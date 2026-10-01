@@ -84,6 +84,14 @@
         "date": "2026-10-01T21:15Z",
         "note": "Wording clarified. It first said “27 automatic checks pass”; the owner report later said 28 — that was a re-run after the final commit. Date unchanged."
       }
+    },
+    {
+      "date": "2026-10-01T21:30:00Z",
+      "title": "Audit pass before the first post",
+      "detail": "External audit applied: tokens that already use the name or ticker are now called “not affiliated”, not “fake”; “a name or ticker is not proof” added everywhere; X/Telegram status, counters and dates made consistent by an automatic audit; platform values marked “as checked”. Pre-launch check at 21:30 UTC: 35 passed, 8 waiting on the owner, 0 failed (of 43).",
+      "proof": {
+        "label": "commit 614c511 · content/checks.json"
+      }
     }
   ]
 }

@@ -2,6 +2,16 @@
 
 Dates are UTC. Entries are added when the change ships — never backdated.
 
+## 2026-10-01 (audit pass, from 21:30 UTC)
+
+- Look-alike tokens: “not affiliated with this project” instead of “fake” on the site, FAQ, Transparency, X/Telegram drafts and README.
+- “A name or ticker is not proof — only the contract address published at the same minute on the site, the pinned X post and the pinned Telegram message.”
+- “Git history proves it” → “documents it”; several independent receipts (repo, X, Telegram, chain).
+- Roadmap X/Telegram status fixed; Public since 01 Oct 2026 shown; platform values “as checked 01 Oct 2026”.
+- Automatic consistency audit (10 rules) inside npm run check; results saved to content/checks.json.
+- Personal data removed from current files; public-repo scrub prepared (not published).
+- Pre-launch check at 21:30 UTC: 35 passed, 8 waiting on the owner, 0 failed (of 43).
+
 ## 2026-10-01
 
 - Project started from an empty folder.
