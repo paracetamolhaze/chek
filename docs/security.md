@@ -40,8 +40,9 @@
 3. No presale, no whitelist, no "early access".
 4. One CA — the same on the site, the pinned X post and the pinned Telegram message.
 5. No fake partnerships, audits or listings.
-6. Build log dates are added when things happen; git history proves it.
+6. Build log entries are added when things happen, never backdated. Git history documents it — but local commit times can technically be rewritten, so we rely on several independent receipts: the public repository, X and Telegram timestamps, and after launch the blockchain.
+7. A name or ticker proves nothing. Other tokens may use the same name or ticker; only the contract address published at the same minute on the site, the pinned X post and the pinned Telegram message identifies ours.
 
 ## Reporting
 
-Found a vulnerability or a fake? Tell us in the Telegram chat or on X. Never send anyone funds or keys to "fix", "verify" or "claim" anything.
+Found a vulnerability or an account pretending to be us? Tell us in the Telegram chat or on X. Never send anyone funds or keys to "fix", "verify" or "claim" anything.

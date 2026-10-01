@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, sep } from "node:path";
 import { fill, fmtUtc, paths, placeholders, readJson, ROOT, slotTime, writeJson, xLength } from "../scripts/lib/content.mjs";
+import { syncReadme } from "../scripts/lib/readme.mjs";
 import { inspectMint, isPubkey } from "./solana.mjs";
 
 const PORT = Number(process.env.DASHBOARD_PORT || 4747);
@@ -78,6 +79,8 @@ async function state(extra = {}) {
   const posts = queues(project, schedule, extra);
   const launchAt = schedule.launchAt ? new Date(schedule.launchAt).getTime() : null;
   const launch = project.status === "live" ? "LIVE" : launchAt ? (launchAt > Date.now() ? "SCHEDULED" : "DUE — create the token") : "NOT STARTED";
+  const checksFile = join(ROOT, "content/checks.json");
+  const checks = existsSync(checksFile) ? readJson(checksFile) : null;
   return {
     project,
     schedule: { ...schedule, launchUtc: schedule.launchAt ? fmtUtc(schedule.launchAt) : null },
@@ -92,6 +95,8 @@ async function state(extra = {}) {
     },
     posts,
     history: readJson(paths.history).entries.slice(-8).reverse(),
+    checks: checks && { checkedAt: checks.checkedAt, ok: checks.ok, owner: checks.owner, failed: checks.failed, total: checks.total, mint: checks.mint },
+    pumpfun: readJson(join(ROOT, "content/pumpfun.json")),
   };
 }
 
@@ -163,9 +168,13 @@ async function applyCa({ ca }) {
     freezeAuthority: f.freezeAuthority,
     creatorWallet: f.creatorWallet,
     creatorBuy: f.creatorBuy,
+    creationTx: f.creationTx,
+    creationFeeSol: f.creationFeeSol,
+    creationSolSpent: f.creationSolSpent,
   });
   project.launch.launchedAt = f.createdAt;
   writeJson(paths.project, project);
+  syncReadme(project);
 
   const schedule = readJson(paths.schedule);
   schedule.launchAt = f.createdAt;
@@ -184,7 +193,7 @@ async function applyCa({ ca }) {
     for (const p of q.posts) p.publishAfter = slotTime(p.slot, schedule);
     writeJson(file, q);
   }
-  const job = startJob("Publish CA", `launch: official contract address ${ca}\n\nVerified on-chain before publishing (symbol, mint/freeze authority, creation tx ${f.creationTx}).`, ["config/project.json", "content/history.json", "content/schedule.json", "content/x/queue.json", "content/telegram/queue.json"]);
+  const job = startJob("Publish CA", `launch: official contract address ${ca}\n\nVerified on-chain before publishing (symbol, mint/freeze authority, creation tx ${f.creationTx}).`, ["config/project.json", "README.md", "content/history.json", "content/schedule.json", "content/x/queue.json", "content/telegram/queue.json"]);
   return { ok: true, report, job };
 }
 
@@ -293,6 +302,13 @@ createServer(async (req, res) => {
       if (url.pathname === "/api/links") return json(res, 200, applyLinks(b));
       if (url.pathname === "/api/post-status") return json(res, 200, setPostStatus(b));
       if (url.pathname === "/api/schedule") return json(res, 200, setSchedule(b));
+      if (url.pathname === "/api/check") {
+        const id = Math.random().toString(36).slice(2, 10);
+        const job = { id, title: "Pre-launch check", log: [], done: false, ok: false };
+        jobs.set(id, job);
+        run(process.execPath, ["scripts/prelaunch-check.mjs"], job.log).then((code) => Object.assign(job, { done: true, ok: code === 0 }));
+        return json(res, 200, { ok: true, job: id });
+      }
     }
     json(res, 404, { error: "not found" });
   } catch (e) {

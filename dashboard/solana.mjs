@@ -99,6 +99,10 @@ export async function inspectMint(ca, expect) {
     const payer = keys.find((k) => k.signer)?.pubkey ?? keys[0]?.pubkey;
     facts.createdAt = tx?.blockTime ? new Date(tx.blockTime * 1000).toISOString() : null;
     facts.creationTx = oldest.signature;
+    // real cost, published after the mint: network fee, and everything the creator wallet spent in that tx (buy + rent + fees)
+    facts.creationFeeSol = tx?.meta ? (tx.meta.fee / 1e9).toFixed(6) : null;
+    const pi = keys.findIndex((k) => k.pubkey === payer);
+    facts.creationSolSpent = tx?.meta && pi >= 0 ? ((tx.meta.preBalances[pi] - tx.meta.postBalances[pi]) / 1e9).toFixed(6) : null;
     facts.creatorWallet = payer ?? null;
     const bought = (tx?.meta?.postTokenBalances ?? []).find((b) => b.mint === ca && b.owner === payer);
     if (bought && Number(bought.uiTokenAmount.uiAmount) > 0) {

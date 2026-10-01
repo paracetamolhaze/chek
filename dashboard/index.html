@@ -12,7 +12,7 @@
   header h1 { margin:0; font-size:18px; letter-spacing:.08em; }
   .badge { font-size:11px; letter-spacing:.2em; padding:3px 8px; border:1px solid var(--line); color:var(--fog); text-transform:uppercase; }
   main { padding:22px 28px 60px; max-width:1500px; margin:0 auto; }
-  .tiles { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; }
+  .tiles { display:grid; grid-template-columns:repeat(8,1fr); gap:10px; }
   .tile { background:#1c1b18; border:1px solid var(--line); padding:12px 14px; min-height:104px; }
   .tile .k { font-size:11px; letter-spacing:.2em; color:var(--fog); }
   .tile .v { font-size:20px; font-weight:800; margin-top:6px; word-break:break-all; }
@@ -75,7 +75,9 @@
     <a class="btn ghost" id="openToken" target="_blank" rel="noopener">Open token</a>
     <button id="updCa" class="ghost" onclick="toggle('caPanel')">Update CA</button>
     <button class="ghost" onclick="toggle('queuePanel')">View content queue</button>
+    <button class="ghost" onclick="runCheck()">Run check</button>
   </div>
+  <pre class="log hidden" id="checkLog"></pre>
 
   <div class="grid">
     <div>
@@ -125,6 +127,11 @@
       </section>
 
       <section class="card">
+        <h2>Pump.fun form — final values</h2>
+        <div id="pumpfun"></div>
+      </section>
+
+      <section class="card">
         <h2>X profile texts</h2>
         <div id="profile"></div>
       </section>
@@ -146,7 +153,7 @@ const toast = (t) => { const el = $("toast"); el.textContent = t; el.style.displ
 const copy = async (t) => { await navigator.clipboard.writeText(t); toast("Copied"); };
 const toggle = (id) => $(id).classList.toggle("hidden");
 const post = (path, data) => fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) }).then((r) => r.json());
-const local = (iso) => (iso ? new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—");
+const local = (iso) => (iso ? new Date(iso).toLocaleString(undefined, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—");
 const utc = (iso) => (iso ? new Date(iso).toISOString().slice(5, 16).replace("T", " ") + " UTC" : "—");
 
 setInterval(() => ($("clock").textContent = new Date().toISOString().slice(11, 16) + " UTC"), 1000);
@@ -167,7 +174,15 @@ function render() {
     tile("CONTENT", `${st.content.ready}/${st.content.total}`, `${st.content.posted} posted`, st.content.ok ? "ok" : "wait") +
     tile("TOKEN", st.token.detail, p.token.launchPlatform, st.token.ok ? "ok" : "wait") +
     tile("CA", ca ? ca.slice(0, 6) + "…" + ca.slice(-6) : "—", ca ? "same on site? " + (st.website.ok ? "yes" : "NO") : "not launched", ca ? "ok" : "wait") +
-    tile("LAUNCH", st.launch, S.schedule.launchUtc ?? "launch time not set", st.launch === "LIVE" ? "ok" : st.launch.startsWith("DUE") ? "bad" : "wait");
+    tile("LAUNCH", st.launch, S.schedule.launchUtc ?? "launch time not set", st.launch === "LIVE" ? "ok" : st.launch.startsWith("DUE") ? "bad" : "wait") +
+    (S.checks ? tile("MINT", S.checks.mint.ready ? "READY" : "BLOCKED", (S.checks.mint.ready ? "" : S.checks.mint.blockers.join(", ") + " · ") + "check " + utc(S.checks.checkedAt), S.checks.mint.ready ? "ok" : "bad") : tile("MINT", "UNKNOWN", "run the check", "wait"));
+
+  const pf = S.pumpfun, L = p.links;
+  $("pumpfun").innerHTML = [["Name", pf.name], ["Ticker", pf.ticker], ["Description", pf.description], ["Website", L.website], ["X", L.x], ["Telegram", L.telegram]]
+    .map(([k, v]) => `<div style="margin-bottom:8px"><label>${k}</label><div class="row"><div style="flex:1;white-space:pre-wrap">${v ? esc(v) : '<span style="color:var(--stamp)">not set — mint blocked</span>'}</div>${v ? `<button class="ghost" data-c="${esc(v)}">Copy</button>` : ""}</div></div>`).join("") +
+    `<div class="warn">Pair ${esc(pf.pair)} · creator rewards → ${esc(pf.creatorRewardsTo)} · Mayhem ${pf.mayhemMode ? "ON" : "OFF"} · creator buy: ${esc(pf.creatorBuy)}</div>` +
+    `<div class="row" style="gap:12px;margin-top:8px"><a href="/asset/${pf.image}" download>token image</a><a href="/asset/${pf.banner}" download>banner</a></div>` +
+    `<p class="warn">${p.tickerConfirmed ? "" : "Ticker NOT confirmed yet. "}Pump.fun: details, links and banner are set at creation and may not be editable later.</p>`;
 
   const launchPost = S.posts.find((x) => x.id === "x-018");
   $("copyLaunch").disabled = !ca;
@@ -265,6 +280,11 @@ async function saveLinks() {
   const r = await post("/api/links", { x: $("lx").value, telegram: $("ltg").value, telegramChat: $("ltgc").value, github: $("lgh").value });
   if (r.error) return alert(r.error);
   poll(r.job, $("linkLog"));
+}
+
+async function runCheck() {
+  const r = await post("/api/check", {});
+  poll(r.job, $("checkLog"));
 }
 
 async function saveSchedule() {

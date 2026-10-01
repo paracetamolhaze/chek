@@ -1,4 +1,6 @@
-# Pump.fun — verified facts (checked 2026-10-01)
+# Pump.fun — facts as checked 2026-10-01
+
+Platform values change. Everything below is "as checked 2026-10-01" and must be re-checked on launch day. Costs are estimates; the real creation transaction and its real cost get published after the mint.
 
 Sources: official pump.fun pages (`/docs/fees` updated 2026-05-20, `/create`, `/docs/terms-and-conditions` updated 2026-09-25, `/docs/wallet-login-changes`), the official `pump-fun/pump-public-docs` GitHub repo, the official help center, and read-only checks of fresh mints on Solana mainnet. Re-check before launch day — fees and options change.
 
@@ -12,7 +14,7 @@ Sources: official pump.fun pages (`/docs/fees` updated 2026-05-20, `/create`, `/
 | Creator buy fee | normal 1.25% trading fee, no extra fee |
 | Graduation fee | 0.015 SOL, taken at migration (not paid by the creator up front) |
 
-Budget for the technical part: **≤ 0.05 SOL (≈ $6)**, well under the $20 limit. The owner's own buy is separate and not part of that budget.
+Estimated technical budget (as checked): **≤ 0.05 SOL**, well under the $20 limit. Not a promise — the real cost is read from the creation transaction after the mint. The owner's own buy is separate.
 
 Our launch flow assumes the coin is **on-chain at T+0** (so the dashboard can verify the CA before it's published). A creator buy at creation does that; its size is the owner's decision and is published either way.
 
@@ -49,7 +51,7 @@ Bonding curve 1.25% = 0.95% protocol + 0.30% creator. PumpSwap tiers from 1.25% 
 
 ## Geography
 
-Prohibited by Pump.fun's terms (§32): United Kingdom, Cuba, Iran, North Korea, Syria, **Russia**, Belarus, Crimea/Donetsk/Luhansk, plus sanctioned countries; perps also exclude the US and Ontario. VPN evasion is prohibited. The terms also exclude anyone for whom use is illegal under local law.
+Prohibited by Pump.fun's terms (§32): United Kingdom, Cuba, Iran, North Korea, Syria, **Russia**, Belarus, Crimea/Donetsk/Luhansk, plus sanctioned countries; perps also exclude the US and Ontario. VPN evasion is prohibited. The terms also exclude anyone for whom use is illegal under local law — every user checks that for themselves.
 
 ## URL formats
 

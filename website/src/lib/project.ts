@@ -7,7 +7,9 @@ export type Project = {
   tagline: string;
   oneLiner: string;
   network: string;
+  publicSince: string;
   status: "prelaunch" | "live";
+  tickerConfirmed: boolean;
   token: {
     ca: string | null;
     createdAt: string | null;
@@ -21,6 +23,9 @@ export type Project = {
     creatorBuy: string | null;
     treasuryWallet: string | null;
     otherAllocations: string;
+    creationTx: string | null;
+    creationFeeSol: string | null;
+    creationSolSpent: string | null;
   };
   launch: { plannedAt: string | null; launchedAt: string | null };
   links: {
@@ -31,6 +36,15 @@ export type Project = {
     github: string | null;
   };
   site?: { analytics?: boolean };
+  platform: {
+    name: string;
+    checkedAt: string;
+    creatorFee: string;
+    creatorFeeScope: string;
+    createFee: string;
+    graduationFee: string;
+    note: string;
+  };
 };
 
 export const project = raw as Project;
@@ -44,6 +58,20 @@ export const ca: string | null =
 export const isLive = ca !== null;
 
 export const cashtag = `$${project.ticker}`;
+
+// "01 Oct 2026" — for values that can change ("as checked …").
+export const platformChecked = new Date(`${project.platform.checkedAt}T00:00:00Z`).toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+// The one sentence about look-alike tokens, used everywhere before launch.
+export const notAffiliated = `The official ${project.name} token has not launched yet. Any token using this name or ticker before our launch is not affiliated with this project.`;
+
+// After launch: the name proves nothing, the address does.
+export const onlyTheAddress = `A name or ticker is not proof. The only exact identifier is the official Solana contract address, published at the same minute on this website, in the pinned X post and in the pinned Telegram message.`;
 
 export const siteUrl = project.links.website ?? "https://rcpt.example";
 

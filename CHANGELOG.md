@@ -15,4 +15,4 @@ Dates are UTC. Entries are added when the change ships — never backdated.
 - Pump.fun facts re-checked (fees, form limits, Token-2022, authorities); creator fee disclosed.
 - Content bank: 26 X posts, 11 Telegram posts, 10 memes, 5 mascot images, reaction GIF; schedule D1–D5 + launch T±.
 - Owner launch dashboard (local only) with on-chain CA verification; launch minute rehearsed on a real coin in a throwaway copy, one bug fixed.
-- Docs: brand guide, tokenomics draft, launch plan, security, lore, checklist; `npm run check` — 27 automatic checks pass.
+- Docs: brand guide, tokenomics draft, launch plan, security, lore, checklist; `npm run check` at 20:10 UTC: 27 passed, 6 waiting on the owner, 0 failed.

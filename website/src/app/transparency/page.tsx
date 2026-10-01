@@ -5,7 +5,7 @@ import { OfficialRecord } from "@/components/OfficialRecord";
 import { SectionHead, Stamp } from "@/components/receipt";
 import { Shell } from "@/components/Shell";
 import { houseRules } from "@/lib/content";
-import { ca, cashtag, isLive, project, tradeUrl } from "@/lib/project";
+import { ca, cashtag, isLive, notAffiliated, onlyTheAddress, project, tradeUrl } from "@/lib/project";
 
 export const metadata: Metadata = {
   title: "Transparency",
@@ -42,7 +42,7 @@ export default function Transparency() {
           <Mascot expr="angry" pose="point" prop="stamp" dark className="hidden h-auto w-[170px] lg:block" />
         </div>
         <div className="mt-8 max-w-[640px]">
-          <CaBox ca={ca} />
+          <CaBox ca={ca} note={notAffiliated} />
         </div>
       </div>
 
@@ -72,18 +72,27 @@ export default function Transparency() {
                 </li>
               ))}
             </ol>
-            {!isLive && <p className="reveal mt-4 text-[13px] text-faded">Before launch there is nothing to verify — and nothing to buy.</p>}
+            {!isLive && <p className="reveal mt-4 text-[13px] text-faded">Before launch there is no official contract address to verify. {notAffiliated}</p>}
+          </section>
+
+          <section className="pt-16" aria-labelledby="names">
+            <SectionHead n="03" id="names" title="Names prove nothing" kicker="Read this twice" />
+            <p className="reveal max-w-[62ch] text-[15px] leading-relaxed font-semibold">{onlyTheAddress}</p>
+            <p className="reveal mt-3 max-w-[62ch] text-[13.5px] leading-relaxed">
+              Other tokens already use the name or ticker {project.name}. They are independent projects, not affiliated with us — not necessarily scams, just
+              not ours. Anyone can create a token with any name, so a matching name or logo is never evidence.
+            </p>
           </section>
 
           <section className="pt-16" aria-labelledby="launch">
-            <SectionHead n="03" id="launch" title="Launch day, minute by minute" kicker="Plan" />
+            <SectionHead n="04" id="launch" title="Launch day, minute by minute" kicker="Plan" />
             <p className="reveal max-w-[62ch] text-[14.5px] leading-relaxed">
               The token is created last. Everything else exists first. At creation, the contract address goes to every official place in the same
               minute — so there is never a window where only one source shows it.
             </p>
             <ol className="mt-6 grid gap-px bg-ink/15 sm:grid-cols-2">
               {[
-                ["T+0", "Token created on Pump.fun. CA added to this site (a public commit), X bio + pinned post, Telegram pinned message."],
+                ["T+0", "Token created on Pump.fun. CA added to this site (a commit), X bio + pinned post, Telegram pinned message — the same minute."],
                 ["T+10 min", "Launch post: visual, name, ticker, the contract address, link to this site."],
                 ["T+30 min", "Transparency post: CA, network, platform, supply, creator wallet, explorer links."],
                 ["T+24 h", "Honest recap: what shipped, what's next. No price charts, no fake milestones."],
@@ -98,10 +107,10 @@ export default function Transparency() {
           </section>
 
           <section className="pt-16" aria-labelledby="publish">
-            <SectionHead n="04" id="publish" title="What we publish at launch" kicker="No hidden lines" />
+            <SectionHead n="05" id="publish" title="What we publish at launch" kicker="No hidden lines" />
             <ul className="reveal grid gap-x-8 sm:grid-cols-2">
               {[
-                "Contract address + creation transaction",
+                "Contract address + creation transaction and its real cost",
                 "Creator wallet address",
                 "Whether the creator bought at launch, how much, with the transaction link",
                 "Mint authority and freeze authority status",
@@ -117,7 +126,7 @@ export default function Transparency() {
           </section>
 
           <section className="pt-16" aria-labelledby="rules">
-            <SectionHead n="05" id="rules" title="House rules" kicker="Never changes" />
+            <SectionHead n="06" id="rules" title="House rules" kicker="Never changes" />
             <ol>
               {houseRules.map((r, i) => (
                 <li key={r} className="reveal grid grid-cols-[44px_1fr] border-b-2 border-dotted border-ink/20 py-3 text-[14.5px] leading-snug">
@@ -129,7 +138,7 @@ export default function Transparency() {
           </section>
 
           <section className="pt-16" aria-labelledby="security">
-            <SectionHead n="06" id="security" title="Security" kicker="How this site works" />
+            <SectionHead n="07" id="security" title="Security" kicker="How this site works" />
             <div className="grid gap-6 md:grid-cols-2">
               <div className="reveal border-2 border-ink p-5">
                 <Stamp rotate={-3} className="text-sm">No wallet connect</Stamp>
@@ -142,7 +151,7 @@ export default function Transparency() {
                 <Stamp rotate={2} className="text-sm">Static site</Stamp>
                 <p className="mt-4 text-[14px] leading-relaxed">
                   The site is plain static HTML: no backend, no database, no admin panel to hack. The contract address comes from one file in
-                  the public repository, and changing it means a public commit.
+                  the project repository, and changing it means a commit with its own timestamp. The repository goes public before launch.
                 </p>
               </div>
               <div className="reveal border-2 border-ink p-5">
@@ -162,7 +171,7 @@ export default function Transparency() {
           </section>
 
           <section className="pt-16" aria-labelledby="links">
-            <SectionHead n="07" id="links" title="Official links" kicker="Only these" />
+            <SectionHead n="08" id="links" title="Official links" kicker="Only these" />
             <ul className="reveal border-t-2 border-ink">
               {official.map((l) => (
                 <li key={l.label} className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-dotted border-ink/20 py-3 text-[14px]">
@@ -178,7 +187,7 @@ export default function Transparency() {
               ))}
             </ul>
             <p className="reveal mt-5 text-[13px] leading-relaxed">
-              Saw a fake? Report it in our Telegram chat or reply on X. Never send anyone funds or a seed phrase to “fix”, “verify” or “claim”
+              Saw an account pretending to be us? Report it in our Telegram chat or reply on X. Never send anyone funds or a seed phrase to “fix”, “verify” or “claim”
               anything.
             </p>
             <a href="/" className="mt-8 inline-block text-[12px] font-bold tracking-[0.16em] uppercase underline underline-offset-4">

@@ -5,6 +5,8 @@ export const FADED: string;
 export const STAMP: string;
 export const MARKER: string;
 
+export const EXPRESSIONS: string[];
+export const POSES: string[];
 export type Expression = "neutral" | "skeptic" | "happy" | "shock" | "angry" | "sleep" | "wink";
 export type Pose = "down" | "point" | "wave" | "up" | "hold" | "hip";
 

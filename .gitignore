@@ -21,3 +21,6 @@ next-env.d.ts
 test-artifacts/
 .DS_Store
 Thumbs.db
+
+# owner-only notes (personal paths, local setup) — never public
+private/

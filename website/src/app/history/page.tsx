@@ -32,8 +32,9 @@ export default function History() {
               Still printing.
             </h1>
             <p className="mt-4 max-w-[52ch] text-[14px] leading-relaxed text-paper/80">
-              Every line was added the day it happened — never before, never backdated. Times are UTC. Where there&apos;s a receipt (a commit, a
-              post, a transaction), it&apos;s linked.
+              Every line was added the day it happened — never before, never backdated. Times are UTC. Each line names its receipt — a commit,
+              a post or a transaction. Commit hashes become clickable when the repository goes public; cross-check them against X and
+              Telegram timestamps. Several independent receipts beat one.
             </p>
           </div>
           <Mascot expr="happy" pose="up" dark className="hidden h-auto w-[130px] shrink-0 sm:block" />
@@ -66,6 +67,11 @@ export default function History() {
                     <div>
                       <h3 className="text-[15px] font-extrabold">{e.title}</h3>
                       {e.detail && <p className="mt-1 text-[13.5px] leading-relaxed">{e.detail}</p>}
+                      {e.correction && (
+                        <p className="mt-2 border-l-4 border-stamp pl-2 text-[11.5px] leading-snug text-faded">
+                          <span className="font-bold text-stamp uppercase">Corrected {formatUtc(e.correction.date, true)}:</span> {e.correction.note}
+                        </p>
+                      )}
                       {e.proof && (
                         <p className="mt-2 text-[11px] font-semibold tracking-[0.14em] text-faded uppercase">
                           Receipt:{" "}

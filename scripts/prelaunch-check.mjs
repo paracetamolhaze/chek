@@ -1,15 +1,20 @@
-// Automated part of the pre-launch checklist. Prints ✓/✗/· for everything a script can verify.
-//   node scripts/prelaunch-check.mjs
+// Pre-launch check. The ONLY source of check counts: writes content/checks.json (timestamped).
+//   node scripts/prelaunch-check.mjs           → run + print + save
+//   node scripts/prelaunch-check.mjs --no-save → run + print
+// States: ok · fail (something is wrong) · owner (waiting on an owner action/decision).
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { fill, paths, placeholders, readJson, ROOT, SAMPLE, xLength } from "./lib/content.mjs";
+import { audit } from "./lib/consistency.mjs";
+import { fill, paths, placeholders, readJson, ROOT, SAMPLE, writeJson, xLength } from "./lib/content.mjs";
+import { scanRepo } from "./lib/public-scan.mjs";
 
 const project = readJson(paths.project);
 const schedule = readJson(paths.schedule);
+const pumpfun = readJson(join(ROOT, "content/pumpfun.json"));
 const site = project.links.website;
 const rows = [];
-const add = (state, item, detail = "") => rows.push({ state, item, detail });
+const add = (group, state, item, detail = "") => rows.push({ group, state, item, detail });
 const get = async (url) => {
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(10000), redirect: "manual" });
@@ -19,72 +24,96 @@ const get = async (url) => {
   }
 };
 
-// Website
+// ── Website (live) ──
 const home = await get(site);
-add(home.status === 200 && site.startsWith("https://") ? "ok" : "fail", "Website on HTTPS", `${site} → ${home.status}`);
+add("website", home.status === 200 && site.startsWith("https://") ? "ok" : "fail", "Website on HTTPS", `${site} → ${home.status}`);
 for (const p of ["/history", "/transparency", "/kit", "/opengraph-image.png", "/favicon.ico", "/icon.svg", "/apple-icon.png", "/manifest.webmanifest", "/sitemap.xml"]) {
   const r = await get(site + p);
-  add(r.status === 200 ? "ok" : "fail", `GET ${p}`, String(r.status));
+  add("website", r.status === 200 ? "ok" : "fail", `GET ${p}`, String(r.status));
 }
 const h = home.text;
-const meta = (re) => re.test(h);
-add(meta(/property="og:title"/) && meta(/property="og:image"/) && meta(/name="twitter:card" content="summary_large_image"/) ? "ok" : "fail", "OG + Twitter card metadata", "og:title, og:image, twitter:card");
-add(meta(/rel="icon"/) ? "ok" : "fail", "Favicon linked");
-add(/content-security-policy/i.test([...(home.headers?.keys?.() ?? [])].join(" ")) ? "ok" : "fail", "Security headers (CSP)");
+add("website", /property="og:title"/.test(h) && /property="og:image"/.test(h) && /name="twitter:card" content="summary_large_image"/.test(h) ? "ok" : "fail", "OG + Twitter card metadata");
+add("website", /rel="icon"/.test(h) ? "ok" : "fail", "Favicon linked");
+add("website", home.headers?.get?.("content-security-policy") ? "ok" : "fail", "Security headers (CSP)");
 const ca = project.status === "live" ? project.token.ca : null;
-if (ca) add(h.includes(ca) ? "ok" : "fail", "Live site shows the official CA", ca);
-else add(/Not launched yet/i.test(h) && !/[1-9A-HJ-NP-Za-km-z]{43,44}pump/.test(h) ? "ok" : "fail", "Pre-launch: NOT LAUNCHED YET, no address-like string", "");
-add(/never DM first/i.test(h) ? "ok" : "fail", "Scam warning on the site");
-add(/Always verify the Contract Address/i.test(h) ? "ok" : "fail", "CA warning in How to buy");
+if (ca) add("website", h.includes(ca) ? "ok" : "fail", "Live site shows the official CA", ca);
+else add("website", /Not launched yet/i.test(h) && !/[1-9A-HJ-NP-Za-km-z]{43,44}pump/.test(h) ? "ok" : "fail", "Live site: NOT LAUNCHED YET, no address-like string");
+add("website", /not affiliated with this project/i.test(h) ? "ok" : "fail", "Live site: look-alike tokens “not affiliated” (not “fake”)");
+add("website", /never DM first/i.test(h) && /Always verify the Contract Address/i.test(h) ? "ok" : "fail", "Live site: DM + CA warnings");
+add("website", project.site?.analytics ? "ok" : "owner", "Analytics (Vercel Web Analytics)", project.site?.analytics ? "on" : "owner enables it in Vercel");
 
-// Socials
-add(project.links.x ? "ok" : "todo", "X account linked", project.links.x ?? "create @chekcoin");
-if (project.links.telegram) {
-  const tg = await get(project.links.telegram);
-  add(/tgme_page_title/.test(tg.text) ? "ok" : "fail", "Telegram channel exists", project.links.telegram);
-} else add("todo", "Telegram channel linked", "create t.me/chekcoin");
-add(project.links.telegramChat ? "ok" : "todo", "Telegram chat linked", project.links.telegramChat ?? "create t.me/chekchat");
-add(project.links.github ? "ok" : "todo", "Public GitHub repo linked", project.links.github ?? "owner decides the account");
+// ── Consistency (built site + docs + drafts vs sources) ──
+const { results } = audit();
+for (const r of results) add("consistency", r.ok ? "ok" : "fail", r.title, r.problems.slice(0, 3).join(" | "));
 
-// Token assets (PNG header: width/height at bytes 16..24)
+// ── Name / ticker ──
+add("token data", project.tickerConfirmed ? "ok" : "owner", "Ticker decision confirmed", project.tickerConfirmed ? `$${project.ticker}` : "collision report delivered; owner decides A (keep $CHEK) or B (new ticker)");
+add("token data", /^[A-Z]{1,6}$/.test(project.ticker) ? "ok" : "fail", "Ticker is a clickable X cashtag (≤6 letters)", `$${project.ticker}`);
 const dims = (f) => {
   const b = readFileSync(join(ROOT, f));
   return [b.readUInt32BE(16), b.readUInt32BE(20)];
 };
-const [tw, th] = dims("brand/social/token-1000.png");
-add(tw >= 1000 && tw === th ? "ok" : "fail", "Token image ≥1000×1000, 1:1", `${tw}×${th}`);
-const [bw, bh] = dims("brand/social/x-header-1500x500.png");
-add(bw === 1500 && bh === 500 ? "ok" : "fail", "Banner 1500×500", `${bw}×${bh}`);
-add(/^[A-Z]{1,6}$/.test(project.ticker) ? "ok" : "fail", "Ticker is a clickable cashtag (≤6 letters)", `$${project.ticker}`);
-add(project.name.length < 32 ? "ok" : "fail", "Name fits pump.fun (<32)", project.name);
+const [tw, th] = dims(pumpfun.image);
+add("token data", tw >= 1000 && tw === th ? "ok" : "fail", "Token image ≥1000×1000, 1:1", `${tw}×${th}`);
+const [bw, bh] = dims(pumpfun.banner);
+add("token data", bw === 1500 && bh === 500 ? "ok" : "fail", "Banner 1500×500", `${bw}×${bh}`);
+add("token data", pumpfun.description.length < 2000 ? "ok" : "fail", "Description < 2000 chars", `${pumpfun.description.length}`);
 
-// Content
+// ── Socials ──
+add("socials", project.links.x ? "ok" : "owner", "X account linked", project.links.x ?? "owner creates it");
+if (project.links.telegram) {
+  const tg = await get(project.links.telegram);
+  add("socials", /tgme_page_title/.test(tg.text) ? "ok" : "fail", "Telegram channel exists", project.links.telegram);
+} else add("socials", "owner", "Telegram channel linked", "owner creates it");
+add("socials", project.links.telegramChat ? "ok" : "owner", "Telegram chat linked", project.links.telegramChat ?? "owner creates it");
+
+// ── Content ──
 const x = readJson(paths.x).posts;
 const tg = readJson(paths.tg).posts;
 const values = placeholders(project, schedule);
 const sample = Object.fromEntries(Object.entries({ ...SAMPLE, ...values }).map(([k, v]) => [k, v ?? SAMPLE[k]]));
 const long = x.filter((p) => [p.text, ...(p.thread || [])].some((t) => xLength(fill(t, sample).text) > 280));
-add(long.length ? "fail" : "ok", "X posts ≤ 280 chars", long.map((p) => p.id).join(", ") || `${x.length} posts`);
-add(x.length >= 20 ? "ok" : "fail", "≥ 20 X posts ready", String(x.length));
-add(tg.length >= 8 ? "ok" : "fail", "Telegram posts ready", String(tg.length));
-add(x.some((p) => p.id === "x-018") && tg.some((p) => p.id === "tg-007") ? "ok" : "fail", "Launch post + Telegram CA pin prepared");
-add(schedule.launchAt ? "ok" : "todo", "Launch time confirmed", schedule.launchAt ?? `proposed ${schedule.proposedLaunchAt}`);
+add("content", long.length ? "fail" : "ok", "X drafts ≤ 280 chars", long.map((p) => p.id).join(", ") || `${x.length} drafts`);
+add("content", x.some((p) => p.id === "x-018") && tg.some((p) => p.id === "tg-007") ? "ok" : "fail", "Launch post + Telegram CA pin drafted");
+add("content", schedule.launchAt ? "ok" : "owner", "Launch time confirmed", schedule.launchAt ?? `proposed ${schedule.proposedLaunchAt}`);
 
-// Repo hygiene
+// ── Repository (public readiness) ──
 const tracked = execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
-const badNames = tracked.filter((f) => /(^|\/)\.env|\.pem$|\.key$|keypair.*\.json$|wallet.*\.json$/i.test(f));
-add(badNames.length ? "fail" : "ok", "No secret files tracked by git", badNames.join(", "));
-const SECRET = /(-----BEGIN [A-Z ]*PRIVATE KEY-----|VERCEL_TOKEN\s*=\s*[A-Za-z0-9]{20,}|BOT_TOKEN\s*=\s*\d|\b\d{8,10}:[A-Za-z0-9_-]{35}\b|\[(\s*\d{1,3}\s*,){63}\s*\d{1,3}\s*\])/;
-const leaks = tracked.filter((f) => /\.(m?js|ts|tsx|json|md|html|txt|css)$/.test(f) && SECRET.test(readFileSync(join(ROOT, f), "utf8")));
-add(leaks.length ? "fail" : "ok", "No key-like content in tracked files", leaks.join(", "));
-const gi = readFileSync(join(ROOT, ".gitignore"), "utf8");
-add(/^\.env\*$/m.test(gi) ? "ok" : "fail", ".env* is git-ignored");
+add("repository", /^\.env\*$/m.test(readFileSync(join(ROOT, ".gitignore"), "utf8")) && /^private\/$/m.test(readFileSync(join(ROOT, ".gitignore"), "utf8")) ? "ok" : "fail", ".env* and private/ are git-ignored");
+const findings = scanRepo(ROOT);
+const nowF = findings.filter((f) => f.where === "tracked");
+const histF = findings.filter((f) => f.where !== "tracked");
+add("repository", nowF.length ? "fail" : "ok", "Current files: no secrets / personal data", [...new Set(nowF.map((f) => `${f.file}: ${f.why}`))].join(" | "));
+add("repository", histF.length ? "owner" : "ok", "Git history: no secrets / personal data", histF.length ? `${new Set(histF.map((f) => f.commit)).size} old commits need the scrub (scripts/prepare-public-repo.mjs) — owner approves` : "");
+add("repository", project.links.github ? "ok" : "owner", "Public GitHub repo", project.links.github ?? "owner picks the account");
 const dirty = execFileSync("git", ["status", "--porcelain"], { cwd: ROOT, encoding: "utf8" }).trim();
-add(dirty ? "todo" : "ok", "Everything committed (backup = git)", dirty ? `${dirty.split("\n").length} uncommitted` : "");
+add("repository", dirty ? "owner" : "ok", "Everything committed", dirty ? `${dirty.split("\n").length} uncommitted` : "");
+void tracked;
 
-const icon = { ok: "✓", fail: "✗", todo: "·" };
-for (const r of rows) console.log(`${icon[r.state]} ${r.item}${r.detail ? `  — ${r.detail}` : ""}`);
-const fails = rows.filter((r) => r.state === "fail").length;
-const todos = rows.filter((r) => r.state === "todo").length;
-console.log(`\n${rows.length - fails - todos} ok · ${todos} waiting on owner · ${fails} failed`);
-process.exit(fails ? 1 : 0);
+// ── Mint gate: Pump.fun details can't be edited after creation ──
+const need = (cond, what) => (cond ? null : what);
+const gate = [
+  need(home.status === 200, "website live"),
+  need(project.links.x, "X linked"),
+  need(project.links.telegram, "Telegram linked"),
+  need(project.tickerConfirmed, "name/ticker confirmed"),
+  need(tw >= 1000 && bw === 1500, "token image + banner"),
+  need(pumpfun.description.length < 2000, "description"),
+  need(schedule.launchAt, "launch time"),
+  need(project.links.github && !histF.length, "public repo (the site promises it before launch)"),
+  need(results.every((r) => r.ok), "consistency audit"),
+].filter(Boolean);
+const mint = { ready: gate.length === 0, blockers: gate };
+
+const icon = { ok: "✓", fail: "✗", owner: "·" };
+let group = "";
+for (const r of rows) {
+  if (r.group !== group) console.log(`\n${(group = r.group).toUpperCase()}`);
+  console.log(`  ${icon[r.state]} ${r.item}${r.detail ? `  — ${r.detail}` : ""}`);
+}
+const n = (s) => rows.filter((r) => r.state === s).length;
+const summary = { checkedAt: new Date().toISOString(), total: rows.length, ok: n("ok"), owner: n("owner"), failed: n("fail") };
+console.log(`\n${summary.ok} ok · ${summary.owner} waiting on the owner · ${summary.failed} failed  (of ${summary.total})`);
+console.log(mint.ready ? "READY TO MINT" : `NOT READY TO MINT — ${mint.blockers.join(", ")}`);
+if (!process.argv.includes("--no-save")) writeJson(join(ROOT, "content/checks.json"), { $comment: "Generated by npm run check. The only source for check counts.", ...summary, mint, rows });
+process.exit(summary.failed ? 1 : 0);

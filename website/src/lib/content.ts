@@ -1,12 +1,18 @@
 import history from "../../../content/history.json";
-import { cashtag as T, project } from "./project";
+import { cashtag as T, notAffiliated, onlyTheAddress, project } from "./project";
 import type { Expression, Pose } from "../../../brand/mascot.mjs";
 import type { TagKind } from "@/components/receipt";
 
 const M = project.mascot;
 const hasCommunity = Boolean(project.links.telegram || project.links.x);
 
-export type HistoryEntry = { date: string; title: string; detail?: string; proof?: { label: string; href?: string } };
+export type HistoryEntry = {
+  date: string;
+  title: string;
+  detail?: string;
+  proof?: { label: string; href?: string };
+  correction?: { date: string; note: string };
+};
 export const buildLog = (history.entries as HistoryEntry[]).slice().sort((a, b) => b.date.localeCompare(a.date));
 
 export const lore: { ch: string; title: string; body: string; expr: Expression; pose: Pose; prop?: "stamp" | "magnifier" }[] = [
@@ -51,8 +57,8 @@ export const lore: { ch: string; title: string; body: string; expr: Expression; 
 
 export const why = [
   { k: "Honest label", v: `It's a meme coin and we say so. No fake utility, no “ecosystem”, no road to riches.` },
-  { k: "Proof, not promises", v: "Every claim on this site links to something you can check — a commit, a post, a transaction." },
-  { k: "History in public", v: "The build log starts on day one. Dates are added when things happen, never after. Git history backs it up." },
+  { k: "Proof, not promises", v: "Every claim comes with a receipt — a commit, a post, a transaction. Several independent receipts beat one." },
+  { k: "History in public", v: `Public since day one (${new Date(`${project.publicSince}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" })}). Build-log lines are added when things happen, never after; repository and post timestamps document them.` },
   { k: "Fun first", v: `Memes, lore and challenges around a character worth following — even if you never buy a single ${T}.` },
 ];
 
@@ -102,7 +108,7 @@ export const roadmap: { phase: string; title: string; items: { t: string; s: Tag
     items: [
       { t: "Concept, brand & mascot", s: "done" },
       { t: "Website v1 + build log", s: "done" },
-      { t: "X and Telegram open", s: hasCommunity ? "done" : "now" },
+      { t: "X + Telegram accounts", s: hasCommunity ? "done" : "next" },
       { t: "Pre-launch: lore, memes, transparency", s: "next" },
       { t: "Public launch on Pump.fun", s: project.status === "live" ? "done" : "next" },
     ],
@@ -144,7 +150,11 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "How do I know the contract address is real?",
-    a: "It must match in three places: this website, the pinned post on X and the pinned message in Telegram. The commit that added it to this site is public too. If anything doesn't match — don't buy.",
+    a: `${onlyTheAddress} The commit that adds it to this site documents it too. If anything doesn't match — don't buy.`,
+  },
+  {
+    q: `Other tokens called ${project.name} already exist. Are they yours?`,
+    a: `No. ${notAffiliated} They are independent — not necessarily scams, just not ours.`,
   },
   {
     q: "Has the contract been audited?",
@@ -169,6 +179,7 @@ export const houseRules = [
   "We never ask for a seed phrase, private key or “wallet validation”.",
   "No presale, no whitelist, no “early access”. Ever.",
   "One contract address — the same here, in the pinned post on X and in the pinned Telegram message. If they don't match, don't buy.",
+  "A name or ticker proves nothing. Other tokens may use the same name or ticker; they are not affiliated with us. Only the address counts.",
   "No fake partnerships, audits or listings. If it's not linked, it didn't happen.",
-  "Build log dates are added when things happen. Git history proves it.",
+  "Build log entries are added when things happen, never backdated. The public repository, X and Telegram timestamps — and after launch the blockchain — document it. Several independent receipts beat one.",
 ];

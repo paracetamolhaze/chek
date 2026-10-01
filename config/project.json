@@ -6,7 +6,9 @@
   "tagline": "Receipts or it didn't happen.",
   "oneLiner": "A Solana meme coin with one rule: every claim comes with a receipt.",
   "network": "Solana",
+  "publicSince": "2026-10-01",
   "status": "prelaunch",
+  "tickerConfirmed": false,
   "token": {
     "ca": null,
     "createdAt": null,
@@ -19,7 +21,10 @@
     "creatorWallet": null,
     "creatorBuy": null,
     "treasuryWallet": null,
-    "otherAllocations": "none"
+    "otherAllocations": "none",
+    "creationTx": null,
+    "creationFeeSol": null,
+    "creationSolSpent": null
   },
   "launch": {
     "plannedAt": null,
@@ -34,5 +39,14 @@
   },
   "site": {
     "analytics": false
+  },
+  "platform": {
+    "name": "Pump.fun",
+    "checkedAt": "2026-10-01",
+    "creatorFee": "0.30%",
+    "creatorFeeScope": "bonding-curve trades",
+    "createFee": "0 SOL",
+    "graduationFee": "0.015 SOL",
+    "note": "Platform values change. Re-check on launch day; after the mint we publish the real creation transaction and its real cost."
   }
 }

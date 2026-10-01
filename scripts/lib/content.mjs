@@ -44,10 +44,18 @@ export function fmtUtc(iso) {
 
 const host = (u) => (u ? u.replace(/^https?:\/\//, "").replace(/\/$/, "") : null);
 
-export function placeholders(project, schedule, extra = {}) {
+export function placeholders(project, schedule, extra = {}, now = new Date()) {
   const t = project.token;
   const ca = project.status === "live" ? t.ca : null;
+  // Day 1 = the day the site went public (UTC). Computed for the moment of posting — never backdated.
+  const dayN = Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - Date.parse(`${project.publicSince}T00:00:00Z`)) / 86400e3) + 1;
+  const fmtDay = (d) => new Date(`${d}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
   return {
+    DAY_N: dayN,
+    CREATOR_FEE: project.platform?.creatorFee,
+    FEE_CHECKED: project.platform ? fmtDay(project.platform.checkedAt) : null,
+    CREATION_TX: t.creationTx,
+    CREATION_FEE: t.creationFeeSol,
     SITE: host(project.links.website),
     SITE_URL: project.links.website,
     X: host(project.links.x),
@@ -95,6 +103,9 @@ export const SAMPLE = {
   CREATOR: "X".repeat(44),
   CREATOR_BUY: "25,000,000 CHEK (2.50% of supply) in the creation tx",
   ROTW_ENTRIES: "12",
+  DAY_N: "9",
+  CREATION_TX: "X".repeat(88),
+  CREATION_FEE: "0.000105",
 };
 
 // X counts every URL as 23 characters; this is close enough to warn before posting.

@@ -7,7 +7,7 @@ import { BUILT_AT, primaryCta, Shell } from "@/components/Shell";
 import { SideMascot } from "@/components/SideMascot";
 import { IconArrow, IconExternal, IconWarn, SocialIcon } from "@/components/icons";
 import { buildLog, faq, houseRules, lore, roadmap, utility, why } from "@/lib/content";
-import { ca, cashtag, formatUtc, isLive, project, shortAddress, socials, tradeUrl, walletUrl } from "@/lib/project";
+import { ca, cashtag, formatUtc, isLive, notAffiliated, platformChecked, project, shortAddress, socials, tradeUrl, walletUrl } from "@/lib/project";
 
 const T = cashtag;
 const M = project.mascot;
@@ -111,7 +111,7 @@ export default function Home() {
               )}
             </div>
             <div className="mt-7 max-w-[560px]">
-              <CaBox ca={ca} />
+              <CaBox ca={ca} note={notAffiliated} />
             </div>
             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-semibold tracking-[0.18em] text-fog uppercase">
               {socials.map((s) =>
@@ -164,6 +164,7 @@ export default function Home() {
             <p className="mt-4 text-[11px] font-semibold tracking-[0.3em] text-faded uppercase">Register #4 · Open 24/7 · {project.network}</p>
             <div className="mx-auto mt-5 max-w-[420px] space-y-0.5 text-left">
               <Row label="Order" value={T} />
+              <Row label="Public since" value={formatUtc(`${project.publicSince}T00:00:00Z`)} />
               <Row label="Printed" value={formatUtc(BUILT_AT, true)} />
               <Row label="Status" value={isLive ? <span className="text-ok">Live</span> : <span className="text-stamp">Pre-launch</span>} strong />
             </div>
@@ -304,15 +305,16 @@ export default function Home() {
               />
               <Row label="Other allocations" value={t.otherAllocations === "none" ? "None" : t.otherAllocations} />
               <Row label="Token tax" value="None" />
-              <Row label="Creator fee (set by platform)" value="0.30% of curve trades" />
+              <Row label={`Creator fee (platform, as checked ${platformChecked})`} value={`${project.platform.creatorFee} of curve trades`} />
               <div className="rule-double my-3" />
-              <Row label="Hidden allocations" value="0" strong />
+              <Row label="Hidden allocations" value="None" strong />
             </div>
             <p className="reveal mt-3 text-[12px] leading-relaxed text-faded">
-              Trading fees are set by {t.launchPlatform}, not by us — including the creator fee the platform pays to the creator wallet (0.30% of
-              bonding-curve trades as of Oct 2026). We list it because it&apos;s real income for the creator. For reference, a standard {t.launchPlatform}{" "}
-              coin today has 1,000,000,000 supply and mint/freeze authority disabled at creation — this table will show our coin&apos;s actual
-              on-chain values, not the expected ones.
+              Trading fees are set by {t.launchPlatform}, not by us — including the creator fee the platform pays to the creator wallet (
+              {project.platform.creatorFee} of {project.platform.creatorFeeScope}, as checked {platformChecked}; platform values can change and get re-checked on launch day).
+              We list it because it&apos;s real income for the creator. For reference, a standard {t.launchPlatform} coin (as checked {platformChecked}) has
+              1,000,000,000 supply and mint/freeze authority disabled at creation — this table will show our coin&apos;s actual on-chain values, not the
+              expected ones.
             </p>
           </section>
 
@@ -343,17 +345,15 @@ export default function Home() {
             <SectionHead n="07" id="buy-title" title="How to buy" kicker="5 steps" />
             {!isLive && (
               <div className="reveal mb-6 flex flex-wrap items-center gap-4 border-2 border-stamp/60 bg-stamp/[0.06] p-4">
-                <Stamp rotate={-3}>Nothing to buy yet</Stamp>
-                <p className="text-[13.5px] leading-relaxed">
-                  {T} hasn&apos;t launched. Any {T} you see today is fake.
-                </p>
+                <Stamp rotate={-3}>Not launched yet</Stamp>
+                <p className="max-w-[60ch] text-[13.5px] leading-relaxed">{notAffiliated}</p>
               </div>
             )}
             <ol className="border-t-2 border-ink">
               {[
                 ["Get a Solana wallet", "Phantom, Solflare or Backpack. Download it only from the official site."],
                 ["Get SOL", "Buy SOL on an exchange and send it to your wallet."],
-                ["Verify the contract", "Copy the address from this site. Check it matches our pinned posts on X and Telegram."],
+                ["Verify the contract", "Copy the address from this site. Check it matches our pinned posts on X and Telegram. The name and ticker prove nothing — only the address does."],
                 ["Open the official link", isLive ? "Use the trading link on this page — nowhere else." : "The trading link appears here at launch."],
                 ["Swap", "Swap SOL for the token. Start small. Only use money you can afford to lose."],
               ].map(([h, b], i) => (
@@ -367,7 +367,7 @@ export default function Home() {
             <div className="reveal mt-5 flex items-start gap-3 bg-ink p-4 text-paper sm:items-center">
               <IconWarn className="size-6 shrink-0 text-marker" />
               <p className="text-[13.5px] leading-relaxed font-semibold">
-                Always verify the Contract Address. Fake tokens may use the same name or ticker.
+                Always verify the Contract Address. Other tokens may use the same name or ticker.
               </p>
             </div>
             {isLive && tradeUrl && (
@@ -445,7 +445,7 @@ export default function Home() {
             <div className="rule-double" />
             <div className="mx-auto mt-6 max-w-[420px] text-left">
               <Row label="Lines printed" value={String(buildLog.length)} />
-              <Row label="Claims without proof" value="0" />
+              <Row label="Public since" value={formatUtc(`${project.publicSince}T00:00:00Z`)} />
               <Row label="Total" value="Receipts" strong />
             </div>
             <Stars className="mt-8" />

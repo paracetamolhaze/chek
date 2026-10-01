@@ -3,7 +3,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { character, shredder, coupon } from "../../brand/mascot.mjs";
+import { character, shredder, coupon, EXPRESSIONS, POSES } from "../../brand/mascot.mjs";
 
 const OUT = fileURLToPath(new URL("../public/m", import.meta.url));
 rmSync(OUT, { recursive: true, force: true });
@@ -15,8 +15,8 @@ const STYLE =
   "@media (prefers-reduced-motion:reduce){.eye{animation:none}}</style>";
 const file = (inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">${STYLE}${inner}</svg>`;
 
-const EXPR = ["neutral", "skeptic", "happy", "shock", "angry", "sleep", "wink"];
-const POSE = ["down", "point", "wave", "up", "hold", "hip"];
+const EXPR = EXPRESSIONS;
+const POSE = POSES;
 let n = 0;
 for (const expr of EXPR)
   for (const pose of POSE)

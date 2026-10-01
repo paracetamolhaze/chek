@@ -76,9 +76,13 @@
     {
       "date": "2026-10-01T20:10:00Z",
       "title": "Pre-launch checklist",
-      "detail": "27 automatic checks pass. Waiting on: X and Telegram accounts, launch date.",
+      "detail": "Automatic pre-launch check at 20:10 UTC: 27 passed, 6 waiting on the owner (X, Telegram ×2, GitHub, launch time, uncommitted files), 0 failed.",
       "proof": {
         "label": "commit 6270576 · docs/checklist.md"
+      },
+      "correction": {
+        "date": "2026-10-01T21:15Z",
+        "note": "Wording clarified. It first said “27 automatic checks pass”; the owner report later said 28 — that was a re-run after the final commit. Date unchanged."
       }
     }
   ]

@@ -11,6 +11,10 @@ export const MARKER = "#f6e05e";
 
 const SW = 7; // outline width
 
+// The canonical lists (counted by the consistency audit): 7 expressions × 6 body poses.
+export const EXPRESSIONS = ["neutral", "skeptic", "happy", "shock", "angry", "sleep", "wink"];
+export const POSES = ["down", "point", "wave", "up", "hold", "hip"];
+
 // Zig-zag (serrated tear) from x0 to x1 at y, teeth pointing down.
 function zigzag(x0, x1, y, teeth, depth) {
   const step = (x1 - x0) / teeth;

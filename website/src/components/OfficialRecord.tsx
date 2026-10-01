@@ -8,7 +8,20 @@ export function OfficialRecord({ className = "" }: { className?: string }) {
     ["Contract", ca ? <code className="break-all">{ca}</code> : <span className="text-stamp">NOT LAUNCHED YET</span>],
     ["Network", project.network.toUpperCase()],
     ["Created", t.createdAt ? formatUtc(t.createdAt, true) : "—"],
-    ["Launch platform", t.launchPlatform.toUpperCase()],
+    [
+      "Creation tx",
+      t.creationTx ? (
+        <a className="break-all underline underline-offset-2" href={`https://solscan.io/tx/${t.creationTx}`} target="_blank" rel="noopener noreferrer">
+          {t.creationTx}
+        </a>
+      ) : (
+        "— (published at launch, with its real cost)"
+      ),
+    ],
+    ...(t.creationFeeSol
+      ? ([["Creation cost", `${t.creationFeeSol} SOL network fee · ${t.creationSolSpent ?? "?"} SOL left the creator wallet in that tx (incl. any creator buy)`]] as [string, React.ReactNode][])
+      : []),
+    ["Launch platform", isLive ? t.launchPlatform.toUpperCase() : `${t.launchPlatform.toUpperCase()} (PLANNED)`],
     [
       "Creator wallet",
       t.creatorWallet ? (
@@ -45,7 +58,7 @@ export function OfficialRecord({ className = "" }: { className?: string }) {
       </dl>
       {!isLive && (
         <p className="mt-5 text-[12px] leading-relaxed text-fog">
-          Links to Solscan, Solana Explorer, RugCheck, DexScreener and Bubblemaps appear here the minute the token exists.
+          Links to {verifyLinks("").map((l) => l.name).join(", ").replace(/, ([^,]*)$/, " and $1")} appear here the minute the token exists.
         </p>
       )}
       {ca && (

@@ -4,7 +4,7 @@ All times UTC. Real dates get written into the build log only when things happen
 
 ## Pre-launch (proposed: 5 days of public history before the token)
 
-The account day is **D1**. Proposed D1 = 2026-10-02 → launch D6 = **2026-10-07 15:00 UTC** (17:00 Berlin · 11:00 New York). Shift everything with one command if accounts open later:
+The account day is **D1**. Proposed D1 = 2026-10-02 → launch D6 = **2026-10-07 15:00 UTC** (11:00 New York · 17:00 Berlin · 23:00 Singapore). Shift everything with one command if accounts open later:
 
 ```bash
 node scripts/schedule.mjs --d1 2026-10-03 --launch 2026-10-08T15:00:00Z
@@ -12,11 +12,11 @@ node scripts/schedule.mjs --d1 2026-10-03 --launch 2026-10-08T15:00:00Z
 
 | Day | Theme | X | Telegram |
 |---|---|---|---|
-| D1 | Brand appears | x-001 03:14 AM · x-002 first line · x-003 pics vs receipts | — |
+| D1 | Brand appears | x-001 “day N, printing since oct 1” · x-002 first line · x-003 pics vs receipts | — |
 | D2 | Website | x-004 building · **x-005 site link (pin)** · x-006 $CHEK in 10s | — |
 | D3 | Community opens | x-007 build log · x-008 mechanics · x-009 telegram open | tg-001 pin · tg-002 rules · tg-004 open |
 | D4 | Lore + memes | x-010 The Shredder · x-011 The Coupon · x-012 vibe chek | tg-005 villains |
-| D5 | Transparency | x-013 launch thread · x-014 spot a fake · **x-015 launch date (T-24h)** | tg-006 launch date |
+| D5 | Transparency | x-013 launch thread · x-014 names prove nothing · **x-015 launch date (T-24h)** | tg-006 launch date |
 | D6 | Launch | x-016 T-3h, then the launch sequence below | tg-007 … |
 
 Minimum honest version if waiting a week is too long: 48 hours (D1 brand + site, D2 community + transparency + launch date, D3 launch).
@@ -41,30 +41,13 @@ Minimum honest version if waiting a week is too long: 48 hours (D1 brand + site,
 
 No countdown hype, no "price is going up", no charts.
 
-## Pump.fun form (copy-paste)
+## Pump.fun form
 
-- **Name:** `CHEK`
-- **Ticker:** `CHEK`
-- **Description:**
+All values live in [`content/pumpfun.json`](../content/pumpfun.json) (name, ticker, description, image, banner, pair, creator rewards, Mayhem OFF); website / X / Telegram come from `config/project.json`. The dashboard has a copy button for each field.
 
-  ```
-  CHEK is a meme coin with one rule: every claim comes with a receipt.
+Before pressing create: open pump.fun only by typing `pump.fun` yourself (no links from DMs or search ads), re-check fees and the create form **on launch day** (`pump.fun/docs/fees`, `pump.fun/create`) and update `config/project.json → platform` if anything changed. Read every field once more — Pump.fun says coin details, social links and banner are set at creation and may not be editable later.
 
-  Chek is a slip of thermal paper that only prints what it can prove. No presale, no team mint, no promises — memes, lore and proof.
-
-  Official CA, creator wallet and the full build log: chekcoin.vercel.app
-  We never DM first.
-  ```
-
-- **Image:** `brand/social/token-1000.png`
-- **Banner:** `brand/social/x-header-1500x500.png`
-- **Website:** `https://chekcoin.vercel.app`
-- **X:** `https://x.com/chekcoin`
-- **Telegram:** `https://t.me/chekcoin`
-- **Pair:** SOL · **Creator rewards to:** Creator · **Mayhem mode:** OFF
-- **Buy during creation:** owner's choice (published on the site either way)
-
-Before pressing create: open pump.fun only by typing `pump.fun` yourself (no links from DMs or search ads), re-check fees on `pump.fun/docs/fees`, and read every field once more — none of them can be edited afterwards.
+**Mint is blocked until all of these are final:** website, X, Telegram, token image, banner, description, name, ticker (`npm run check` → "READY TO MINT"). We don't promise an exact network cost in advance; after the mint the real creation transaction and its real cost are published.
 
 ## After launch: content mix
 

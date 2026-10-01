@@ -25,7 +25,7 @@
       "slot": "D3 13:00",
       "pin": "prelaunch",
       "category": "transparency",
-      "text": "🧾 CHEK — official channel\n\nWhat: a meme coin on Solana with one rule — every claim comes with a receipt.\nStatus: NOT LAUNCHED. No contract address exists yet. Anyone selling $CHEK now is selling a fake.\n\nOfficial links (only these):\n• Site: {{SITE_URL}}\n• X: {{X_URL}}\n• Chat: {{TG_CHAT_URL}}\n• Build log: {{SITE_URL}}/history\n\n⚠️ Admins never DM first. We never ask for a seed phrase, private key or “wallet validation”.",
+      "text": "🧾 CHEK — official channel\n\nWhat: a meme coin on Solana with one rule — every claim comes with a receipt.\nStatus: NOT LAUNCHED. The official CHEK token has no contract address yet. Any token using this name or ticker before our launch is not affiliated with this project.\n\nOfficial links (only these):\n• Site: {{SITE_URL}}\n• X: {{X_URL}}\n• Chat: {{TG_CHAT_URL}}\n• Build log: {{SITE_URL}}/history\n\n⚠️ Admins never DM first. We never ask for a seed phrase, private key or “wallet validation”.",
       "status": "ready",
       "publishAfter": "2026-10-04T13:00:00.000Z"
     },
@@ -36,7 +36,7 @@
       "pin": "prelaunch",
       "category": "community",
       "kind": "rules",
-      "text": "🧾 Welcome to the CHEK chat.\n\nRules (short, like a receipt):\n1. Memes > price talk.\n2. No shilling other tokens, no referral links, no “DM me”.\n3. No financial advice, no promises. Nobody here knows the future.\n4. Be decent. Bots and scammers get shredded.\n\nSafety:\n• Admins NEVER DM first. Anyone who does is a scammer.\n• Never share a seed phrase or private key. With anyone. Ever.\n• The only contract address is on {{SITE_URL}}, in the X pin and in the channel pin. All three must match.\n\nOfficial links: {{SITE_URL}} · {{X_URL}} · {{TG_URL}}",
+      "text": "🧾 Welcome to the CHEK chat.\n\nRules (short, like a receipt):\n1. Memes > price talk.\n2. No shilling other tokens, no referral links, no “DM me”.\n3. No financial advice, no promises. Nobody here knows the future.\n4. Be decent. Bots and scammers get shredded.\n\nSafety:\n• Admins NEVER DM first. Anyone who does is a scammer.\n• Never share a seed phrase or private key. With anyone. Ever.\n• A name or ticker proves nothing. The only identifier is the contract address on {{SITE_URL}}, in the X pin and in the channel pin — all three must match.\n\nOfficial links: {{SITE_URL}} · {{X_URL}} · {{TG_URL}}",
       "status": "ready",
       "publishAfter": "2026-10-04T13:05:00.000Z"
     },
@@ -56,7 +56,7 @@
       "where": "channel",
       "slot": "D3 14:30",
       "category": "community",
-      "text": "the telegram is open 🧾\n\nchannel = announcements (you're here)\nchat = memes and people: {{TG_CHAT_URL}}\n\nwhat exists today: site, build log, meme kit, this channel.\nwhat doesn't exist yet: the token. no CA until launch day.",
+      "text": "the telegram is open 🧾\n\nchannel = announcements (you're here)\nchat = memes and people: {{TG_CHAT_URL}}\n\nwhat exists today: site, build log, meme kit, this channel.\nwhat doesn't exist yet: the official token. no CA until launch day. tokens already using the name aren't ours.",
       "asset": "content/mascot/02-receipt.png",
       "status": "ready",
       "publishAfter": "2026-10-04T14:30:00.000Z"
@@ -76,7 +76,7 @@
       "where": "channel",
       "slot": "D5 20:00",
       "category": "announcement",
-      "text": "🧾 $CHEK launches {{LAUNCH_UTC}} on pump.fun.\n\nThe contract address will appear at the same minute:\n• on {{SITE_URL}}\n• in the X pin\n• pinned here\n\nNo CA exists before that. Anything earlier is fake. Admins never DM first.",
+      "text": "🧾 $CHEK launches {{LAUNCH_UTC}} on pump.fun.\n\nThe contract address will appear at the same minute:\n• on {{SITE_URL}}\n• in the X pin\n• pinned here\n\nThe official CA doesn't exist before that minute. Tokens with the same name or ticker are not ours — only the address counts. Admins never DM first.",
       "asset": "content/mascot/02-receipt.png",
       "status": "ready",
       "publishAfter": "2026-10-06T20:00:00.000Z"
@@ -87,7 +87,7 @@
       "slot": "T+0",
       "pin": "live",
       "category": "token",
-      "text": "OFFICIAL CONTRACT ADDRESS:\n{{CA}}\n\nOfficial links:\n• Website: {{SITE_URL}}\n• X: {{X_URL}}\n• Pump.fun: https://pump.fun/coin/{{CA}}\n• Explorer: https://solscan.io/token/{{CA}}\n\nWARNING:\nAdmins will never DM first.\nAlways verify the Contract Address from official sources.",
+      "text": "OFFICIAL CONTRACT ADDRESS:\n{{CA}}\n\nOfficial links:\n• Website: {{SITE_URL}}\n• X: {{X_URL}}\n• Pump.fun: https://pump.fun/coin/{{CA}}\n• Explorer: https://solscan.io/token/{{CA}}\n\nWARNING:\nAdmins will never DM first.\nA name or ticker is not proof — other tokens may use them.\nAlways verify the Contract Address from official sources.",
       "needs": [
         "CA"
       ],
@@ -116,7 +116,7 @@
       "where": "channel",
       "slot": "T+30m",
       "category": "transparency",
-      "text": "the receipt for the launch 🧾\n\nCA: {{CA}}\nNetwork: Solana · Platform: pump.fun\nCreated: {{CREATED_AT}}\nSupply: {{SUPPLY}}\nMint authority: {{MINT_AUTH}} · Freeze authority: {{FREEZE_AUTH}}\nCreator wallet: {{CREATOR}}\nCreator buy at launch: {{CREATOR_BUY}}\nOther allocations: none\n\nCheck it yourself:\nhttps://solscan.io/token/{{CA}}\nhttps://rugcheck.xyz/tokens/{{CA}}",
+      "text": "the receipt for the launch 🧾\n\nCA: {{CA}}\nNetwork: Solana · Platform: pump.fun\nCreated: {{CREATED_AT}}\nCreation tx: https://solscan.io/tx/{{CREATION_TX}} (network fee {{CREATION_FEE}} SOL)\nSupply: {{SUPPLY}}\nMint authority: {{MINT_AUTH}} · Freeze authority: {{FREEZE_AUTH}}\nCreator wallet: {{CREATOR}}\nCreator buy at launch: {{CREATOR_BUY}}\nOther allocations: none\n\nCheck it yourself:\nhttps://solscan.io/token/{{CA}}\nhttps://rugcheck.xyz/tokens/{{CA}}",
       "needs": [
         "CA",
         "CREATED_AT",

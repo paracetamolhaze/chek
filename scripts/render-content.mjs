@@ -1,5 +1,6 @@
 // Renders post images: 5 mascot images (content/mascot) and 10 memes (content/memes), 1080×1080.
 //   node scripts/render-content.mjs
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,7 +38,17 @@ body{font-family:"Martian Mono",monospace;font-stretch:87.5%;color:${C.ink}}
 .tag{position:absolute;right:44px;bottom:36px;font-size:22px;letter-spacing:.2em;font-weight:700;opacity:.7}
 .cap{font-weight:800;font-stretch:112.5%;letter-spacing:-.02em;line-height:1.02}
 `;
-const ch = (opts) => M.svg(M.character(opts), { w: "100%", h: "100%" });
+// Real hashes at render time — re-render after the repository goes public (hashes may change then).
+const gitLog = (n) =>
+  execFileSync("git", ["log", `-${n}`, "--format=%h%x09%s"], { cwd: ROOT, encoding: "utf8" })
+    .trim()
+    .split("\n")
+    .map((l) => {
+      const [h, s] = l.split("\t");
+      const short = s.split(/[:(—]/)[0].trim();
+      return [h, short.length > 24 ? short.slice(0, 23) + "…" : short];
+    });
+const ch = (opts) =>M.svg(M.character(opts), { w: "100%", h: "100%" });
 const sign = (dark) => `<div class="tag" style="color:${dark ? C.fog : C.ink}">${T} · ${HOST}</div>`;
 const made = [];
 const shot = async (dir, name, html) => {
@@ -160,13 +171,9 @@ await shot(MEMES, "07-receipts-fade", `<div class="f dark">
   <div style="position:absolute;left:80px;top:330px;width:400px;height:600px;opacity:.28;filter:grayscale(1)">${ch({ expr: "sleep", pose: "down", dark: true })}</div>
   <div style="position:absolute;right:60px;top:360px;width:520px;background:#0d0c0b;border:2px solid rgba(244,240,230,.15);padding:26px 28px;font-size:24px;line-height:1.75;color:${C.paper}">
     <div style="color:${C.fog}">$ git log --oneline</div>
-    <div><span style="color:${C.marker}">f1f21c5</span> performance</div>
-    <div><span style="color:${C.marker}">b30a175</span> website v1</div>
-    <div><span style="color:${C.marker}">cb610de</span> brand system</div>
-    <div><span style="color:${C.marker}">1c2ce13</span> website v0</div>
-    <div><span style="color:${C.marker}">39bcca1</span> initial concept</div>
+    ${gitLog(5).map(([h, s]) => `<div><span style="color:${C.marker}">${h}</span> ${s}</div>`).join("")}
   </div>
-  <div style="position:absolute;right:60px;top:760px;width:520px;font-size:24px;line-height:1.5;color:${C.fog}">every step of ${T} is a public commit with its real timestamp.</div>
+  <div style="position:absolute;right:60px;top:760px;width:520px;font-size:24px;line-height:1.5;color:${C.fog}">every step of ${T} is a commit. cross-check it with X, Telegram and, after launch, the chain.</div>
   ${sign(true)}</div>`);
 
 await shot(MEMES, "08-long-receipt", `<div class="f yellow">

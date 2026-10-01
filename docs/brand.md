@@ -18,7 +18,7 @@ Never write "$CHECK" (that's a different coin) — always **$CHEK**.
 ## Character
 
 - **Chek** — deadpan, pedantic, honest to a fault. Signature look: one eyebrow up ("receipt?"). Can't lie: it's a receipt.
-- Moods: skeptic (default), neutral, happy ("verified"), shock ("you bought WHAT?"), angry + stamp ("VOID"), magnifier ("checking the CA"), wink/wave ("gm"), sleep ("printing since 03:14").
+- 7 expressions × 6 body poses in code; the meme kit ships 8 ready-made moods: skeptic (default), neutral, happy ("verified"), shock ("you bought WHAT?"), angry + stamp ("VOID"), magnifier ("checking the CA"), wink/wave ("gm"), sleep ("printing since 03:14").
 - **Register #4** — the closed corner-store register that printed Chek at 03:14 AM.
 - **The Shredder** (villain) — eats evidence: deleted posts, wiped sites, vanished devs. Leaves confetti.
 - **The Coupon** (villain) — loud, shiny, always expiring: "100X OFF! TODAY ONLY!". Fine print: none of it is real.
@@ -76,7 +76,7 @@ UI icons: 1.75px monoline, square caps, 24px grid (`website/src/components/icons
 | `brand/social/token-1000.png` | 1000×1000 | Pump.fun token image (min 1000×1000, 1:1) |
 | `website/src/app/opengraph-image.png` | 1200×630 | link previews |
 | `website/src/app/favicon.ico`, `icon.svg`, `apple-icon.png` | 16–180 | browser icons |
-| `website/public/kit/*` | 800×1200 | meme kit: 8 poses, 2 villains, logo, wordmarks |
+| `website/public/kit/*` | 800×1200 | meme kit: 8 moods, 2 villains, logo, wordmarks |
 | `content/mascot/*`, `content/memes/*` | 1080×1080 | posts |
 | `content/animations/receipt-reaction.{gif,mp4}` | 600×600 | reply GIF |
 
@@ -86,7 +86,7 @@ The avatar and the token image are the same picture on purpose: people can match
 
 Short. Lowercase on X, sentence case on the site. Deadpan, a bit pedantic, never hype.
 
-- ✅ "receipts or it didn't happen." · "no CA exists yet. anything you see is fake." · "telling you because it's real money and you should know."
+- ✅ "receipts or it didn't happen." · "the official token hasn't launched. tokens already using the name aren't ours." · "telling you because it's real money and you should know."
 - ❌ "🚀🚀 100x gem" · "LFG" · "don't miss out" · "partnership soon" · anything about price going up.
 
 Every claim gets a link. If there's no link, it doesn't get posted.

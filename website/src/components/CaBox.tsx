@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IconCheck, IconCopy } from "./icons";
 
 // Contract address strip. Before launch it shows a stamp, never a placeholder that looks like an address.
-export function CaBox({ ca, tone = "dark" }: { ca: string | null; tone?: "dark" | "paper" }) {
+export function CaBox({ ca, note, tone = "dark" }: { ca: string | null; note: string; tone?: "dark" | "paper" }) {
   const [copied, setCopied] = useState(false);
   const dark = tone === "dark";
 
@@ -51,7 +51,7 @@ export function CaBox({ ca, tone = "dark" }: { ca: string | null; tone?: "dark" 
             Not launched yet
           </span>
           <span className={`text-[12px] leading-snug ${dark ? "text-fog" : "text-faded"}`}>
-            No token exists yet. Anyone selling it now is a scam.
+            {note}
           </span>
         </div>
       )}
