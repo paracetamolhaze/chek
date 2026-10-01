@@ -105,9 +105,25 @@ export async function inspectMint(ca, expect) {
     facts.creationSolSpent = tx?.meta && pi >= 0 ? ((tx.meta.preBalances[pi] - tx.meta.postBalances[pi]) / 1e9).toFixed(6) : null;
     facts.creatorWallet = payer ?? null;
     const bought = (tx?.meta?.postTokenBalances ?? []).find((b) => b.mint === ca && b.owner === payer);
-    if (bought && Number(bought.uiTokenAmount.uiAmount) > 0) {
+    // The creator's buy as the program reported it: TradeEvent in the logs ("Program data: <base64>", discriminator bddb7fd34ee661ee).
+    // Layout after the 8-byte discriminator: mint(32) sol_amount(u64) token_amount(u64) is_buy(u8) user(32) …
+    const trade = (tx?.meta?.logMessages ?? [])
+      .filter((l) => l.startsWith("Program data: "))
+      .map((l) => Buffer.from(l.slice(14), "base64"))
+      .find((b) => b.length >= 89 && b.subarray(0, 8).toString("hex") === "bddb7fd34ee661ee");
+    if (trade && trade[56] === 1) {
+      const solAmount = Number(trade.readBigUInt64LE(40)) / 1e9;
+      const tokens = Number(trade.readBigUInt64LE(48)) / 10 ** (facts.decimals ?? 6);
+      const pct = (tokens / Number(supply)) * 100;
+      facts.creatorBuySol = solAmount.toFixed(4);
+      facts.creatorTokens = fmt(Math.round(tokens));
+      facts.creatorPct = `${pct.toFixed(2)}%`;
+      facts.creatorBuy = `${facts.creatorTokens} ${expect.ticker} (${facts.creatorPct} of supply) for ${facts.creatorBuySol} SOL in the creation tx`;
+    } else if (bought && Number(bought.uiTokenAmount.uiAmount) > 0) {
       const pct = (Number(bought.uiTokenAmount.uiAmount) / Number(supply)) * 100;
-      facts.creatorBuy = `${fmt(Math.round(bought.uiTokenAmount.uiAmount))} ${expect.ticker} (${pct.toFixed(2)}% of supply) in the creation tx`;
+      facts.creatorTokens = fmt(Math.round(bought.uiTokenAmount.uiAmount));
+      facts.creatorPct = `${pct.toFixed(2)}%`;
+      facts.creatorBuy = `${facts.creatorTokens} ${expect.ticker} (${facts.creatorPct} of supply) in the creation tx`;
     } else facts.creatorBuy = "none in the creation tx";
     add(Boolean(facts.createdAt), "Creation transaction found", `${oldest.signature.slice(0, 10)}… · ${facts.createdAt ?? "?"}`);
   } else add(false, "Creation transaction found", "no signatures yet", false);

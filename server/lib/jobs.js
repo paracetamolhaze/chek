@@ -12,7 +12,7 @@ const JOBS = [
   { name: "publisher", everyMin: 0, run: runPublisher },
   { name: "onchain", everyMin: 5, run: runWatcher },
   { name: "news_fetch", everyMin: 120, run: fetchFeeds },
-  { name: "news_eval", everyMin: 120, offsetMin: 10, run: () => evaluateNews(3) },
+  { name: "news_eval", everyMin: 240, offsetMin: 10, run: () => evaluateNews(2) },
   { name: "engine", daily: "morning", run: runEngine },
   { name: "digest", daily: "digest", run: digest },
   { name: "fixed_costs", daily: "00:05", run: fixedCosts },

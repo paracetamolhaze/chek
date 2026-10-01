@@ -63,13 +63,44 @@ export const why = [
 ];
 
 export const utility: { title: string; body: string; status: TagKind; href?: string; note?: string }[] = [
-  { title: "Read the build log", body: "Every step since day one, each with a receipt.", status: "live", href: "/history" },
-  { title: "Grab the meme kit", body: `${M} in every mood, logo and stamps. Make your own memes.`, status: "live", href: "/kit" },
+  { title: "Receipt Board", body: "Every significant project action as a numbered receipt. On-chain ones link to the transaction; reported ones say so.", status: "live", href: "/receipts" },
+  { title: "Read the build log", body: "Every step since day one, dated, with its receipt.", status: "live", href: "/history" },
+  { title: "Grab the meme kit", body: `${M} in every mood, the villains, logo and stamps.`, status: "live", href: "/kit" },
   {
     title: "Join the community",
-    body: "Memes, lore drops and launch updates on X and Telegram.",
+    body: "Memes, lore drops and updates on X and Telegram.",
     status: hasCommunity ? "live" : "planned",
     note: hasCommunity ? undefined : "Opens before launch",
+  },
+  {
+    title: "Receipt Generator",
+    body: "Turn any claim into a CHEK receipt — “JOHN STILL OWES ME $20”. Free for everyone, made to share.",
+    status: "planned",
+    note: "Phase 2 · after launch",
+  },
+  {
+    title: "Proof of Hold",
+    body: `Prove you hold ${T} by signing a plain message with your wallet and get a shareable Verified Holder receipt. No seed phrase, no token approval, no transaction.`,
+    status: "planned",
+    note: "Phase 3",
+  },
+  {
+    title: "Holder votes",
+    body: `Holders vote on what ${M} prints next: memes, lore, new characters, site features. Community participation — not ownership.`,
+    status: "planned",
+    note: "Phase 4 · voting design published first",
+  },
+  {
+    title: "Holder Desk",
+    body: "Badges, holder-only templates, early drops, community tasks. Wallet sign-in, no passwords.",
+    status: "planned",
+    note: "Phase 4",
+  },
+  {
+    title: "Meme Generator",
+    body: `${M}, The Shredder and The Coupon in ready templates, square and vertical, for X and Telegram.`,
+    status: "planned",
+    note: "Phase 5",
   },
   {
     title: "Receipt of the Week",
@@ -78,59 +109,71 @@ export const utility: { title: string; body: string; status: TagKind; href?: str
     note: "Starts when the community opens",
   },
   {
-    title: "The Long Receipt",
-    body: "A public, ever-growing receipt on this site. Each community milestone becomes a line item.",
+    title: "Community bounties",
+    body: "Part of the project budget may fund meme contests, art and dev bounties. Every real payout is published as a receipt. No regular payouts, no yield.",
     status: "planned",
+    note: "Only when funded — announced with a receipt",
   },
   {
-    title: "Holder role",
-    body: `Verified ${T} holders get a role in the Telegram chat.`,
-    status: "planned",
-    note: "Needs a verification bot — after launch",
-  },
-  {
-    title: "Lore votes",
-    body: `Holders vote on what ${M} itemizes next.`,
-    status: "planned",
-    note: "Voting tool not chosen yet",
-  },
-  {
-    title: "Digital drops",
-    body: "Receipt art for the community. Collectibles for fun — no financial value promised.",
+    title: "Holder drops",
+    body: "Collectible receipts, badges and profile assets. For fun — no financial value promised.",
     status: "planned",
   },
 ];
 
 export const roadmap: { phase: string; title: string; items: { t: string; s: TagKind }[] }[] = [
   {
-    phase: "01",
+    phase: "00",
     title: "Origin",
     items: [
       { t: "Concept, brand & mascot", s: "done" },
-      { t: "Website v1 + build log", s: "done" },
+      { t: "Website, build log, Receipt Board", s: "done" },
       { t: "X + Telegram accounts", s: hasCommunity ? "done" : "next" },
-      { t: "Pre-launch: lore, memes, transparency", s: "next" },
       { t: "Public launch on Pump.fun", s: project.status === "live" ? "done" : "next" },
     ],
   },
   {
-    phase: "02",
-    title: "Build the world",
+    phase: "01",
+    title: "Receipts on autopilot",
     items: [
-      { t: "Receipt of the Week challenge", s: "later" },
-      { t: "New lore chapters", s: "later" },
-      { t: "The Long Receipt page", s: "later" },
-      { t: "Community voting experiments", s: "later" },
-      { t: "Holder role in Telegram", s: "later" },
+      { t: "Autonomous X + Telegram publishing (with owner approval for sensitive posts)", s: "next" },
+      { t: "On-chain receipts: creator fees, creator wallet, project payouts", s: "next" },
+      { t: "News desk — verified sources only", s: "next" },
+    ],
+  },
+  {
+    phase: "02",
+    title: "Receipt Generator",
+    items: [
+      { t: "Public Receipt Generator + shareable images", s: "later" },
+      { t: "Automatic receipt posts", s: "later" },
+      { t: "Community submissions (always credited)", s: "later" },
     ],
   },
   {
     phase: "03",
-    title: "Expand",
+    title: "Proof of Hold",
     items: [
-      { t: "Collabs with other meme communities — announced only when real", s: "later" },
-      { t: "Digital drops", s: "later" },
-      { t: "New formats: animations, IRL receipt prints", s: "later" },
+      { t: "Wallet verification (sign a message, nothing else)", s: "later" },
+      { t: "Verified Holder receipt", s: "later" },
+      { t: "Holder statistics", s: "later" },
+    ],
+  },
+  {
+    phase: "04",
+    title: "Holder Desk",
+    items: [
+      { t: "Community voting", s: "later" },
+      { t: "Holder Desk + holder-only templates", s: "later" },
+    ],
+  },
+  {
+    phase: "05",
+    title: "Expand the world",
+    items: [
+      { t: "Meme Generator", s: "later" },
+      { t: "New characters, deeper lore", s: "later" },
+      { t: "Collabs — announced only when real", s: "later" },
     ],
   },
 ];
@@ -163,6 +206,14 @@ export const faq: { q: string; a: string }[] = [
   {
     q: "Will there be buybacks or burns?",
     a: "No promises. If anything like that ever happens, it'll be announced with a transaction link — a receipt.",
+  },
+  {
+    q: `What does holding ${T} give me?`,
+    a: `Participation in the community: holder votes on what ${M} prints next, holder-only templates and a Verified Holder receipt (all planned — see what's live above). It does not give ownership of anything, dividends, financial rights, or legal governance.`,
+  },
+  {
+    q: "Who runs the X and Telegram accounts?",
+    a: "An automated system run by the project owner. It writes and publishes routine posts on its own; posts about the CHEK price, partnerships, people or anything sensitive wait for the owner's approval. Every automatic action is logged.",
   },
   {
     q: "Who is behind it?",

@@ -76,6 +76,7 @@ function Footer() {
           <h3 className="text-[11px] font-bold tracking-[0.25em] text-paper uppercase">Pages</h3>
           <ul className="mt-4 space-y-2 text-[13px]">
             <li><a href="/" className="hover:text-paper">Home</a></li>
+            <li><a href="/receipts" className="hover:text-paper">Receipt Board</a></li>
             <li><a href="/history" className="hover:text-paper">Build log</a></li>
             <li><a href="/transparency" className="hover:text-paper">Transparency</a></li>
             <li><a href="/kit" className="hover:text-paper">Meme kit</a></li>

@@ -88,9 +88,17 @@ export function audit() {
     [/claims without proof/i, "unverifiable counter"],
     [/links to something you can check/i, "claims every claim is linked (commit links are not public yet)"],
     [/neither does any/i, "implies all same-name tokens are fake"],
+    [/\bno backend\b|\bno server code\b|never asks? (?:you )?to connect a wallet/i, "outdated: the project has a backend and a planned wallet-signature feature"],
   ];
   const phraseProblems = [];
   for (const [where, text] of Object.entries({ ...all, ...C.historical })) for (const [re, why] of BANNED) if (re.test(text)) phraseProblems.push(`${where}: ${why} — “${text.match(re)[0]}”`);
+  // financial-return words are fine only when negated nearby ("no dividends", "not … yield")
+  const FIN = /\b(dividends?|passive income|yield|guaranteed (?:return|profit)s?|financial rights)\b/gi;
+  for (const [where, text] of Object.entries(all))
+    for (const m of text.matchAll(FIN)) {
+      const before = text.slice(Math.max(0, m.index - 60), m.index).toLowerCase();
+      if (!/\b(no|not|never|none|without|nor|zero|avoid)\b|n't\b/.test(before)) phraseProblems.push(`${where}: financial-return wording without negation — “…${text.slice(Math.max(0, m.index - 30), m.index + m[0].length)}”`);
+    }
   rule("phrases", "No false or over-claiming phrases", phraseProblems);
 
   // 2. Social + repo status: one value everywhere

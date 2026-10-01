@@ -10,7 +10,7 @@ const NAV = [
   { href: "/#tokenomics", label: "Tokenomics" },
   { href: "/transparency", label: "Transparency" },
   { href: "/#buy", label: "How to buy" },
-  { href: "/history", label: "Build log" },
+  { href: "/receipts", label: "Receipts" },
 ];
 
 export function Header({

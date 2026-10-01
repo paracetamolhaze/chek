@@ -33,9 +33,12 @@ content/x/queue.json     prepared X posts (status, slot, publishAfter, asset)
 content/telegram/        prepared Telegram posts and channel/chat texts
 content/memes, mascot/   rendered images for posts
 brand/                   mascot + logo source (SVG in code), fonts (OFL), social images
-website/                 Next.js static site (no server, no wallet code, no secrets)
-dashboard/               owner launch dashboard — runs locally only (127.0.0.1)
-docs/                    concept, brand, tokenomics, launch plan, checklist, security, Pump.fun facts, lore
+website/                 Next.js static site (pages; no wallet code, no secrets)
+api/                     Vercel functions: cron, admin, public data, Telegram webhook, X OAuth
+server/lib/              backend: receipts, content queue, publisher, guards, agents (news, on-chain, content)
+shared/                  pure helpers shared by scripts, dashboard and backend
+dashboard/               owner launch dashboard + command center — runs locally only (127.0.0.1)
+docs/                    concept, brand, tokenomics, launch plan, checklist, security, Pump.fun facts, lore, architecture, voting
 scripts/                 asset renderer, deploy, checks, screenshots
 ```
 
@@ -54,7 +57,7 @@ Deploy: `VERCEL_TOKEN_FILE=<path outside the repo> npm run deploy`.
 ## Security
 
 - No seed phrases, private keys, bot tokens, cookies or API secrets in this repo, the website or the build. `.env*` is ignored; deploy and check scripts refuse anything that looks like a key.
-- The public site is static HTML. It has no write endpoints and never asks to connect a wallet.
+- Pages are static HTML. The backend holds no wallet keys; write endpoints need a secret. The site never asks for a seed phrase, a token approval or a transaction.
 - The CA can only change through `config/project.json` → a commit → a redeploy.
 
 ## License

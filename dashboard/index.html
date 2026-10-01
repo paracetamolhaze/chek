@@ -61,9 +61,59 @@
   <span class="badge">local only · 127.0.0.1</span>
   <span class="badge" id="clock"></span>
   <span style="flex:1"></span>
-  <button class="ghost" onclick="load()">Refresh</button>
+  <nav class="tabs" style="margin:0">
+    <button class="ghost tab" data-tab="launch" onclick="tab('launch')">Launch</button>
+    <button class="ghost tab" data-tab="cc" onclick="tab('cc')">Command center</button>
+    <button class="ghost tab" data-tab="mint" onclick="tab('mint')">Mint</button>
+  </nav>
+  <button class="ghost" onclick="load();loadCC()">Refresh</button>
 </header>
-<main>
+
+<main id="tab-cc" class="hidden">
+  <div class="tiles" id="sysTiles" style="grid-template-columns:repeat(9,1fr)"></div>
+  <div class="actions">
+    <span class="badge" style="align-self:center">AUTOPILOT</span>
+    <button class="ghost" onclick="setMode('off')">Off</button>
+    <button class="ghost" onclick="setMode('dry')">Dry run</button>
+    <button class="danger" onclick="setMode('on')">Live</button>
+    <span style="width:18px"></span>
+    <button class="ghost" onclick="ccOp({op:'sync'})">Sync seed + receipts</button>
+    <button class="ghost" onclick="ccOp({op:'run'})">Run tick now</button>
+    <button class="ghost" onclick="tgSetup()">Set up Telegram bot</button>
+    <button class="ghost" onclick="xConnect()">Connect X</button>
+  </div>
+  <p class="warn" id="ccNote"></p>
+  <div class="grid">
+    <div>
+      <section class="card"><h2>Waiting for your approval</h2><div id="ccReview"></div></section>
+      <section class="card"><h2>Content queue (production)</h2><div id="ccQueue"></div></section>
+      <section class="card"><h2>Audit log</h2><div class="hist" id="ccAudit"></div></section>
+    </div>
+    <div>
+      <section class="card"><h2>Today</h2><div id="ccToday"></div></section>
+      <section class="card"><h2>Alerts</h2><div id="ccAlerts"></div></section>
+      <section class="card"><h2>Costs (USD)</h2><div id="ccCosts"></div></section>
+    </div>
+  </div>
+</main>
+
+<main id="tab-mint" class="hidden">
+  <section class="card">
+    <h2>Initial buy calculator — live pump.fun parameters + live SOL price</h2>
+    <div id="calc">loading…</div>
+  </section>
+  <section class="card">
+    <h2>Pre-mint preview</h2>
+    <div class="row">
+      <div style="flex:1"><label>Creator buy (USD)</label><input id="pmUsd" value="200" /></div>
+      <div style="flex:3"><label>Creator wallet (public address of your pump.fun wallet)</label><input id="pmWallet" placeholder="public address only — never a seed phrase or private key" /></div>
+      <button onclick="premint()">Preview</button>
+    </div>
+    <div id="pm"></div>
+  </section>
+</main>
+
+<main id="tab-launch">
   <div class="tiles" id="tiles"></div>
 
   <div class="actions">
@@ -294,8 +344,99 @@ async function saveSchedule() {
   toast("Saved"); load();
 }
 
+// ───────── tabs ─────────
+function tab(name) {
+  for (const t of ["launch", "cc", "mint"]) $("tab-" + t).classList.toggle("hidden", t !== name);
+  document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("hot", b.dataset.tab === name));
+  if (name === "cc") loadCC();
+  if (name === "mint" && !window._calcLoaded) loadCalc();
+}
+
+// ───────── command center (production backend via the local proxy) ─────────
+let CC = null;
+const ago = (iso) => (iso ? Math.round((Date.now() - new Date(iso)) / 60000) + " min ago" : "never");
+async function loadCC() {
+  CC = await (await fetch("/api/prod")).json();
+  const t = $("sysTiles");
+  if (CC.error) {
+    t.innerHTML = tile("DATABASE", "NOT CONNECTED", CC.error, "bad");
+    $("ccNote").textContent = "The backend is deployed but has no database yet — see NEEDS ME. Nothing runs and nothing is published.";
+    for (const id of ["ccReview", "ccQueue", "ccAudit", "ccToday", "ccAlerts", "ccCosts"]) $(id).innerHTML = "<p>—</p>";
+    return;
+  }
+  const i = CC.integrations, s = CC.settings, runs = s.job_runs || {};
+  const st = (ok, v, d) => [ok ? "ok" : "wait", v, d];
+  const tiles = [
+    ["SITE", ...st(true, "LIVE", "chekcoin.vercel.app")],
+    ["X", ...(i.x ? (CC.xAccount ? st(s.platforms.x, s.platforms.x ? "ON" : "CONNECTED", "@" + CC.xAccount.username) : ["wait", "KEYS SET", "click Connect X"]) : ["bad", "NOT SET", "owner: X API keys"])],
+    ["TELEGRAM", ...(i.telegram ? st(s.platforms.telegram, s.platforms.telegram ? "ON" : "BOT SET", s.owner.linked ? "owner linked" : "owner not linked") : ["bad", "NOT SET", "owner: bot token"])],
+    ["NEWS AGENT", ...st(Boolean(runs.news_fetch), i.ai ? "AI ON" : "COLLECTING", "fetched " + ago(runs.news_fetch))],
+    ["CONTENT ENGINE", ...st(i.ai, i.ai ? "AI ON" : "TEMPLATES", "planned " + ago(runs.engine))],
+    ["ON-CHAIN", ...st(Boolean(runs.onchain), runs.onchain ? "WATCHING" : "IDLE", "checked " + ago(runs.onchain))],
+    ["RECEIPTS", "ok", String(CC.counts.receipts_total), "+" + CC.counts.receipts_today + " today"],
+    ["DATABASE", "ok", "OK", "cron tick " + ago(runs.tick)],
+    ["PUBLISH QUEUE", CC.counts.review ? "wait" : "ok", s.autopilot.toUpperCase(), CC.counts.review + " waiting for you"],
+  ];
+  t.innerHTML = tiles.map(([k, cls, v, d]) => tile(k, v, d, cls)).join("");
+  $("ccNote").textContent = s.autopilot === "dry" ? "DRY RUN: the system decides and logs what it would post, but publishes nothing." : s.autopilot === "off" ? "Autopilot OFF." : "LIVE: due posts are published automatically (sensitive ones wait for you).";
+  const m = CC.metrics || {};
+  $("ccToday").innerHTML = [["Posts published", CC.counts.posts_today], ["Receipts created", CC.counts.receipts_today], ["News reviewed", CC.counts.news_reviewed_today], ["Community mentions", m.mentions ?? "— (X not connected)"], ["Site users", "— (analytics off)"], ["Receipt Generator uses", m.generator_uses ?? "— (phase 2)"], ["Holder verifications", m.holder_verifications ?? "— (phase 3)"]]
+    .map(([k, v]) => `<div class="row" style="justify-content:space-between;border-bottom:1px dotted var(--line);padding:4px 0"><span>${k}</span><b>${esc(v)}</b></div>`).join("");
+  const review = CC.queue.filter((q) => q.status === "review");
+  $("ccReview").innerHTML = review.map((q) => `<div class="post"><div class="meta"><b>${esc(q.id)}</b><br>${esc(q.platform)} · ${esc(q.category)}<br>${utc(q.publish_after)}</div><div class="text">${esc(q.preview)}</div><div class="side"><button onclick="ccOp({op:'decide',id:'${q.id}',approve:true})">Approve</button><button class="ghost" onclick="ccOp({op:'decide',id:'${q.id}',approve:false})">Reject</button></div></div>`).join("") || "<p>Nothing waits for you.</p>";
+  $("ccQueue").innerHTML = `<table style="width:100%;font-size:12px;border-collapse:collapse">` + CC.queue.slice(0, 30).map((q) => `<tr style="border-bottom:1px dotted var(--line)"><td>${utc(q.publish_after)}</td><td>${esc(q.platform)}</td><td>${esc(q.category)}</td><td>${esc(q.status)}${q.last_error && q.last_error !== "dry" ? " ⚠" : ""}</td><td style="color:var(--fog)">${esc((q.requires || []).join(", "))}</td><td>${esc(q.id)}</td></tr>`).join("") + `</table>`;
+  $("ccAlerts").innerHTML = CC.alerts.map((a) => `<div class="row" style="justify-content:space-between;padding:4px 0"><span><b>${esc(a.level)}</b> ${esc(a.message)}</span><button class="ghost" onclick="ccOp({op:'resolve_alert',id:${a.id}})">OK</button></div>`).join("") || "<p>No open alerts.</p>";
+  const C = CC.costs;
+  $("ccCosts").innerHTML = `<table style="width:100%;font-size:12px"><tr><th align=left>provider</th><th>day</th><th>7d</th><th>30d</th></tr>` + Object.keys(C[1]).map((p) => `<tr><td>${p}</td><td align=center>${C[1][p].toFixed(2)}</td><td align=center>${C[7][p].toFixed(2)}</td><td align=center>${C[30][p].toFixed(2)}</td></tr>`).join("") + `</table><p class="warn">Budgets: $${s.budgets.dailyUsd}/day · $${s.budgets.monthlyUsd}/month · AI $${s.budgets.aiDailyUsd}/day — paid actions pause when reached.</p>`;
+  $("ccAudit").innerHTML = CC.audit.slice(0, 40).map((a) => `<div><time>${utc(a.at)}</time><b>${esc(a.agent)}</b> ${esc(a.action)} · ${esc(a.result)}${a.ref ? " · " + esc(a.ref) : ""}${a.error ? ` <span style="color:var(--stamp)">${esc(a.error)}</span>` : ""}</div>`).join("");
+}
+async function ccOp(body) {
+  const r = await post("/api/prod", body);
+  if (r.error) alert(r.error);
+  else toast("Done");
+  loadCC();
+  return r;
+}
+const setMode = (mode) => (mode !== "on" || confirm("Go LIVE? Due posts will be published automatically.")) && ccOp({ op: "settings", values: { autopilot: mode } });
+async function tgSetup() {
+  const r = await ccOp({ op: "telegram_setup" });
+  if (r && r.claim) prompt(`Bot @${r.bot} is connected. Open it in Telegram and send this message (valid 1 hour):`, r.claim);
+}
+async function xConnect() {
+  const r = await ccOp({ op: "x_connect_link" });
+  if (r && r.url) window.open(r.url, "_blank");
+}
+
+// ───────── mint ─────────
+async function loadCalc() {
+  const c = await (await fetch("/api/calc")).json();
+  if (c.error) return ($("calc").textContent = c.error);
+  window._calcLoaded = true;
+  $("calc").innerHTML = `<p>SOL = <b>$${c.solUsd.usd.toFixed(2)}</b> (${c.solUsd.sources.map((s) => s.name + " " + s.usd).join(" · ")}) · curve: ${c.params.virtualSol} SOL / ${c.params.virtualTokens.toLocaleString()} virtual · supply ${c.params.supply.toLocaleString()} · fee ${c.params.feeBps.protocol}+${c.params.feeBps.creator} bps · read ${utc(c.checkedAt)}</p>
+  <table style="width:100%;font-size:13px;border-collapse:collapse"><tr style="color:var(--fog)"><th align=left>USD</th><th>SOL SPEND</th><th>EXPECTED CHEK</th><th>% OF SUPPLY</th><th>EST. FEES (SOL)</th><th>PRICE IMPACT</th></tr>` +
+    c.rows.map((r) => `<tr style="border-top:1px dotted var(--line);${r.usd === 200 ? "background:#2a2410" : ""}"><td>$${r.usd}</td><td align=center>${r.sol.toFixed(4)}</td><td align=center>${Math.round(r.tokens).toLocaleString()}</td><td align=center>${r.pctSupply.toFixed(2)}%</td><td align=center>${r.estFeesSol[0].toFixed(4)}–${r.estFeesSol[1].toFixed(4)}</td><td align=center>+${r.priceMovePct.toFixed(1)}%</td></tr>`).join("") +
+    `</table><ul class="warn">${c.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
+}
+async function premint() {
+  $("pm").textContent = "reading the chain…";
+  const p = await (await fetch(`/api/premint?usd=${encodeURIComponent($("pmUsd").value)}&wallet=${encodeURIComponent($("pmWallet").value.trim())}`)).json();
+  if (p.error) return ($("pm").textContent = p.error);
+  const line = (k, v, bad) => `<div class="row" style="justify-content:space-between;border-bottom:1px dotted var(--line);padding:5px 0"><span>${k}</span><b style="${bad ? "color:var(--stamp)" : ""}">${esc(v)}</b></div>`;
+  $("pm").innerHTML =
+    line("Coin", p.coin) + line("Ticker", p.ticker + (p.tickerConfirmed ? "" : "  (NOT CONFIRMED)"), !p.tickerConfirmed) + line("Supply", p.supply.toLocaleString()) +
+    line("Creator initial buy", "~$" + p.creatorBuyUsd) + line("SOL amount", p.solAmount.toFixed(4) + " SOL @ $" + p.solPrice.usd.toFixed(2)) +
+    line("Creator receives", Math.round(p.creatorReceives).toLocaleString() + " CHEK") + line("Creator ownership", p.creatorPct.toFixed(2) + "%") +
+    line("Estimated fees", p.estFeesSol[0].toFixed(4) + "–" + p.estFeesSol[1].toFixed(4) + " SOL (estimate)") + line("Price impact of this buy", "+" + p.priceMovePct.toFixed(1) + "%") +
+    line("Creator wallet", p.wallet || "— enter the public address", !p.wallet) +
+    (p.walletBalanceSol !== null ? line("Wallet balance", p.walletBalanceSol + " SOL (need ≈ " + p.needSol.toFixed(3) + ")", !p.walletEnough) : "") +
+    line("Website", p.website, p.website !== "READY") + line("X", p.x, p.x !== "READY") + line("Telegram", p.telegram, p.telegram !== "READY") +
+    (p.mintGate ? line("Mint gate (last check)", p.mintGate.ready ? "READY TO MINT" : "BLOCKED — " + p.mintGate.blockers.join(", "), !p.mintGate.ready) : "") +
+    `<p class="warn" style="font-size:15px;margin-top:14px">STOP. Nothing is signed here. You create the coin and confirm the wallet transaction yourself on pump.fun. Never paste a seed phrase or private key anywhere.</p>`;
+}
+
 load();
 setInterval(load, 60000);
+tab("launch");
 </script>
 </body>
 </html>

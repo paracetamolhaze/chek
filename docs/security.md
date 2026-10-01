@@ -7,10 +7,10 @@
 - The Vercel deploy token is read at runtime from a file **outside** the repo (`VERCEL_TOKEN_FILE`).
 - `scripts/deploy.mjs` refuses to upload anything that looks like a PEM key, an env token, a Telegram bot token or a 64-byte Solana keypair array.
 
-## The public website
+## The public website and backend
 
-- Static HTML/CSS/JS (Next.js static export) on Vercel. No server code, no database, no admin panel, no write endpoints.
-- It never asks to connect a wallet, sign a message or approve anything — and says so on /transparency.
+- Pages are static HTML/CSS/JS (Next.js static export). A small backend (Vercel functions, `api/`) keeps receipts, reads the chain and publishes posts; it holds no wallet keys and cannot move funds. Write endpoints require a secret (cron, admin, Telegram webhook) — see `docs/architecture.md`.
+- The site never asks for a seed phrase or private key and never asks to approve a token transfer or send a transaction. The planned Proof of Hold only asks to sign a plain-text message.
 - Strict security headers: CSP (`default-src 'self'`, no third-party scripts), `X-Frame-Options: DENY`, `nosniff`, HSTS, strict referrer and permissions policies.
 - Fonts and images are self-hosted: visitors' browsers talk only to the site itself.
 

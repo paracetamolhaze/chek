@@ -21,6 +21,10 @@ export type Project = {
     freezeAuthority: string | null;
     creatorWallet: string | null;
     creatorBuy: string | null;
+    creatorBuySol: string | null;
+    creatorBuyUsd: string | null;
+    creatorTokens: string | null;
+    creatorPct: string | null;
     treasuryWallet: string | null;
     otherAllocations: string;
     creationTx: string | null;

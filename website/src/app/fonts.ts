@@ -20,4 +20,7 @@ export const martian = localFont({
   display: "swap",
   preload: true,
   declarations: [{ prop: "font-stretch", value: "75% 112.5%" }],
+  // Cyrillic (e.g. «Чек») comes from a small subset declared in globals.css, before any system fallback
+  fallback: ["Martian Mono Cyrillic", "ui-monospace", "monospace"],
+  adjustFontFallback: false,
 });

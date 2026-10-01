@@ -35,7 +35,7 @@ Our launch flow assumes the coin is **on-chain at T+0** (so the dashboard can ve
 | Banner | optional, 1500×500, ≤ 5 MB | `brand/social/x-header-1500x500.png` |
 | Website / X / Telegram | optional | from `config/project.json` |
 | Pair | SOL / USDC / custom | **SOL** |
-| Creator rewards to | Creator / Holders | **Creator** (holder payouts would read as a yield promise) |
+| Creator rewards to | Creator / Holders | **Creator** (we avoid holder payouts: they could look like a yield promise) |
 | Mayhem mode | on/off, increases supply | **OFF** |
 | Buy during creation | optional | owner's decision |
 

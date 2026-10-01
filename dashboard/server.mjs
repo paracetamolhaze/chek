@@ -9,6 +9,7 @@ import { extname, join, normalize, sep } from "node:path";
 import { fill, fmtUtc, paths, placeholders, readJson, ROOT, slotTime, writeJson, xLength } from "../scripts/lib/content.mjs";
 import { syncReadme } from "../scripts/lib/readme.mjs";
 import { inspectMint, isPubkey } from "./solana.mjs";
+import { calculator, walletBalanceSol } from "./pumpcalc.mjs";
 
 const PORT = Number(process.env.DASHBOARD_PORT || 4747);
 const ORIGINS = new Set([`http://127.0.0.1:${PORT}`, `http://localhost:${PORT}`]);
@@ -171,6 +172,10 @@ async function applyCa({ ca }) {
     creationTx: f.creationTx,
     creationFeeSol: f.creationFeeSol,
     creationSolSpent: f.creationSolSpent,
+    creatorBuySol: f.creatorBuySol ?? null,
+    creatorTokens: f.creatorTokens ?? null,
+    creatorPct: f.creatorPct ?? null,
+    creatorBuyUsd: f.creatorBuySol ? await calculator([1]).then((c) => `$${Math.round(Number(f.creatorBuySol) * c.solUsd.usd)} at $${c.solUsd.usd.toFixed(2)}/SOL`).catch(() => null) : null,
   });
   project.launch.launchedAt = f.createdAt;
   writeJson(paths.project, project);
@@ -253,6 +258,61 @@ function setSchedule({ d1, launchAt }) {
   return { ok: true };
 }
 
+// ───────── production backend (command center) ─────────
+function localEnv() {
+  const f = join(ROOT, "private", ".env.local");
+  if (!existsSync(f)) return {};
+  return Object.fromEntries(readFileSync(f, "utf8").split(/\r?\n/).filter((l) => l.includes("=")).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).trim()]));
+}
+async function prod(method, body) {
+  const token = localEnv().ADMIN_TOKEN;
+  const site = readJson(paths.project).links.website;
+  if (!token) return { error: "no ADMIN_TOKEN in private/.env.local" };
+  try {
+    const r = await fetch(`${site}/api/admin`, { method, headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(60_000) });
+    const j = await r.json().catch(() => ({ error: `HTTP ${r.status}` }));
+    return r.ok ? j : { error: j.error || `HTTP ${r.status}` };
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+// Pre-mint preview: everything the owner must see before signing.
+async function premint({ usd = 200, wallet = null }) {
+  const p = readJson(paths.project);
+  const pf = readJson(join(ROOT, "content/pumpfun.json"));
+  const checks = existsSync(join(ROOT, "content/checks.json")) ? readJson(join(ROOT, "content/checks.json")) : null;
+  const calc = await calculator([Number(usd)]);
+  const row = calc.rows[0];
+  const bal = wallet && isPubkey(wallet) ? await walletBalanceSol(wallet) : null;
+  const need = row.sol + row.estFeesSol[1];
+  const site = await siteStatus(p);
+  return {
+    coin: pf.name,
+    ticker: `$${pf.ticker}`,
+    tickerConfirmed: p.tickerConfirmed,
+    supply: calc.params.supply,
+    creatorBuyUsd: Number(usd),
+    solAmount: row.sol,
+    solPrice: calc.solUsd,
+    creatorReceives: row.tokens,
+    creatorPct: row.pctSupply,
+    estFeesSol: row.estFeesSol,
+    priceMovePct: row.priceMovePct,
+    feeBps: calc.params.feeBps,
+    wallet,
+    walletBalanceSol: bal,
+    walletEnough: bal === null ? null : bal >= need,
+    needSol: need,
+    website: site.ok ? "READY" : "NOT READY",
+    x: p.links.x ? "READY" : "NOT READY",
+    telegram: p.links.telegram ? "READY" : "NOT READY",
+    mintGate: checks?.mint ?? null,
+    checkedAt: calc.checkedAt,
+    notes: calc.notes,
+  };
+}
+
 // ───────── http ─────────
 const json = (res, code, data) => {
   res.writeHead(code, { "content-type": "application/json", "cache-control": "no-store" });
@@ -283,6 +343,9 @@ createServer(async (req, res) => {
     }
     if (req.method === "GET" && url.pathname === "/api/state") return json(res, 200, await state({ ROTW_ENTRIES: url.searchParams.get("rotw") || null }));
     if (req.method === "GET" && url.pathname.startsWith("/api/job/")) return json(res, 200, jobs.get(url.pathname.split("/").pop()) ?? { error: "no job" });
+    if (req.method === "GET" && url.pathname === "/api/prod") return json(res, 200, await prod("GET"));
+    if (req.method === "GET" && url.pathname === "/api/calc") return json(res, 200, await calculator());
+    if (req.method === "GET" && url.pathname === "/api/premint") return json(res, 200, await premint({ usd: url.searchParams.get("usd") || 200, wallet: url.searchParams.get("wallet") }));
     if (req.method === "GET" && url.pathname.startsWith("/asset/")) {
       const rel = normalize(decodeURIComponent(url.pathname.slice(7))).replace(/^([/\\])+/, "");
       const full = join(ROOT, rel);
@@ -302,6 +365,11 @@ createServer(async (req, res) => {
       if (url.pathname === "/api/links") return json(res, 200, applyLinks(b));
       if (url.pathname === "/api/post-status") return json(res, 200, setPostStatus(b));
       if (url.pathname === "/api/schedule") return json(res, 200, setSchedule(b));
+      if (url.pathname === "/api/prod") {
+        const allowed = ["settings", "schedule", "decide", "sync", "input", "resolve_alert", "run", "telegram_setup", "x_connect_link"];
+        if (!allowed.includes(b.op)) return json(res, 400, { error: "op not allowed" });
+        return json(res, 200, await prod("POST", b));
+      }
       if (url.pathname === "/api/check") {
         const id = Math.random().toString(36).slice(2, 10);
         const job = { id, title: "Pre-launch check", log: [], done: false, ok: false };

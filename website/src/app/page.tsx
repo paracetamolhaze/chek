@@ -197,6 +197,22 @@ export default function Home() {
                 <Row label="Receipts" value="Always" strong />
               </div>
             </div>
+            <div className="reveal mt-10 grid gap-px bg-ink sm:grid-cols-3">
+              {[
+                ["The meme", "is the product."],
+                ["The receipts", "are the system."],
+                [project.name, "is the access layer."],
+              ].map(([a, b]) => (
+                <div key={a} className="bg-paper p-5">
+                  <div className="font-display text-3xl leading-none font-black sm:text-4xl">{a}</div>
+                  <div className="mt-2 text-[13px] font-extrabold tracking-[0.08em] uppercase">{b}</div>
+                </div>
+              ))}
+            </div>
+            <p className="reveal mt-4 max-w-[64ch] text-[13.5px] leading-relaxed">
+              {project.name} is a meme about proof. Holding {T} is how you&apos;ll take part — holder votes, holder templates, a Verified Holder
+              receipt (planned, see below). No ownership, no dividends, no promises.
+            </p>
           </section>
 
           {/* 02 STORY */}
