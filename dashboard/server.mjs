@@ -97,10 +97,11 @@ async function state(extra = {}) {
 
 // ───────── jobs (commit → build → deploy) ─────────
 const jobs = new Map();
-function run(cmd, args, log, env = {}) {
+function run(cmd, args, log, env = {}, cwd = ROOT) {
   return new Promise((resolve) => {
-    log.push(`$ ${cmd} ${args.join(" ")}`);
-    const p = spawn(cmd, args, { cwd: ROOT, shell: process.platform === "win32", env: { ...process.env, ...env } });
+    log.push(`$ ${cmd === process.execPath ? "node" : cmd} ${args.join(" ").split("\n")[0]}`);
+    // no shell: arguments (commit messages with spaces/newlines) are passed through untouched
+    const p = spawn(cmd, args, { cwd, shell: false, env: { ...process.env, ...env } });
     const on = (d) => String(d).split(/\r?\n/).filter(Boolean).forEach((l) => log.push(l.slice(0, 300)));
     p.stdout.on("data", on);
     p.stderr.on("data", on);
@@ -120,12 +121,14 @@ function startJob(title, message, files) {
     const hasRemote = (await run("git", ["remote", "get-url", "origin"], [])) === 0;
     if (hasRemote) await run("git", ["push"], log);
     else log.push("no git remote yet — commit stays local");
-    if ((await run("npm", ["run", "build", "--silent"], log)) !== 0) return Object.assign(job, { done: true, ok: false });
+    // build without npm (npm.cmd can't be spawned without a shell on Windows)
+    if ((await run(process.execPath, ["website/scripts/gen-mascots.mjs"], log)) !== 0) return Object.assign(job, { done: true, ok: false });
+    if ((await run(process.execPath, ["node_modules/next/dist/bin/next", "build"], log, {}, join(ROOT, "website"))) !== 0) return Object.assign(job, { done: true, ok: false });
     if (!process.env.VERCEL_TOKEN_FILE && !process.env.VERCEL_TOKEN) {
       log.push("VERCEL_TOKEN_FILE not set — run the deploy yourself: npm run deploy");
       return Object.assign(job, { done: true, ok: true });
     }
-    const d = await run("node", ["scripts/deploy.mjs"], log);
+    const d = await run(process.execPath, ["scripts/deploy.mjs"], log);
     const site = await siteStatus(readJson(paths.project));
     log.push(`live check: ${site.detail}`);
     Object.assign(job, { done: true, ok: d === 0 && site.ok });
