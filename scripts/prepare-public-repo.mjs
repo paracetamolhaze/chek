@@ -88,7 +88,12 @@ ${map.map((m) => `| ${m.date} | \`${m.old}\` | \`${m.new}\` | ${m.subject.replac
 `,
 );
 git(["add", "content/history.json", "docs/history-rewrite.md"]);
-git(["commit", "--quiet", "-m", "publish: personal data removed from history; old → new hash map\n\nCommit dates and messages unchanged. See docs/history-rewrite.md."]);
+const nowUtc = `${Math.floor(Date.now() / 1000)} +0000`;
+git(
+  ["commit", "--quiet", "-m", "publish: personal data removed from history; old → new hash map\n\nCommit times and messages unchanged. See docs/history-rewrite.md."],
+  target,
+  UTC ? { GIT_AUTHOR_DATE: nowUtc, GIT_COMMITTER_DATE: nowUtc } : {},
+);
 
 const findings = scanRepo(target).filter((f) => f.file !== "docs/history-rewrite.md" || !/hash/.test(f.why));
 const uniq = [...new Set(findings.map((f) => `${f.where} ${f.commit} ${f.file} — ${f.why}${f.text ? ` [${f.text.slice(0, 40)}]` : ""}`))];
