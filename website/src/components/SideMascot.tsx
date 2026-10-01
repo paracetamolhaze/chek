@@ -1,0 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+// Wide screens only: the mascot stands next to the receipt and reacts to the section you're reading.
+// Moods are pre-rendered SVG strings (built at compile time); this only swaps which one is visible.
+export function SideMascot({ moods }: { moods: { key: string; svg: string; say: string }[] }) {
+  const [active, setActive] = useState<string | undefined>(moods[0]?.key);
+
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-mood]"));
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActive((visible[0].target as HTMLElement).dataset.mood);
+      },
+      { rootMargin: "-35% 0px -45% 0px", threshold: [0, 0.25, 0.5] },
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, []);
+
+  const current = moods.find((m) => m.key === active) ?? moods[0];
+
+  return (
+    <div className="pointer-events-none sticky top-28 hidden w-[200px] xl:block" aria-hidden>
+      <div className="relative mb-3 ml-6 inline-block bg-paper px-3 py-2 text-[12px] font-bold text-ink shadow-[3px_3px_0_0_#000]">
+        {current?.say}
+        <span className="absolute -bottom-2 left-6 size-4 rotate-45 bg-paper" />
+      </div>
+      <div className="relative h-[300px] w-[200px]">
+        {moods.map((m) => (
+          <div
+            key={m.key}
+            className="absolute inset-0 transition-[opacity,transform] duration-300"
+            style={{ opacity: m.key === current?.key ? 1 : 0, transform: m.key === current?.key ? "none" : "translateY(8px)" }}
+            dangerouslySetInnerHTML={{ __html: m.svg }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
