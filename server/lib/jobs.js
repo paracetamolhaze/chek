@@ -6,9 +6,26 @@ import { runEngine } from "./engine.js";
 import { evaluateNews, fetchFeeds } from "./news.js";
 import { runWatcher } from "./onchain.js";
 import { runPublisher } from "./publisher.js";
-import { notifyOwner } from "./telegram.js";
+import { chatFromLink, notifyOwner, tg } from "./telegram.js";
+import { integrations } from "./env.js";
+import { project } from "./project.js";
+
+// Telegram turns itself on once the owner made the bot an admin of the channel (post + edit/pin rights).
+async function telegramRights() {
+  const s = await allSettings();
+  const p = project();
+  if (!integrations().telegram || !p.links.telegram || s.platforms.telegram) return { skipped: true };
+  const me = await tg("getMe");
+  const m = await tg("getChatMember", { chat_id: chatFromLink(p.links.telegram), user_id: me.id }).catch(() => null);
+  if (m?.status !== "administrator" || !m.can_post_messages) return { admin: false };
+  await setSetting("platforms", { ...s.platforms, telegram: true });
+  await audit("publisher", "telegram.platform_enabled", "ok", { detail: { canEdit: Boolean(m.can_edit_messages) } });
+  if (!m.can_edit_messages) await alert("warn", "tg_pin_right", "The bot can post but not pin: give it 'Edit messages' in the channel admin rights.");
+  return { admin: true };
+}
 
 const JOBS = [
+  { name: "tg_rights", everyMin: 30, run: telegramRights },
   { name: "publisher", everyMin: 0, run: runPublisher },
   { name: "onchain", everyMin: 5, run: runWatcher },
   { name: "news_fetch", everyMin: 120, run: fetchFeeds },

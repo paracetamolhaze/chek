@@ -42,6 +42,23 @@ add("website", /not affiliated with this project/i.test(h) ? "ok" : "fail", "Liv
 add("website", /never DM first/i.test(h) && /Always verify the Contract Address/i.test(h) ? "ok" : "fail", "Live site: DM + CA warnings");
 add("website", project.site?.analytics ? "ok" : "owner", "Analytics (Vercel Web Analytics)", project.site?.analytics ? "on" : "owner enables it in Vercel");
 
+// ── Backend (production) ──
+const ping = await get(`${site}/api/public?op=ping`);
+add("backend", ping.status === 200 ? "ok" : "fail", "API functions deployed", `${ping.status}`);
+const priv = join(ROOT, "private/.env.local");
+const adminToken = existsSync(priv) ? (readFileSync(priv, "utf8").match(/^ADMIN_TOKEN=(.+)$/m)?.[1] ?? "").trim() : "";
+let integ = null;
+if (adminToken) {
+  try {
+    const r = await fetch(`${site}/api/admin`, { headers: { authorization: `Bearer ${adminToken}` }, signal: AbortSignal.timeout(20000) });
+    if (r.ok) integ = (await r.json()).integrations;
+  } catch {}
+}
+add("backend", integ?.database ? "ok" : "owner", "Database connected", integ ? "" : "owner: dedicated Supabase project (or approve the shared one) → DATABASE_URL");
+add("backend", integ?.telegram ? "ok" : "owner", "Telegram bot token", integ?.telegram ? "" : "owner: @BotFather → TELEGRAM_BOT_TOKEN");
+add("backend", integ?.x ? "ok" : "owner", "X API app keys", integ?.x ? "" : "owner: X developer app (pay-per-use) → X_CLIENT_ID/SECRET");
+add("backend", integ?.ai ? "ok" : "owner", "AI key (authored posts, news verdicts)", integ?.ai ? "" : "owner: ANTHROPIC_API_KEY with a spend limit");
+
 // ── Consistency (built site + docs + drafts vs sources) ──
 const { results } = audit();
 for (const r of results) add("consistency", r.ok ? "ok" : "fail", r.title, r.problems.slice(0, 3).join(" | "));
