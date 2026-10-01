@@ -138,18 +138,17 @@ export function face(expr = "skeptic", { cx = 200, cy = 205 } = {}) {
 }
 
 // Legs with little shoes, drawn behind the paper.
-export function legs({ y = 470 } = {}) {
+export function legs({ y = 470, color = INK } = {}) {
   const leg = (x, dir) =>
-    `<path d="M${x},${y - 10} L${x + dir * 6},${y + 66}" stroke="${INK}" stroke-width="${SW}" stroke-linecap="round"/>` +
-    `<ellipse cx="${x + dir * 18}" cy="${y + 72}" rx="24" ry="11" fill="${INK}"/>`;
+    `<path d="M${x},${y - 10} L${x + dir * 6},${y + 66}" stroke="${color}" stroke-width="${SW}" stroke-linecap="round"/>` +
+    `<ellipse cx="${x + dir * 18}" cy="${y + 72}" rx="24" ry="11" fill="${color}"/>`;
   return leg(166, -1) + leg(234, 1);
 }
 
-const hand = (x, y, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${INK}"/>`;
-const limb = (d) => `<path d="${d}" stroke="${INK}" stroke-width="${SW}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
-
-// Arms. Shoulders at (108, 300) and (292, 300).
-export function arms(pose = "down") {
+// Arms. Shoulders at (108, 300) and (292, 300). color = limb colour (paper on dark backgrounds).
+export function arms(pose = "down", color = INK) {
+  const hand = (x, y, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${color}"/>`;
+  const limb = (d) => `<path d="${d}" stroke="${color}" stroke-width="${SW}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
   switch (pose) {
     case "point": // right arm points up-right
       return limb("M110,300 C86,340 80,370 84,400") + hand(84, 404) + limb("M290,300 C326,282 350,250 362,214") + hand(364, 210);
@@ -185,12 +184,14 @@ export function magnifier(x = 364, y = 210) {
 
 // A full character. opts: expr, arms, legs, prop, tilt, printout
 export function character(opts = {}) {
-  const { expr = "skeptic", pose = "down", withLegs = true, prop = "", tilt = 0, lines = true, shadow = true } = opts;
+  // dark: true → limbs, shoes and shadow in paper colour so they read on dark backgrounds
+  const { expr = "skeptic", pose = "down", withLegs = true, prop = "", tilt = 0, lines = true, shadow = true, dark = false } = opts;
+  const limbColor = dark ? PAPER : INK;
   const propSvg = prop === "stamp" ? stampProp() : prop === "magnifier" ? magnifier() : prop;
   return `<g transform="rotate(${tilt} 200 330)">
-  ${shadow ? `<ellipse cx="200" cy="552" rx="120" ry="14" fill="${INK}" opacity=".14"/>` : ""}
-  ${withLegs ? legs() : ""}
-  ${arms(pose)}
+  ${shadow ? `<ellipse cx="200" cy="552" rx="120" ry="14" fill="${dark ? "#000" : INK}" opacity="${dark ? ".45" : ".14"}"/>` : ""}
+  ${withLegs ? legs({ color: limbColor }) : ""}
+  ${arms(pose, limbColor)}
   ${body()}
   ${printout({ lines })}
   ${face(expr)}
@@ -216,4 +217,63 @@ export function symbol({ bg = "", stroke = true } = {}) {
   <path d="M53,32 Q60,27 67,30" stroke="${INK}" stroke-width="3.6" stroke-linecap="round" fill="none"/>
   <path d="M44,62 Q50,61 57,58.5" stroke="${INK}" stroke-width="3.6" stroke-linecap="round" fill="none"/>
 </svg>`;
+}
+
+// ── Villains ───────────────────────────────────────────────
+// THE SHREDDER — eats evidence (deleted posts, wiped sites, vanished devs). viewBox 0 0 400 600.
+export function shredder({ expr = "grin" } = {}) {
+  const body = "#2b2a27";
+  const steel = "#8d8a82";
+  let strips = "";
+  const xs = [128, 152, 176, 200, 224, 248, 272];
+  xs.forEach((x, i) => {
+    const len = 70 + ((i * 37) % 60);
+    const sway = i % 2 ? 6 : -6;
+    strips += `<path d="M${x},430 q${sway},${len / 2} 0,${len}" stroke="${PAPER}" stroke-width="16" fill="none"/>`;
+    strips += `<path d="M${x},430 q${sway},${len / 2} 0,${len}" stroke="${INK}" stroke-width="16" fill="none" stroke-dasharray="2 ${len}" opacity=".0"/>`;
+    strips += `<path d="M${x - 8},430 q${sway},${len / 2} 0,${len} M${x + 8},430 q${sway},${len / 2} 0,${len}" stroke="${INK}" stroke-width="3" fill="none"/>`;
+  });
+  const brows =
+    expr === "grin"
+      ? `<path d="M138,238 L186,256" stroke="${PAPER}" stroke-width="9" stroke-linecap="round"/><path d="M262,238 L214,256" stroke="${PAPER}" stroke-width="9" stroke-linecap="round"/>`
+      : "";
+  return `
+  <ellipse cx="200" cy="560" rx="130" ry="14" fill="${INK}" opacity=".14"/>
+  ${strips}
+  <rect x="96" y="150" width="208" height="290" rx="26" fill="${body}" stroke="${INK}" stroke-width="7"/>
+  <rect x="84" y="128" width="232" height="56" rx="16" fill="#3a3935" stroke="${INK}" stroke-width="7"/>
+  <rect x="112" y="148" width="176" height="14" rx="7" fill="${INK}"/>
+  <path d="M116,162 l10,12 l10,-12 l10,12 l10,-12 l10,12 l10,-12 l10,12 l10,-12 l10,12 l10,-12 l10,12 l10,-12 l10,12 l10,-12 l10,12 l10,-12" stroke="${steel}" stroke-width="4" fill="none" stroke-linejoin="round"/>
+  <circle cx="290" cy="142" r="6" fill="${STAMP}"/>
+  ${brows}
+  <ellipse cx="160" cy="282" rx="22" ry="20" fill="${PAPER}"/><ellipse cx="240" cy="282" rx="22" ry="20" fill="${PAPER}"/>
+  <circle cx="166" cy="286" r="9" fill="${INK}"/><circle cx="234" cy="286" r="9" fill="${INK}"/>
+  <path d="M140,340 Q200,392 260,340 Z" fill="${INK}" stroke="${PAPER}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M152,346 l10,14 l10,-12 l10,14 l10,-12 l10,14 l10,-12 l10,14 l10,-12 l10,12" stroke="${PAPER}" stroke-width="4" fill="none" stroke-linejoin="round"/>
+  <rect x="120" y="406" width="160" height="10" rx="5" fill="${INK}"/>`;
+}
+
+// THE COUPON — loud, shiny, always expiring ("100X OFF! TODAY ONLY!"). viewBox 0 0 400 600.
+export function coupon({ text = "100X OFF!", sub = "TODAY ONLY" } = {}) {
+  const gold = "#f2c84b";
+  return `
+  <ellipse cx="200" cy="556" rx="120" ry="14" fill="${INK}" opacity=".14"/>
+  <path d="M168,470 L160,540 M232,470 L240,540" stroke="${INK}" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="146" cy="546" rx="24" ry="11" fill="${INK}"/><ellipse cx="254" cy="546" rx="24" ry="11" fill="${INK}"/>
+  <path d="M70,300 C40,270 30,240 44,210" stroke="${INK}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="44" cy="204" r="11" fill="${INK}"/>
+  <path d="M330,300 C364,282 372,250 358,222" stroke="${INK}" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle cx="358" cy="216" r="11" fill="${INK}"/>
+  <rect x="64" y="150" width="272" height="330" rx="18" fill="${gold}" stroke="${INK}" stroke-width="7"/>
+  <rect x="82" y="168" width="236" height="294" rx="10" fill="none" stroke="${INK}" stroke-width="3.5" stroke-dasharray="12 8"/>
+  <g transform="translate(300 150) rotate(90)"><circle cx="-6" cy="-6" r="7" fill="none" stroke="${INK}" stroke-width="3"/><circle cx="-6" cy="10" r="7" fill="none" stroke="${INK}" stroke-width="3"/><path d="M0,-2 L18,10 M0,6 L18,-6" stroke="${INK}" stroke-width="3"/></g>
+  <path d="M120,214 l6,-14 l6,14 l14,6 l-14,6 l-6,14 l-6,-14 l-14,-6 z" fill="${PAPER}" stroke="${INK}" stroke-width="3"/>
+  <path d="M276,206 l4,-9 l4,9 l9,4 l-9,4 l-4,9 l-4,-9 l-9,-4 z" fill="${PAPER}" stroke="${INK}" stroke-width="3"/>
+  <ellipse class="eye" cx="164" cy="250" rx="13" ry="17" fill="${INK}"/><ellipse class="eye" cx="236" cy="250" rx="13" ry="17" fill="${INK}"/>
+  <circle cx="169" cy="244" r="4.5" fill="${PAPER}"/><circle cx="241" cy="244" r="4.5" fill="${PAPER}"/>
+  <path d="M130,286 Q200,350 270,286 Q200,316 130,286 Z" fill="${PAPER}" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M152,298 L156,312 M176,304 L178,320 M200,306 L200,322 M224,304 L222,320 M248,298 L244,312" stroke="${INK}" stroke-width="3"/>
+  <text x="200" y="392" text-anchor="middle" font-family="Doto, monospace" font-weight="900" font-size="40" fill="${INK}">${text}</text>
+  <text x="200" y="430" text-anchor="middle" font-family="'Martian Mono', monospace" font-weight="800" font-size="20" letter-spacing="3" fill="${STAMP}">${sub}</text>
+  <text x="200" y="452" text-anchor="middle" font-family="'Martian Mono', monospace" font-size="9" fill="${INK}" opacity=".7">*terms: none of this is real</text>`;
 }

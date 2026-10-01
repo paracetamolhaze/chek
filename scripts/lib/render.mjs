@@ -1,6 +1,6 @@
 // Renders HTML/SVG to PNG with the locally installed Chrome (puppeteer-core, no download).
-import { existsSync } from "node:fs";
-import { pathToFileURL, fileURLToPath } from "node:url";
+import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -12,7 +12,8 @@ const CHROME = [
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
 ].find((p) => p && existsSync(p));
 
-const font = (name) => pathToFileURL(`${ROOT}brand/fonts/${name}`).href;
+// Fonts are inlined as data URIs: file:// URLs are blocked for pages created with setContent.
+const font = (name) => `data:font/woff2;base64,${readFileSync(`${ROOT}brand/fonts/${name}`).toString("base64")}`;
 
 export const FONT_CSS = `
 @font-face { font-family: "Doto"; src: url("${font("Doto-Variable.woff2")}") format("woff2"); font-weight: 100 900; }
