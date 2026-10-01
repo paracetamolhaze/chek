@@ -19,7 +19,10 @@ const rules = join(ROOT, "private/scrub.json");
 if (!existsSync(rules)) throw new Error("private/scrub.json missing");
 const git = (args, cwd = target, env = {}) => execFileSync("git", args, { cwd, encoding: "utf8", env: { ...process.env, ...env }, maxBuffer: 1 << 28 });
 
-const oldLog = git(["log", "--reverse", "--format=%H%x09%aI%x09%s"], ROOT).trim().split("\n").map((l) => l.split("\t"));
+// --utc: store every commit's time with a +0000 offset (same instant; hides the local time zone)
+const UTC = process.argv.includes("--utc");
+const FMT = "--format=%H%x09%at%x09%ct%x09%s";
+const oldLog = git(["log", "--reverse", FMT], ROOT).trim().split("\n").map((l) => l.split("\t"));
 git(["clone", "--quiet", "--no-local", ROOT, target], ROOT);
 
 // tree filter: plain node script outside the clone
@@ -41,17 +44,30 @@ for (const f of files) {
 }
 `,
 );
-git(["filter-branch", "-f", "--tree-filter", `node "${filter.replace(/\\/g, "/")}"`, "--", "--all"], target, { FILTER_BRANCH_SQUELCH_WARNING: "1" });
+git(
+  [
+    "filter-branch",
+    "-f",
+    ...(UTC ? ["--env-filter", 'export GIT_AUTHOR_DATE="${GIT_AUTHOR_DATE% *} +0000"; export GIT_COMMITTER_DATE="${GIT_COMMITTER_DATE% *} +0000"'] : []),
+    "--tree-filter",
+    `node "${filter.replace(/\\/g, "/")}"`,
+    "--",
+    "--all",
+  ],
+  target,
+  { FILTER_BRANCH_SQUELCH_WARNING: "1" },
+);
 git(["for-each-ref", "--format=%(refname)", "refs/original/"]).split("\n").filter(Boolean).forEach((r) => git(["update-ref", "-d", r]));
 git(["reflog", "expire", "--expire=now", "--all"]);
 git(["gc", "--quiet", "--prune=now"]);
 
 // old → new mapping (messages and dates are unchanged, order is the same)
-const newLog = git(["log", "--reverse", "--format=%H%x09%aI%x09%s"]).trim().split("\n").map((l) => l.split("\t"));
+const newLog = git(["log", "--reverse", FMT]).trim().split("\n").map((l) => l.split("\t"));
 if (newLog.length !== oldLog.length) throw new Error("commit count changed");
-const map = oldLog.map(([h, d, s], i) => {
-  if (newLog[i][1] !== d || newLog[i][2] !== s) throw new Error(`commit ${h} date/message changed`);
-  return { old: h.slice(0, 7), new: newLog[i][0].slice(0, 7), date: d, subject: s };
+// same instants (epoch seconds) and same messages, commit by commit
+const map = oldLog.map(([h, at, ct, s], i) => {
+  if (newLog[i][1] !== at || newLog[i][2] !== ct || newLog[i][3] !== s) throw new Error(`commit ${h} time/message changed`);
+  return { old: h.slice(0, 7), new: newLog[i][0].slice(0, 7), date: new Date(Number(at) * 1000).toISOString().replace(".000", ""), subject: s };
 });
 
 const hist = join(target, "content/history.json");
@@ -66,7 +82,7 @@ Before this repository went public, personal data (a local file path with the ow
 Commit **dates and messages were kept exactly**; only file contents changed, so every commit hash changed.
 Old hashes appear in early build-log entries and posts; this table maps them.
 
-| Date (author) | Old | New | Commit |
+| Author time (UTC) | Old | New | Commit |
 |---|---|---|---|
 ${map.map((m) => `| ${m.date} | \`${m.old}\` | \`${m.new}\` | ${m.subject.replace(/\|/g, "\\|")} |`).join("\n")}
 `,
@@ -77,6 +93,6 @@ git(["commit", "--quiet", "-m", "publish: personal data removed from history; ol
 const findings = scanRepo(target).filter((f) => f.file !== "docs/history-rewrite.md" || !/hash/.test(f.why));
 const uniq = [...new Set(findings.map((f) => `${f.where} ${f.commit} ${f.file} — ${f.why}${f.text ? ` [${f.text.slice(0, 40)}]` : ""}`))];
 console.log(`public copy: ${target}`);
-console.log(`commits: ${map.length} rewritten (+1 mapping commit), dates/messages preserved`);
+console.log(`commits: ${map.length} rewritten (+1 mapping commit), times/messages preserved${UTC ? ", offsets normalized to UTC" : ""}`);
 console.log(uniq.length ? `NOT CLEAN:\n${uniq.join("\n")}` : "scan: clean (files + full history)");
 process.exit(uniq.length ? 1 : 0);
