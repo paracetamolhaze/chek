@@ -109,6 +109,11 @@
       <div style="flex:3"><label>Creator wallet (public address of your pump.fun wallet)</label><input id="pmWallet" placeholder="public address only — never a seed phrase or private key" /></div>
       <button onclick="premint()">Preview</button>
     </div>
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" onclick="announceWallet()">Announce this wallet to the launch watcher (stays private)</button>
+      <button class="ghost" onclick="window.open('/card?usd=' + encodeURIComponent($('pmUsd').value), '_blank')">Open FINAL PUMP.FUN FORM card</button>
+    </div>
+    <p class="warn" id="pmw"></p>
     <div id="pm"></div>
   </section>
 </main>
@@ -168,9 +173,9 @@
 
       <section class="card">
         <h2>Official links</h2>
-        <label>X</label><input id="lx" placeholder="https://x.com/chekcoin" />
-        <label>Telegram channel</label><input id="ltg" placeholder="https://t.me/chekcoin" />
-        <label>Telegram chat</label><input id="ltgc" placeholder="https://t.me/chekchat" />
+        <label>X</label><input id="lx" placeholder="https://x.com/chekcoinsol" />
+        <label>Telegram channel</label><input id="ltg" placeholder="https://t.me/chekcoinsol" />
+        <label>Telegram chat</label><input id="ltgc" placeholder="optional" />
         <label>GitHub repo</label><input id="lgh" placeholder="https://github.com/…/chek" />
         <div style="margin-top:10px"><button onclick="saveLinks()">Save links → site</button></div>
         <pre class="log hidden" id="linkLog"></pre>
@@ -370,8 +375,12 @@ async function loadCC() {
     ["SITE", ...st(true, "LIVE", "chekcoin.vercel.app")],
     ["X", ...(i.x ? (CC.xAccount ? st(s.platforms.x, s.platforms.x ? "ON" : "CONNECTED", "@" + CC.xAccount.username) : ["wait", "KEYS SET", "click Connect X"]) : ["bad", "NOT SET", "owner: X API keys"])],
     ["TELEGRAM", ...(i.telegram ? st(s.platforms.telegram, s.platforms.telegram ? "ON" : "BOT SET", s.owner.linked ? "owner linked" : "owner not linked") : ["bad", "NOT SET", "owner: bot token"])],
-    ["NEWS AGENT", ...st(Boolean(runs.news_fetch), i.ai ? "AI ON" : "COLLECTING", "fetched " + ago(runs.news_fetch))],
-    ["CONTENT ENGINE", ...st(i.ai, i.ai ? "AI ON" : "TEMPLATES", "planned " + ago(runs.engine))],
+    ["PC AGENT", ...(CC.agent?.online ? (CC.agent.ai ? ["ok", "ONLINE", "Claude ready · jobs " + CC.agent.jobs.queued + " queued"] : ["wait", "ONLINE", "no Claude access yet — AI jobs wait"]) : ["bad", "OFFLINE", "last seen " + ago(CC.agent?.lastSeen)])],
+    ["DRY RUN", ...(CC.dryRun ? st(Date.parse(CC.dryRun.endsAt) < Date.now(), Date.parse(CC.dryRun.endsAt) < Date.now() ? "FINISHED" : "RUNNING", "ends " + CC.dryRun.endsAt.slice(5, 16).replace("T", " ") + " UTC") : ["wait", "NOT STARTED", ""])],
+    ["LIVE GATE", ...(CC.gate?.ok ? ["ok", "OPEN", ""] : ["wait", "CLOSED", (CC.gate?.missing || []).join(" · ")])],
+    ["PROD AUDIT", ...(CC.prodAudit ? st(CC.prodAudit.ok, CC.prodAudit.ok ? "CLEAN" : CC.prodAudit.problems.length + " PROBLEMS", ago(CC.prodAudit.checkedAt)) : ["wait", "NOT RUN", ""])],
+    ["NEWS AGENT", ...st(Boolean(runs.news_fetch), CC.agent?.ai ? "AI ON" : "COLLECTING", "fetched " + ago(runs.news_fetch))],
+    ["CONTENT ENGINE", ...st(Boolean(CC.agent?.ai), CC.agent?.ai ? "AI ON" : "TEMPLATES", "planned " + ago(runs.engine))],
     ["ON-CHAIN", ...st(Boolean(runs.onchain), runs.onchain ? "WATCHING" : "IDLE", "checked " + ago(runs.onchain))],
     ["RECEIPTS", "ok", String(CC.counts.receipts_total), "+" + CC.counts.receipts_today + " today"],
     ["DATABASE", "ok", "OK", "cron tick " + ago(runs.tick)],
@@ -416,6 +425,11 @@ async function loadCalc() {
   <table style="width:100%;font-size:13px;border-collapse:collapse"><tr style="color:var(--fog)"><th align=left>USD</th><th>SOL SPEND</th><th>EXPECTED CHEK</th><th>% OF SUPPLY</th><th>EST. FEES (SOL)</th><th>PRICE IMPACT</th></tr>` +
     c.rows.map((r) => `<tr style="border-top:1px dotted var(--line);${r.usd === 200 ? "background:#2a2410" : ""}"><td>$${r.usd}</td><td align=center>${r.sol.toFixed(4)}</td><td align=center>${Math.round(r.tokens).toLocaleString()}</td><td align=center>${r.pctSupply.toFixed(2)}%</td><td align=center>${r.estFeesSol[0].toFixed(4)}–${r.estFeesSol[1].toFixed(4)}</td><td align=center>+${r.priceMovePct.toFixed(1)}%</td></tr>`).join("") +
     `</table><ul class="warn">${c.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
+}
+async function announceWallet() {
+  const address = $("pmWallet").value.trim();
+  const r = await (await fetch("/api/prod", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ op: "creator_wallet", address }) })).json();
+  $("pmw").textContent = r.ok ? "Creator wallet announced. The watcher arms 2 h before the launch time and publishes the CA the moment this wallet creates the coin." : "Not saved: " + (r.error || "unknown error");
 }
 async function premint() {
   $("pm").textContent = "reading the chain…";

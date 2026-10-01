@@ -33,6 +33,8 @@ const rel = (f, base = ROOT) => relative(base, f).split(sep).join("/");
 const entries = [
   ...walk(OUT).map((f) => [f, `public/${rel(f, OUT)}`]),
   ...["mascot", "memes", "animations"].flatMap((d) => walk(join(ROOT, "content", d)).map((f) => [f, `public/media/${d}/${rel(f, join(ROOT, "content", d))}`])),
+  // token image, banner and avatars — downloadable from a phone for the Pump.fun form and profile setup
+  ...walk(join(ROOT, "brand", "social")).map((f) => [f, `public/media/brand/${rel(f, join(ROOT, "brand", "social"))}`]),
   ...walk(join(ROOT, "api")).map((f) => [f, rel(f)]),
   ...walk(join(ROOT, "server", "lib")).map((f) => [f, rel(f)]),
   ...walk(join(ROOT, "server", "fonts")).map((f) => [f, rel(f)]),

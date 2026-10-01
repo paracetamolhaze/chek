@@ -144,6 +144,22 @@
       "proof": {
         "label": "config/project.json · /transparency"
       }
+    },
+    {
+      "date": "2026-10-01T23:45:00Z",
+      "title": "Receipt Generator live",
+      "detail": "Anyone can print a receipt for any claim at /print and share it on X — no wallet, no sign-up. The same printer answers in Telegram (@chekcoinsol_bot). Visitor receipts say “printed by a visitor · not a statement by CHEK” and can never carry a VERIFIED stamp.",
+      "proof": {
+        "label": "commit 623c06c"
+      }
+    },
+    {
+      "date": "2026-10-01T23:51:00Z",
+      "title": "Autopilot connected — 24 h dry run",
+      "detail": "Database, scheduler (every 5 minutes) and Telegram are connected. For 24 hours the system runs exactly as it would live but publishes nothing: every post it would have published and every post its guards rejected is logged. Nothing goes out before the owner reviews that report.",
+      "proof": {
+        "label": "commit 623c06c"
+      }
     }
   ]
 }

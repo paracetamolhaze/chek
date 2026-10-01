@@ -2,6 +2,16 @@
 
 Dates are UTC. Entries are added when the change ships — never backdated.
 
+## 2026-10-01 (final decisions, from 23:15 UTC)
+
+- Ticker decided: the token symbol is $CHEKD; the brand stays CHEK. Old build-log entries keep their original wording with a visible correction.
+- X @chekcoinsol (an existing founder-owned account, repurposed — not created for CHEK) and Telegram t.me/chekcoinsol linked.
+- “Launching on Solana” until the token exists. Creator: 0% free allocation; one public buy at creation (≈ $200), real values only from the chain.
+- Receipt Generator (/print, share cards, Telegram bot) live.
+- Autopilot connected (database, scheduler every 5 min, Telegram); AI drafting moved to the owner's PC agent (Claude subscription); 24 h dry run started 23:51 UTC.
+- Launch minute rebuilt: no waiting period; on-chain check against the announced creator wallet, then site → X → Telegram; launch receipt at T+12 min, creator receipt at T+40 min.
+- Production freshness audit (live pages, not the build) gates any live posting.
+
 ## 2026-10-01 (autopilot foundation, from 22:00 UTC)
 
 - Backend (Vercel functions + Postgres schema chek): numbered receipts, content queue with AUTO/REVIEW levels, publisher, code-level content guards, audit log, alerts, costs with budget guard.

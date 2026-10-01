@@ -89,7 +89,7 @@ async function state(extra = {}) {
     profile: xq.profile,
     status: {
       website: site,
-      x: project.links.x ? { ok: true, detail: project.links.x } : { ok: false, detail: "create @chekcoin, then add the link" },
+      x: project.links.x ? { ok: true, detail: project.links.x } : { ok: false, detail: "add the X link" },
       telegram: tg,
       content: { ok: posts.every((p) => p.status !== "draft"), ready: posts.filter((p) => p.status === "ready" || p.status === "posted").length, total: posts.length, posted: posts.filter((p) => p.status === "posted").length },
       token: project.status === "live" ? { ok: true, detail: "DEPLOYED" } : { ok: false, detail: "NOT DEPLOYED" },
@@ -312,6 +312,14 @@ createServer(async (req, res) => {
     if (req.method === "GET" && url.pathname.startsWith("/api/job/")) return json(res, 200, jobs.get(url.pathname.split("/").pop()) ?? { error: "no job" });
     if (req.method === "GET" && url.pathname === "/api/prod") return json(res, 200, await prodApi("GET"));
     if (req.method === "GET" && url.pathname === "/api/calc") return json(res, 200, await calculator());
+    // FINAL PUMP.FUN FORM card (generated on demand from config + live calculator)
+    if (req.method === "GET" && url.pathname === "/card") {
+      const usd = Number(url.searchParams.get("usd") || 200);
+      const log = [];
+      await run(process.execPath, ["scripts/pumpfun-card.mjs", "--usd", String(Number.isFinite(usd) ? usd : 200)], log);
+      res.writeHead(200, { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; img-src 'self' https:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; frame-ancestors 'none'" });
+      return res.end(readFileSync(join(ROOT, "private", "pumpfun-card.html")));
+    }
     if (req.method === "GET" && url.pathname === "/api/premint") return json(res, 200, await premint({ usd: url.searchParams.get("usd") || 200, wallet: url.searchParams.get("wallet") }));
     if (req.method === "GET" && url.pathname.startsWith("/asset/")) {
       const rel = normalize(decodeURIComponent(url.pathname.slice(7))).replace(/^([/\\])+/, "");
@@ -333,7 +341,7 @@ createServer(async (req, res) => {
       if (url.pathname === "/api/post-status") return json(res, 200, setPostStatus(b));
       if (url.pathname === "/api/schedule") return json(res, 200, setSchedule(b));
       if (url.pathname === "/api/prod") {
-        const allowed = ["settings", "schedule", "decide", "sync", "input", "resolve_alert", "run", "telegram_setup", "x_connect_link"];
+        const allowed = ["settings", "schedule", "decide", "sync", "input", "resolve_alert", "run", "telegram_setup", "x_connect_link", "creator_wallet", "arm_launch", "dry_report", "prod_audit", "run_job", "launch"];
         if (!allowed.includes(b.op)) return json(res, 400, { error: "op not allowed" });
         return json(res, 200, await prodApi("POST", b));
       }

@@ -142,6 +142,10 @@ export async function POST(request) {
         await audit("owner", "launch.creator_wallet", "ok", { detail: { address: b.address } });
         return json({ ok: true });
       }
+      case "arm_launch":
+        await setSetting("launch_armed", Boolean(b.on));
+        await audit("owner", "launch.armed", "ok", { detail: { on: Boolean(b.on) } });
+        return json({ ok: true, armed: Boolean(b.on) });
       case "dry_start":
         return json(await dryStart({ hours: Number(b.hours) || 24, d1: b.d1 }));
       case "dry_report":
