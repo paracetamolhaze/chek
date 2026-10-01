@@ -1,7 +1,6 @@
-import { character, svg } from "../../../brand/mascot.mjs";
 import { Barcode } from "@/components/Barcode";
 import { CaBox } from "@/components/CaBox";
-import { Mascot } from "@/components/Mascot";
+import { Mascot, mascotSrc } from "@/components/Mascot";
 import { OfficialRecord } from "@/components/OfficialRecord";
 import { Row, SectionHead, Stamp, Stars, Tag } from "@/components/receipt";
 import { BUILT_AT, primaryCta, Shell } from "@/components/Shell";
@@ -45,7 +44,7 @@ export default function Home() {
   const moods = MOODS.map((m) => ({
     key: m.key,
     say: m.say,
-    svg: svg(character({ expr: m.expr, pose: m.pose, prop: "prop" in m ? m.prop : undefined, dark: true }), { w: 200, h: 300 }),
+    src: mascotSrc({ expr: m.expr, pose: m.pose, prop: "prop" in m ? m.prop : undefined, dark: true }),
   }));
   const pending = "Published at launch";
 
@@ -77,7 +76,7 @@ export default function Home() {
               receipt?
               <span className="absolute -bottom-2 left-5 size-4 rotate-45 bg-paper" />
             </div>
-            <Mascot expr="skeptic" pose="hip" dark label={`${M}, the ${T} mascot: a thermal paper receipt with one eyebrow raised`} className="mx-auto h-auto w-full lg:max-w-[420px]" />
+            <Mascot expr="skeptic" pose="hip" dark priority label={`${M}, the ${T} mascot: a thermal paper receipt with one eyebrow raised`} className="mx-auto h-auto w-full lg:max-w-[420px]" />
           </div>
 
           <div className="col-span-2 lg:col-span-1">
@@ -305,11 +304,15 @@ export default function Home() {
               />
               <Row label="Other allocations" value={t.otherAllocations === "none" ? "None" : t.otherAllocations} />
               <Row label="Token tax" value="None" />
+              <Row label="Creator fee (set by platform)" value="0.30% of curve trades" />
               <div className="rule-double my-3" />
               <Row label="Hidden allocations" value="0" strong />
             </div>
             <p className="reveal mt-3 text-[12px] leading-relaxed text-faded">
-              Platform trading fees are set by {t.launchPlatform}, not by us. Everything above will link to an explorer once it exists.
+              Trading fees are set by {t.launchPlatform}, not by us — including the creator fee the platform pays to the creator wallet (0.30% of
+              bonding-curve trades as of Oct 2026). We list it because it&apos;s real income for the creator. For reference, a standard {t.launchPlatform}{" "}
+              coin today has 1,000,000,000 supply and mint/freeze authority disabled at creation — this table will show our coin&apos;s actual
+              on-chain values, not the expected ones.
             </p>
           </section>
 

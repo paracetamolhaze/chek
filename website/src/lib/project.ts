@@ -53,7 +53,8 @@ export function verifyLinks(address: string) {
     { name: "Solana Explorer", what: "Official Solana Foundation explorer", href: `https://explorer.solana.com/address/${address}` },
     { name: "RugCheck", what: "Mint/freeze authority, holder concentration", href: `https://rugcheck.xyz/tokens/${address}` },
     { name: "DexScreener", what: "Pairs and trades", href: `https://dexscreener.com/solana/${address}` },
-    { name: "Bubblemaps", what: "Holder clusters", href: `https://app.bubblemaps.io/sol/token/${address}` },
+    { name: "Bubblemaps", what: "Holder clusters", href: `https://v2.bubblemaps.io/map?address=${address}&chain=solana` },
+    { name: "Pump.fun", what: "Official coin page", href: `https://pump.fun/coin/${address}` },
   ];
 }
 

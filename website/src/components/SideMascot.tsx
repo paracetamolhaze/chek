@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 
 // Wide screens only: the mascot stands next to the receipt and reacts to the section you're reading.
-// Moods are pre-rendered SVG strings (built at compile time); this only swaps which one is visible.
-export function SideMascot({ moods }: { moods: { key: string; svg: string; say: string }[] }) {
+export function SideMascot({ moods }: { moods: { key: string; src: string; say: string }[] }) {
   const [active, setActive] = useState<string | undefined>(moods[0]?.key);
 
   useEffect(() => {
+    if (!window.matchMedia("(min-width: 1280px)").matches) return;
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-mood]"));
     const io = new IntersectionObserver(
       (entries) => {
@@ -21,6 +21,7 @@ export function SideMascot({ moods }: { moods: { key: string; svg: string; say: 
   }, []);
 
   const current = moods.find((m) => m.key === active) ?? moods[0];
+  const unique = [...new Map(moods.map((m) => [m.src, m])).values()];
 
   return (
     <div className="pointer-events-none sticky top-28 hidden w-[200px] xl:block" aria-hidden>
@@ -29,12 +30,17 @@ export function SideMascot({ moods }: { moods: { key: string; svg: string; say: 
         <span className="absolute -bottom-2 left-6 size-4 rotate-45 bg-paper" />
       </div>
       <div className="relative h-[300px] w-[200px]">
-        {moods.map((m) => (
-          <div
-            key={m.key}
+        {unique.map((m) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={m.src}
+            src={m.src}
+            alt=""
+            width={200}
+            height={300}
+            loading="lazy"
             className="absolute inset-0 transition-[opacity,transform] duration-300"
-            style={{ opacity: m.key === current?.key ? 1 : 0, transform: m.key === current?.key ? "none" : "translateY(8px)" }}
-            dangerouslySetInnerHTML={{ __html: m.svg }}
+            style={{ opacity: m.src === current?.src ? 1 : 0, transform: m.src === current?.src ? "none" : "translateY(8px)" }}
           />
         ))}
       </div>

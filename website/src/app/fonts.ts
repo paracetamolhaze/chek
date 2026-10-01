@@ -5,7 +5,9 @@ export const doto = localFont({
   src: "../../../brand/fonts/Doto-Variable.woff2",
   variable: "--font-doto",
   weight: "100 900",
-  display: "swap",
+  // 6 KB and preloaded: wait for it instead of swapping a much wider fallback (avoids layout shift)
+  display: "block",
+  adjustFontFallback: false,
   preload: true,
 });
 
