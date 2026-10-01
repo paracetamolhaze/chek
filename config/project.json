@@ -31,5 +31,8 @@
     "telegram": null,
     "telegramChat": null,
     "github": null
+  },
+  "site": {
+    "analytics": false
   }
 }

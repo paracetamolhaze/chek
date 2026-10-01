@@ -25,7 +25,7 @@ content/memes, mascot/   rendered images for posts
 brand/                   mascot + logo source (SVG in code), fonts (OFL), brand guide
 website/                 Next.js static site (no server, no wallet code, no secrets)
 dashboard/               owner launch dashboard — runs locally only (127.0.0.1)
-docs/                    concept, brand, tokenomics, launch plan, checklist, security
+docs/                    concept, brand, tokenomics, launch plan, checklist, security, pump.fun facts, lore
 scripts/                 asset renderer, deploy, screenshots
 ```
 
@@ -36,6 +36,7 @@ npm install && npm --prefix website install
 npm run assets      # render PNGs (avatars, token image, OG, memes) with local Chrome
 npm run build       # static export → website/out
 npm run dashboard   # owner dashboard on http://127.0.0.1:4747
+npm run check       # automated pre-launch checklist against the live site
 ```
 
 Deploy: `VERCEL_TOKEN_FILE=<path outside the repo> npm run deploy`.

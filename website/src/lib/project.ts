@@ -30,6 +30,7 @@ export type Project = {
     telegramChat: string | null;
     github: string | null;
   };
+  site?: { analytics?: boolean };
 };
 
 export const project = raw as Project;

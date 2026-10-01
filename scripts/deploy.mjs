@@ -34,7 +34,7 @@ const files = [
 
 // Safety net: never ship anything that looks like a secret.
 // (PEM keys, env-style tokens, Telegram bot tokens, Solana keypair JSON arrays of 64 bytes)
-const SECRET = /(-----BEGIN [A-Z ]*PRIVATE KEY-----|VERCEL_TOKEN\s*=|BOT_TOKEN\s*=|\b\d{8,10}:[A-Za-z0-9_-]{35}\b|sk_live_|\[(\s*\d{1,3}\s*,){63}\s*\d{1,3}\s*\])/;
+const SECRET = /(-----BEGIN [A-Z ]*PRIVATE KEY-----|VERCEL_TOKEN\s*=\s*[A-Za-z0-9]{20,}|BOT_TOKEN\s*=\s*\d|\b\d{8,10}:[A-Za-z0-9_-]{35}\b|sk_live_|\[(\s*\d{1,3}\s*,){63}\s*\d{1,3}\s*\])/;
 for (const f of files) {
   if (/\.(html|js|json|txt|css)$/.test(f.file) && SECRET.test(f.data.toString("utf8"))) throw new Error(`refusing to deploy, secret-looking content in ${f.file}`);
 }

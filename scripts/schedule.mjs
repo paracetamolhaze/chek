@@ -1,7 +1,7 @@
 // Recomputes publishAfter for every queued post from content/schedule.json and checks X post lengths.
 //   node scripts/schedule.mjs
 //   node scripts/schedule.mjs --d1 2026-10-03 --launch 2026-10-08T15:00:00Z
-import { fill, paths, placeholders, readJson, slotTime, writeJson, xLength } from "./lib/content.mjs";
+import { fill, paths, placeholders, readJson, SAMPLE, slotTime, writeJson, xLength } from "./lib/content.mjs";
 
 const args = process.argv.slice(2);
 const schedule = readJson(paths.schedule);
@@ -20,7 +20,7 @@ for (const file of [paths.x, paths.tg]) {
     if (file === paths.x) {
       for (const [i, part] of [p.text, ...(p.thread || [])].entries()) {
         // measure with realistic stand-ins for values that don't exist yet
-        const sample = fill(part, { ...values, CA: values.CA ?? "X".repeat(44), CA_SHORT: "XXXX…XXXX", LAUNCH_UTC: values.LAUNCH_UTC ?? "Oct 7, 15:00 UTC", TG: values.TG ?? "t.me/chekcoin", CREATED_AT: "Oct 7, 15:00 UTC", SUPPLY: "1,000,000,000", MINT_AUTH: "disabled", FREEZE_AUTH: "disabled", CREATOR: "X".repeat(44), CREATOR_BUY: "0.5 SOL (tx 5x…)", ROTW_ENTRIES: "12" }).text;
+        const sample = fill(part, Object.fromEntries(Object.entries({ ...SAMPLE, ...values }).map(([k, v]) => [k, v ?? SAMPLE[k]]))).text;
         const n = xLength(sample);
         if (n > 280) {
           warn++;

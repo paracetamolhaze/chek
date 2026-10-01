@@ -7,10 +7,14 @@
     "node": ">=20"
   },
   "scripts": {
-    "assets": "node scripts/render-assets.mjs",
+    "assets": "node scripts/render-assets.mjs && node scripts/render-content.mjs",
     "dashboard": "node dashboard/server.mjs",
     "build": "npm --prefix website run build",
-    "deploy": "node scripts/deploy.mjs"
+    "deploy": "node scripts/deploy.mjs",
+    "check": "node scripts/prelaunch-check.mjs",
+    "schedule": "node scripts/schedule.mjs",
+    "shots": "node scripts/shot.mjs",
+    "perf": "node scripts/perf.mjs"
   },
   "devDependencies": {
     "puppeteer-core": "^25.12.0"

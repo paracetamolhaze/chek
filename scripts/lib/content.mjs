@@ -82,6 +82,21 @@ export function fill(text, values) {
   return { text: out, missing: [...missing] };
 }
 
+// Realistic stand-ins for values that only exist after launch (used to measure post length in advance).
+export const SAMPLE = {
+  CA: "X".repeat(44),
+  CA_SHORT: "XXXX…XXXX",
+  LAUNCH_UTC: "Oct 7, 15:00 UTC",
+  TG: "t.me/chekcoin",
+  CREATED_AT: "Oct 7, 15:00 UTC",
+  SUPPLY: "1,000,000,000",
+  MINT_AUTH: "disabled",
+  FREEZE_AUTH: "disabled",
+  CREATOR: "X".repeat(44),
+  CREATOR_BUY: "25,000,000 CHEK (2.50% of supply) in the creation tx",
+  ROTW_ENTRIES: "12",
+};
+
 // X counts every URL as 23 characters; this is close enough to warn before posting.
 export function xLength(text) {
   return [...text.replace(/https?:\/\/\S+|(?:[a-z0-9-]+\.)+(?:app|fun|io|xyz|com|me|so|ag)(?:\/\S*)?/gi, "x".repeat(23))].length;
