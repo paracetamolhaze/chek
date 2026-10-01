@@ -2,6 +2,16 @@
 
 Dates are UTC. Entries are added when the change ships — never backdated.
 
+## 2026-10-01 (autopilot foundation, from 22:00 UTC)
+
+- Backend (Vercel functions + Postgres schema chek): numbered receipts, content queue with AUTO/REVIEW levels, publisher, code-level content guards, audit log, alerts, costs with budget guard.
+- Agents: news desk (verified feeds, evidence quotes checked against the source), on-chain watcher (creator wallet, creator-fee vault), daily content engine.
+- Telegram Bot API and X API (OAuth 2.0 PKCE) adapters; owner approvals via Telegram buttons; nothing connected yet.
+- Receipt Board (/receipts), Creator Receipt, phased utility and roadmap, value proposition on the home page.
+- Receipt image renderer (4 formats, scannable barcodes) and /api/image.
+- Command Center and Mint tab in the local dashboard (live pump.fun calculator, pre-mint preview).
+- Pre-launch check at 22:21 UTC: 36 passed, 12 waiting on the owner, 0 failed (of 48).
+
 ## 2026-10-01 (audit pass, from 21:30 UTC)
 
 - Look-alike tokens: “not affiliated with this project” instead of “fake” on the site, FAQ, Transparency, X/Telegram drafts and README.

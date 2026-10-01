@@ -92,6 +92,38 @@
       "proof": {
         "label": "commit 614c511 · content/checks.json"
       }
+    },
+    {
+      "date": "2026-10-01T22:00:00Z",
+      "title": "Autopilot foundation",
+      "detail": "Backend for receipts, a content queue with owner approvals, code-level content guards (unknown addresses, price promises, “fake” labels are blocked), a news desk that only drafts claims it can quote from the source, and an on-chain watcher. Built and tested; not connected to any account yet — nothing is published by it.",
+      "proof": {
+        "label": "commit 0ecb61d"
+      }
+    },
+    {
+      "date": "2026-10-01T22:12:00Z",
+      "title": "Receipt Board",
+      "detail": "Every project action as a numbered receipt: on-chain verified ones link to the transaction, project-reported ones say so. Plus the Creator Receipt on the transparency page, filled from the creation transaction at launch.",
+      "proof": {
+        "label": "commit 7e2c242"
+      }
+    },
+    {
+      "date": "2026-10-01T22:15:00Z",
+      "title": "Receipt images",
+      "detail": "Receipts render as images (four formats) with real, scannable barcodes. A reported receipt is never styled as verified.",
+      "proof": {
+        "label": "commit ea7c98d"
+      }
+    },
+    {
+      "date": "2026-10-01T22:21:00Z",
+      "title": "Pre-launch check",
+      "detail": "Automatic pre-launch check at 22:21 UTC: 36 passed, 12 waiting on the owner, 0 failed (of 48).",
+      "proof": {
+        "label": "content/checks.json"
+      }
     }
   ]
 }
