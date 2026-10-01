@@ -1,14 +1,14 @@
-import Link from "next/link";
 import { character, svg } from "../../../brand/mascot.mjs";
 import { Barcode } from "@/components/Barcode";
 import { CaBox } from "@/components/CaBox";
 import { Mascot } from "@/components/Mascot";
+import { OfficialRecord } from "@/components/OfficialRecord";
 import { Row, SectionHead, Stamp, Stars, Tag } from "@/components/receipt";
 import { BUILT_AT, primaryCta, Shell } from "@/components/Shell";
 import { SideMascot } from "@/components/SideMascot";
 import { IconArrow, IconExternal, IconWarn, SocialIcon } from "@/components/icons";
 import { buildLog, faq, houseRules, lore, roadmap, utility, why } from "@/lib/content";
-import { ca, cashtag, formatUtc, isLive, project, shortAddress, socials, tradeUrl, verifyLinks, walletUrl } from "@/lib/project";
+import { ca, cashtag, formatUtc, isLive, project, shortAddress, socials, tradeUrl, walletUrl } from "@/lib/project";
 
 const T = cashtag;
 const M = project.mascot;
@@ -45,7 +45,7 @@ export default function Home() {
   const moods = MOODS.map((m) => ({
     key: m.key,
     say: m.say,
-    svg: svg(character({ expr: m.expr, pose: m.pose, prop: "prop" in m ? m.prop : undefined }), { w: 200, h: 300 }),
+    svg: svg(character({ expr: m.expr, pose: m.pose, prop: "prop" in m ? m.prop : undefined, dark: true }), { w: 200, h: 300 }),
   }));
   const pending = "Published at launch";
 
@@ -77,7 +77,7 @@ export default function Home() {
               receipt?
               <span className="absolute -bottom-2 left-5 size-4 rotate-45 bg-paper" />
             </div>
-            <Mascot expr="skeptic" pose="hip" label={`${M}, the ${T} mascot: a thermal paper receipt with one eyebrow raised`} className="mx-auto h-auto w-full lg:max-w-[420px]" />
+            <Mascot expr="skeptic" pose="hip" dark label={`${M}, the ${T} mascot: a thermal paper receipt with one eyebrow raised`} className="mx-auto h-auto w-full lg:max-w-[420px]" />
           </div>
 
           <div className="col-span-2 lg:col-span-1">
@@ -103,12 +103,12 @@ export default function Home() {
                   View token <IconExternal className="size-4" />
                 </a>
               ) : (
-                <Link
+                <a
                   href="/history"
                   className="inline-flex items-center gap-2 border-2 border-paper/40 px-5 py-3 text-[12px] font-bold tracking-[0.16em] text-paper uppercase hover:border-paper"
                 >
                   {cta.href === "/history" ? "How it works" : "Read the build log"}
-                </Link>
+                </a>
               )}
             </div>
             <div className="mt-7 max-w-[560px]">
@@ -183,6 +183,10 @@ export default function Home() {
                   {T} has no app, no yield and no secret tech. It&apos;s a character — <strong>{M}</strong>, a slip of thermal paper that only prints
                   what it can prove — and a community that makes memes, runs challenges and keeps every claim checkable.
                 </p>
+                <p className="text-[13px] leading-relaxed text-faded">
+                  Why “{project.name}”? <em>Чек</em> is Russian for receipt. The check is the bill. And checking is what you should do before you
+                  trust anything — including us.
+                </p>
               </div>
               <div className="reveal self-start border-2 border-ink p-4 sm:p-5">
                 <Row label="Meme coin" value="Yes" />
@@ -253,9 +257,9 @@ export default function Home() {
                         <li key={u.title} className="reveal border-b-2 border-dotted border-ink/20 py-4">
                           <h3 className="text-[15px] font-extrabold">
                             {u.href ? (
-                              <Link href={u.href} className="underline decoration-2 underline-offset-4 hover:bg-marker">
+                              <a href={u.href} className="underline decoration-2 underline-offset-4 hover:bg-marker">
                                 {u.title}
-                              </Link>
+                              </a>
                             ) : (
                               u.title
                             )}
@@ -313,41 +317,7 @@ export default function Home() {
           <section id="transparency" data-mood="transparency" className="scroll-mt-24 pt-20" aria-labelledby="transparency-title">
             <SectionHead n="06" id="transparency-title" title="Transparency" kicker="Only what you can check" />
             <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-              <div className="reveal relative bg-ink p-5 text-paper sm:p-7">
-                <div className="text-[10px] font-bold tracking-[0.3em] text-fog uppercase">Official record</div>
-                <dl className="mt-4 space-y-3 text-[13px]">
-                  {[
-                    ["Contract", ca ? <code key="ca" className="break-all">{ca}</code> : <span key="ca" className="text-stamp">NOT LAUNCHED YET</span>],
-                    ["Network", project.network.toUpperCase()],
-                    ["Created", t.createdAt ? formatUtc(t.createdAt, true) : "—"],
-                    ["Launch platform", t.launchPlatform.toUpperCase()],
-                    ["Creator wallet", t.creatorWallet ? <code key="cw" className="break-all">{t.creatorWallet}</code> : "— (published at launch)"],
-                    ["Mint authority", t.mintAuthority ?? "— (checked at launch)"],
-                    ["Freeze authority", t.freezeAuthority ?? "— (checked at launch)"],
-                  ].map(([k, v]) => (
-                    <div key={String(k)} className="grid grid-cols-[130px_1fr] gap-3 border-b border-paper/15 pb-3 sm:grid-cols-[160px_1fr]">
-                      <dt className="text-[11px] font-semibold tracking-[0.18em] text-fog uppercase">{k}</dt>
-                      <dd className="min-w-0 font-semibold tracking-[0.04em]">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                {!isLive && (
-                  <p className="mt-5 text-[12px] leading-relaxed text-fog">
-                    Links to Solscan, Solana Explorer, RugCheck, DexScreener and Bubblemaps appear here the minute the token exists.
-                  </p>
-                )}
-                {ca && (
-                  <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-                    {verifyLinks(ca).map((l) => (
-                      <li key={l.name}>
-                        <a href={l.href} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between border border-paper/25 px-3 py-2 text-[12px] font-bold tracking-[0.1em] uppercase hover:bg-paper hover:text-ink">
-                          {l.name} <IconExternal className="size-3.5" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <OfficialRecord className="reveal" />
               <div className="reveal">
                 <h3 className="text-sm font-extrabold tracking-[0.16em] uppercase">House rules</h3>
                 <ol className="mt-3">
@@ -358,9 +328,9 @@ export default function Home() {
                     </li>
                   ))}
                 </ol>
-                <Link href="/transparency" className="mt-5 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] uppercase underline decoration-2 underline-offset-4 hover:bg-marker">
+                <a href="/transparency" className="mt-5 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] uppercase underline decoration-2 underline-offset-4 hover:bg-marker">
                   Full transparency page <IconArrow className="size-4" />
-                </Link>
+                </a>
               </div>
             </div>
           </section>
@@ -462,9 +432,9 @@ export default function Home() {
                 </li>
               ))}
             </ol>
-            <Link href="/history" className="reveal mt-5 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] uppercase underline decoration-2 underline-offset-4 hover:bg-marker">
+            <a href="/history" className="reveal mt-5 inline-flex items-center gap-2 text-[12px] font-bold tracking-[0.16em] uppercase underline decoration-2 underline-offset-4 hover:bg-marker">
               Full build log <IconArrow className="size-4" />
-            </Link>
+            </a>
           </section>
 
           {/* receipt footer */}

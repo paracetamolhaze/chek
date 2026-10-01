@@ -9,6 +9,7 @@ export function Mascot({
   label,
   tilt = 0,
   legs = true,
+  dark = false,
 }: {
   expr?: Expression;
   pose?: Pose;
@@ -17,8 +18,9 @@ export function Mascot({
   label?: string;
   tilt?: number;
   legs?: boolean;
+  dark?: boolean;
 }) {
-  const inner = character({ expr, pose, prop, tilt, withLegs: legs });
+  const inner = character({ expr, pose, prop, tilt, withLegs: legs, dark });
   return (
     <svg
       viewBox="0 0 400 600"

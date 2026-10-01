@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { symbol } from "../../../brand/mascot.mjs";
 import { ca, cashtag, formatUtc, project, socials, tradeUrl } from "@/lib/project";
@@ -76,10 +75,10 @@ function Footer() {
         <div>
           <h3 className="text-[11px] font-bold tracking-[0.25em] text-paper uppercase">Pages</h3>
           <ul className="mt-4 space-y-2 text-[13px]">
-            <li><Link href="/" className="hover:text-paper">Home</Link></li>
-            <li><Link href="/history" className="hover:text-paper">Build log</Link></li>
-            <li><Link href="/transparency" className="hover:text-paper">Transparency</Link></li>
-            <li><Link href="/kit" className="hover:text-paper">Meme kit</Link></li>
+            <li><a href="/" className="hover:text-paper">Home</a></li>
+            <li><a href="/history" className="hover:text-paper">Build log</a></li>
+            <li><a href="/transparency" className="hover:text-paper">Transparency</a></li>
+            <li><a href="/kit" className="hover:text-paper">Meme kit</a></li>
           </ul>
           <p className="mt-6 text-[11px] tracking-[0.12em] uppercase">
             We never DM first.

@@ -6,6 +6,8 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   // Override default ignores of eslint-config-next.
+  // Plain <a> on purpose: the site is a static multi-page export (no client-side RSC navigation).
+  { rules: { "@next/next/no-html-link-for-pages": "off" } },
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",

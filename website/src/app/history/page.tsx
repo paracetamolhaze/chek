@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Barcode } from "@/components/Barcode";
 import { Mascot } from "@/components/Mascot";
 import { Row, Stars } from "@/components/receipt";
@@ -37,7 +36,7 @@ export default function History() {
               post, a transaction), it&apos;s linked.
             </p>
           </div>
-          <Mascot expr="happy" pose="up" className="hidden h-auto w-[130px] shrink-0 sm:block" />
+          <Mascot expr="happy" pose="up" dark className="hidden h-auto w-[130px] shrink-0 sm:block" />
         </div>
 
         <article className="paper edge-both px-5 pt-12 pb-16 shadow-[0_30px_60px_-20px_rgba(0,0,0,.7)] sm:px-12">
@@ -100,9 +99,9 @@ export default function History() {
               .
             </p>
             <Barcode value={`${project.ticker}-LOG-${buildLog.length}`} className="mx-auto mt-8 h-14 w-[240px]" />
-            <Link href="/" className="mt-8 inline-block text-[12px] font-bold tracking-[0.16em] uppercase underline underline-offset-4">
+            <a href="/" className="mt-8 inline-block text-[12px] font-bold tracking-[0.16em] uppercase underline underline-offset-4">
               ← Back to the receipt
-            </Link>
+            </a>
           </footer>
         </article>
       </div>

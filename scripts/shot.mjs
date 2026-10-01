@@ -28,8 +28,8 @@ if (!base) {
   server = createServer((req, res) => {
     let p = decodeURIComponent(req.url.split("?")[0]);
     let f = join(dir, p);
-    if (existsSync(f) && statSync(f).isDirectory()) f = join(f, "index.html");
-    if (!existsSync(f) && existsSync(f + ".html")) f += ".html";
+    if (existsSync(f + ".html")) f += ".html";
+    else if (existsSync(f) && statSync(f).isDirectory()) f = join(f, "index.html");
     if (!existsSync(f)) {
       res.writeHead(404, { "content-type": "text/html" });
       return res.end(existsSync(join(dir, "404.html")) ? readFileSync(join(dir, "404.html")) : "404");
@@ -46,7 +46,8 @@ for (const [name, vp] of Object.entries(DEVICES)) {
   for (const path of PAGES) {
     const page = await b.newPage();
     page.on("pageerror", (e) => errors.push(`${path} ${name}: ${e.message}`));
-    page.on("console", (m) => m.type() === "error" && errors.push(`${path} ${name} console: ${m.text()}`));
+    page.on("console", (m) => m.type() === "error" && !m.text().startsWith("Failed to load resource") && errors.push(`${path} ${name} console: ${m.text()}`));
+    page.on("response", (r) => r.status() >= 400 && errors.push(`${path} ${name} ${r.status()} ${r.url().replace(base, "")}`));
     await page.setViewport(vp);
     await page.goto(base + path, { waitUntil: "networkidle0" });
     // reveal everything for full-page shots
