@@ -7,6 +7,7 @@ import { aiReady, structured } from "./llm.js";
 import { enqueue } from "./queue.js";
 import { receiptLabel } from "./receipts.js";
 import { VOICE } from "./voice.js";
+import { sign } from "./http.js";
 
 const Plan = z.object({
   posts: z
@@ -82,7 +83,8 @@ export async function runEngine() {
     });
     for (const [i, p] of (plan?.posts ?? []).entries()) {
       const at = slotTimeToday(cadence[p.slot]).toISOString();
-      const imageUrl = p.format === "receipt_image" && p.receipt ? `/api/image?gen=${b64({ ...p.receipt, format: "square" })}` : null;
+      const gen = p.format === "receipt_image" && p.receipt ? b64({ ...p.receipt, format: "square" }) : null;
+      const imageUrl = gen ? `/api/image?gen=${gen}&s=${sign(`img:${gen}`)}` : null;
       for (const platform of p.channels === "both" ? ["x", "telegram"] : [p.channels]) {
         await enqueue({
           id: `eng-${today}-${i}-${platform}`,

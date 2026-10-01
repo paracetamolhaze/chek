@@ -4,14 +4,11 @@
 // Visual language = brand/mascot.mjs + scripts/render-content.mjs: thermal paper with zig-zag tears, Doto display type,
 // Martian Mono text, dashed rules, dot leaders, red double-border stamps, highlighter, dark counter with a dot grid.
 import { randomInt } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { Resvg } from "@resvg/resvg-js";
-
-// Brand art: a copy bundled with the deployment (data/mascot.mjs) or the repo source when run locally.
-const M = existsSync(fileURLToPath(new URL("../data/mascot.mjs", import.meta.url)))
-  ? await import("../data/mascot.mjs")
-  : await import("../../brand/mascot.mjs");
+// Brand art: the deployment keeps the repository layout, so the source module is always next door.
+import * as M from "../../brand/mascot.mjs";
 
 // ── Fonts ─────────────────────────────────────────────────
 const FONT_FILES = [
