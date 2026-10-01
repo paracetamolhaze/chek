@@ -1,317 +1,235 @@
 {
-  "$comment": "Prepared X posts. Nothing here is posted automatically. status: ready | posted | skipped. slot: 'D<n> HH:MM' (UTC, day n of the public account) or 'T±<n>m/h' (relative to launch). publishAfter is computed by scripts/schedule.mjs. Placeholders {{...}} are filled from config/project.json by the dashboard. 'checks' = what must be TRUE before you press post.",
+  "$comment": "Prepared X posts. Slots: \"D1 13:00\" = day 1 of public posting (schedule.d1) at 13:00 UTC; \"T-30m\" = before the announced launch time (schedule.launchAt); \"T+12m\" = after the real launch minute (schedule.launchedAt, set automatically when the mint is confirmed). Placeholders are filled at publish time. launch:true = part of the launch sequence (no daily cap / gap). Recompute times: node scripts/schedule.mjs",
   "profile": {
-    "username": "chekcoin",
-    "displayName": "CHEK 🧾 $CHEK",
-    "bioPrelaunch": "a receipt that only prints what it can prove. meme coin on solana. official token not launched yet — no CA. same-name tokens aren't ours. we never DM first.",
-    "bioLive": "a receipt that only prints what it can prove. meme coin on solana. CA: {{CA}} — verify on the site. we never DM first.",
+    "username": "chekcoinsol",
+    "displayName": "CHEK 🧾",
+    "bioPrelaunch": "a receipt that only prints what it can prove. meme project launching on solana. token $CHEKD: not launched, no CA yet. same-name tokens aren't ours. we never DM first.",
+    "bioLive": "a receipt that only prints what it can prove. CA only on the site + pins. same-name tokens aren't ours. we never DM first.",
     "location": "Register #4",
     "url": "https://chekcoin.vercel.app",
     "avatar": "brand/social/x-avatar-400.png",
     "header": "brand/social/x-header-1500x500.png",
-    "pinnedPrelaunch": "x-005",
-    "pinnedLive": "x-018"
+    "pinnedPrelaunch": "x-203",
+    "pinnedLive": "x-310",
+    "origin": "Existing founder-owned account, renamed to @chekcoinsol and repurposed for CHEK on 2026-10-02. Never say or imply the account was created for CHEK."
   },
   "posts": [
     {
-      "id": "x-001",
-      "slot": "D1 15:00",
+      "id": "x-101",
+      "slot": "D1 13:00",
       "category": "lore",
-      "text": "day {{DAY_N}}.\n\nthe receipt has been printing since oct 1.\nthe token doesn't exist yet.\n\n🧾 {{SITE}}",
-      "asset": "content/mascot/01-printing.png",
       "status": "ready",
-      "publishAfter": "2026-10-02T15:00:00.000Z",
-      "checks": [
-        "DAY_N is counted from 2026-10-01 (UTC) to the day you post — the dashboard fills it in"
-      ]
+      "text": "day {{DAY_N}}.\n\na receipt started printing on oct 1 and refused to stop.\n\nno token yet. no CA. just receipts. 🧾",
+      "asset": "content/mascot/01-printing.png",
+      "note": "origin — first post",
+      "publishAfter": "2026-10-03T13:00:00.000Z"
     },
     {
-      "id": "x-002",
-      "slot": "D1 18:00",
+      "id": "x-102",
+      "slot": "D1 16:30",
       "category": "lore",
+      "status": "ready",
       "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID",
       "asset": "content/memes/01-itemized-promises.png",
-      "status": "ready",
-      "publishAfter": "2026-10-02T18:00:00.000Z"
+      "note": "origin — the quotes are the joke, stamped VOID",
+      "publishAfter": "2026-10-03T16:30:00.000Z"
     },
     {
-      "id": "x-003",
-      "slot": "D1 21:00",
-      "category": "meme",
-      "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅",
-      "asset": "content/memes/02-pics-vs-receipts.png",
-      "status": "ready",
-      "publishAfter": "2026-10-02T21:00:00.000Z"
-    },
-    {
-      "id": "x-004",
-      "slot": "D2 14:00",
+      "id": "x-103",
+      "slot": "D1 20:00",
       "category": "build",
-      "text": "we're building something.\n\nno CA. no presale. no “soon™”.\njust a receipt for every step.",
-      "asset": "content/mascot/02-receipt.png",
       "status": "ready",
-      "publishAfter": "2026-10-03T14:00:00.000Z"
-    },
-    {
-      "id": "x-005",
-      "slot": "D2 17:00",
-      "category": "announcement",
-      "pin": "prelaunch",
-      "text": "the receipt has a home 🧾\n{{SITE}}\n\nevery claim comes with a receipt. even the build log.\n\nthe official $CHEK token hasn't launched. tokens already using the name or ticker aren't ours.",
-      "asset": null,
-      "note": "No image: X shows the site's OG card.",
-      "checks": [
-        "site opens on phone",
-        "CA box on site says NOT LAUNCHED YET"
-      ],
-      "status": "ready",
-      "publishAfter": "2026-10-03T17:00:00.000Z"
-    },
-    {
-      "id": "x-006",
-      "slot": "D2 20:00",
-      "category": "token",
-      "text": "$CHEK in 10 seconds:\n\n· a meme coin. we say it plainly\n· a character: chek, a slip of thermal paper that only prints what it can prove\n· one rule: every claim comes with a receipt\n· no yield, no promises, no fake partners",
-      "asset": "content/mascot/03-void.png",
-      "status": "ready",
+      "text": "build log, so far:\n\n✓ mascot + two villains\n✓ website + transparency page\n✓ receipt board\n✓ receipt generator — anyone can print one\n☐ token\n\nevery line has a receipt. even this one.",
+      "asset": "content/memes/08-long-receipt.png",
+      "note": "build — no link on purpose; the site is in the profile",
       "publishAfter": "2026-10-03T20:00:00.000Z"
     },
     {
-      "id": "x-007",
-      "slot": "D3 14:00",
-      "category": "build",
-      "text": "build log, day 3:\n\n✓ mascot + meme kit\n✓ website + transparency page\n✓ meme kit (free PNGs)\n✓ telegram\n☐ launch\n\nevery line has a receipt → {{SITE}}/history",
-      "asset": "content/memes/08-long-receipt.png",
-      "checks": [
-        "telegram channel is public",
-        "every ✓ is actually done today — edit the list if not"
-      ],
+      "id": "x-201",
+      "slot": "D2 12:00",
+      "category": "community",
       "status": "ready",
-      "publishAfter": "2026-10-04T14:00:00.000Z"
+      "text": "print your own receipt 🧾\n\nwrite any claim. get a receipt. share it.\n\nno wallet. no sign-up. no token needed.\n\n{{SITE}}/print",
+      "imageUrl": "/api/image?claim=trust%20me%20bro&stamp=VOID&format=square",
+      "note": "utility — the distribution loop; one of the few posts with a link",
+      "publishAfter": "2026-10-04T12:00:00.000Z"
     },
     {
-      "id": "x-008",
-      "slot": "D3 17:00",
-      "category": "community",
-      "text": "community stuff, labelled honestly:\n\nLIVE\n· build log\n· meme kit\n· telegram\n\nPLANNED (not live yet)\n· receipt of the week\n· the long receipt\n· holder role\n\nnothing planned gets called live until it is.",
-      "asset": null,
+      "id": "x-202",
+      "slot": "D2 15:00",
+      "category": "lore",
       "status": "ready",
+      "text": "lore, chapter 03: THE SHREDDER\n\neats evidence.\ndeleted tweets. wiped websites. devs who “went for a walk”.\n\nchek has seen what it leaves behind: confetti.\nchek does not want to be confetti.",
+      "asset": "content/memes/05-the-shredder.png",
+      "publishAfter": "2026-10-04T15:00:00.000Z"
+    },
+    {
+      "id": "x-203",
+      "slot": "D2 17:00",
+      "category": "transparency",
+      "status": "ready",
+      "pin": "prelaunch",
+      "text": "how $CHEKD launches. the receipt, in advance 🧾",
+      "thread": [
+        "platform: pump.fun, SOL pair. name CHEK, ticker CHEKD.\nno presale. no whitelist. no free team allocation.",
+        "the creator makes one public buy at creation (target ≈ $200) from the creator wallet. same curve, same price as everyone.\n\nexact SOL spent, CHEKD received and % of supply get published from the chain — not estimated.",
+        "the CA appears in 3 places in the same minute:\n· {{SITE}}\n· the pinned post here\n· the pinned message in t.me/chekcoinsol\n\nname and ticker prove nothing. only the address does.",
+        "creator fees: pump.fun pays a coin's creator {{CREATOR_FEE}} of bonding-curve trades (as checked {{FEE_CHECKED}}). telling you because it's real money and you should know where it goes.",
+        "we never DM first. we never ask for a seed phrase. if it's not linked from {{SITE}}, it didn't happen."
+      ],
+      "note": "transparency — pinned before launch",
       "publishAfter": "2026-10-04T17:00:00.000Z"
     },
     {
-      "id": "x-009",
-      "slot": "D3 20:00",
-      "category": "community",
-      "text": "telegram is open → {{TG}}\n\nadmins never DM first. if “chek support” messages you, it's the coupon in a trench coat.",
-      "asset": "content/memes/03-never-dm-first.png",
-      "checks": [
-        "{{TG}} opens",
-        "anti-scam message is pinned in Telegram"
-      ],
+      "id": "x-204",
+      "slot": "D2 20:30",
+      "category": "meme",
       "status": "ready",
-      "publishAfter": "2026-10-04T20:00:00.000Z"
+      "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅",
+      "asset": "content/memes/02-pics-vs-receipts.png",
+      "publishAfter": "2026-10-04T20:30:00.000Z"
     },
     {
-      "id": "x-010",
-      "slot": "D4 14:00",
-      "category": "lore",
-      "text": "lore, chapter 03: THE SHREDDER\n\neats evidence.\ndeleted tweets. wiped websites. devs who “went for a walk”.\n\nchek has seen what it leaves behind: confetti.\nchek does not want to be confetti.",
-      "asset": "content/memes/05-the-shredder.png",
+      "id": "x-205",
+      "slot": "T-26h",
+      "category": "announcement",
       "status": "ready",
-      "publishAfter": "2026-10-05T14:00:00.000Z"
+      "text": "🧾 $CHEKD launches {{LAUNCH_UTC}} on pump.fun.\n\nthe CA doesn't exist before that minute. any token using the name or ticker before then isn't ours.\n\nwhere the CA appears: {{SITE}}, the pin here, t.me/chekcoinsol.",
+      "asset": "content/mascot/02-receipt.png",
+      "note": "launch-time announcement — goes out ≥24 h before mint, only after the owner confirmed launchAt",
+      "publishAfter": null
     },
     {
-      "id": "x-011",
-      "slot": "D4 17:00",
+      "id": "x-206",
+      "slot": "T-20h",
       "category": "lore",
+      "status": "ready",
       "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”",
       "asset": "content/memes/06-the-coupon.png",
-      "status": "ready",
-      "publishAfter": "2026-10-05T17:00:00.000Z"
+      "publishAfter": null
     },
     {
-      "id": "x-012",
-      "slot": "D4 20:00",
-      "category": "meme",
-      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌",
-      "asset": "content/memes/09-vibe-chek.png",
-      "status": "ready",
-      "publishAfter": "2026-10-05T20:00:00.000Z"
-    },
-    {
-      "id": "x-013",
-      "slot": "D5 14:00",
+      "id": "x-301",
+      "slot": "T-5h",
       "category": "transparency",
-      "text": "how $CHEK will launch. the receipt, in advance 🧾",
-      "thread": [
-        "platform: pump.fun. fair launch — everyone buys from the same bonding curve.\nno presale. no whitelist. no team mint.",
-        "the CA appears in 3 places in the same minute:\n· {{SITE}}\n· the pinned post here\n· the pinned message in telegram\n\nname and ticker prove nothing. only the address does.",
-        "at launch we publish: the creator wallet, whether it bought and how much (with the tx), mint + freeze authority status, supply as read from the chain.",
-        "creator fees: pump.fun pays a coin's creator {{CREATOR_FEE}} of bonding-curve trades (as checked {{FEE_CHECKED}}). telling you because it's real money and you should know where it goes.",
-        "we never DM first. we never ask for a seed phrase. if it's not linked, it didn't happen."
-      ],
-      "asset": null,
       "status": "ready",
-      "publishAfter": "2026-10-06T14:00:00.000Z"
-    },
-    {
-      "id": "x-014",
-      "slot": "D5 17:00",
-      "category": "transparency",
       "text": "name and ticker prove nothing.\n\nother tokens already use the name. they're not ours. to find the real one:\n\n1. CA matches {{SITE}}, our X pin and telegram pin\n2. nobody DMed you first\n3. no “presale”, “whitelist”, “early access”",
       "asset": "content/memes/04-ca-chek.png",
-      "status": "ready",
-      "publishAfter": "2026-10-06T17:00:00.000Z"
-    },
-    {
-      "id": "x-015",
-      "slot": "D5 20:00",
-      "category": "announcement",
-      "text": "🧾 $CHEK launches {{LAUNCH_UTC}} on pump.fun.\n\nour CA doesn't exist before that minute. any token with this name or ticker before then isn't ours.\n\nthe real one goes up here, on {{SITE}} and in telegram — at the same time.",
-      "asset": "content/mascot/02-receipt.png",
-      "checks": [
-        "launch time confirmed in content/schedule.json (launchAt)",
-        "Telegram has the same announcement (tg-006)"
-      ],
-      "status": "ready",
-      "publishAfter": "2026-10-06T20:00:00.000Z"
-    },
-    {
-      "id": "x-016",
-      "slot": "T-3h",
-      "category": "transparency",
-      "text": "few hours.\n\nbefore anything happens today:\n· bookmark {{SITE}}\n· the CA comes from there. not from replies. not from DMs. not from “chek_official_2”.",
-      "asset": "content/animations/receipt-reaction.mp4",
-      "status": "ready",
       "publishAfter": null
     },
     {
-      "id": "x-017",
-      "slot": "T+5m",
+      "id": "x-302",
+      "slot": "T-30m",
       "category": "announcement",
-      "text": "receipt printing… 🧾\n\n5 minutes.",
+      "status": "ready",
+      "launch": true,
+      "text": "30 minutes. 🧾\n\nthe CA appears at the same minute on {{SITE}}, in our pinned post and in t.me/chekcoinsol.\n\nnot in replies. not in DMs. not from accounts that look like us.",
+      "note": "optional reminder",
+      "publishAfter": null
+    },
+    {
+      "id": "x-303",
+      "slot": "T-5m",
+      "category": "announcement",
+      "status": "ready",
+      "launch": true,
+      "text": "5 minutes.\n\nanything posted before our pin isn't ours.",
       "asset": "content/mascot/01-printing.png",
-      "checks": [
-        "CA is already on the site, X bio and Telegram pin (T+0 done)"
-      ],
-      "status": "ready",
       "publishAfter": null
     },
     {
-      "id": "x-018",
-      "slot": "T+10m",
+      "id": "x-310",
+      "slot": "T+0",
       "category": "token",
+      "status": "ready",
+      "launch": true,
       "pin": "live",
-      "text": "🧾 $CHEK is live.\n\none rule: every claim comes with a receipt.\n\nCA: {{CA}}\n\nsame address on {{SITE}} and in telegram. names prove nothing — the address does.\n\nno presale. no team mint. creator wallet + buy on the site.",
+      "text": "🧾 $CHEKD is live on pump.fun.\n\nCA: {{CA}}\n\nsame address on {{SITE}} and pinned in t.me/chekcoinsol. names prove nothing — the address does.\n\nno presale. creator buy receipt within the hour.",
       "asset": "content/mascot/05-live.png",
-      "needs": [
-        "CA"
-      ],
-      "checks": [
-        "CA in this text = CA on site = CA in Telegram pin (dashboard compares)"
-      ],
-      "status": "ready",
+      "note": "fires the moment the mint is verified on-chain (launch op), right after the website switches",
       "publishAfter": null
     },
     {
-      "id": "x-019",
-      "slot": "T+30m",
+      "id": "x-311",
+      "slot": "T+12m",
       "category": "transparency",
-      "text": "the receipt for the launch 🧾",
+      "status": "ready",
+      "launch": true,
+      "text": "RECEIPT #{{LAUNCH_RECEIPT_N}} — token created 🧾\n\nCA: {{CA_SHORT}}\ncreated: {{CREATED_AT}}\nmint authority: {{MINT_AUTH}} · freeze: {{FREEZE_AUTH}}\n\nON-CHAIN VERIFIED. the tx: solscan.io/tx/{{CREATION_TX}}",
+      "imageUrl": "/api/image?receipt={{LAUNCH_RECEIPT_N}}&format=square",
+      "note": "first on-chain verified launch receipt",
+      "publishAfter": null
+    },
+    {
+      "id": "x-312",
+      "slot": "T+40m",
+      "category": "transparency",
+      "status": "ready",
+      "launch": true,
+      "text": "the creator receipt 🧾",
       "thread": [
-        "CA: {{CA}}\nnetwork: solana\nplatform: pump.fun\ncreated: {{CREATED_AT}}\ncreation tx: solscan.io/tx/{{CREATION_TX}}",
-        "supply: {{SUPPLY}}\nmint authority: {{MINT_AUTH}}\nfreeze authority: {{FREEZE_AUTH}}",
-        "creator wallet: {{CREATOR}}\ncreator buy at launch: {{CREATOR_BUY}}\nother allocations: none",
-        "check it yourself:\nsolscan.io/token/{{CA}}\nrugcheck.xyz/tokens/{{CA}}\n\nand the history of every change: {{SITE}}/history"
+        "creator wallet: {{CREATOR}}\n\nspent: {{CREATOR_SOL}} SOL\nreceived: {{CREATOR_TOKENS}} CHEKD\nshare of supply: {{CREATOR_PCT}}",
+        "it was a buy in the creation transaction — same bonding curve as everyone. free allocation: 0%.\n\ntx: solscan.io/tx/{{CREATION_TX}}",
+        "the creator position stays live on {{SITE}}/transparency — read from the chain, not typed by us."
       ],
-      "asset": null,
-      "needs": [
-        "CA",
-        "CREATED_AT",
-        "SUPPLY",
-        "CREATOR"
-      ],
-      "status": "ready",
+      "imageUrl": "/api/image?receipt={{CREATOR_RECEIPT_N}}&format=square",
+      "note": "creator receipt with chain-confirmed values",
       "publishAfter": null
     },
     {
-      "id": "x-020",
-      "slot": "T+60m",
-      "category": "meme",
-      "text": "chek, one hour after launch:\n\nstill printing.\nstill not trusting anyone.\nincluding you. (affectionate)",
-      "asset": "content/memes/04-ca-chek.png",
-      "status": "ready",
-      "publishAfter": null
-    },
-    {
-      "id": "x-021",
+      "id": "x-320",
       "slot": "T+2h",
       "category": "build",
-      "text": "what's live right now:\n\n✓ $CHEK on pump.fun ({{CA_SHORT}})\n✓ site + transparency page updated with real data\n✓ telegram\n\nnext: receipt of the week. rules drop in telegram today.",
-      "asset": null,
-      "needs": [
-        "CA"
-      ],
-      "checks": [
-        "every ✓ is true right now"
-      ],
       "status": "ready",
+      "text": "what's live right now:\n\n✓ $CHEKD on pump.fun ({{CA_SHORT}})\n✓ site + transparency page with real data\n✓ receipt generator — print one, any claim\n✓ telegram: t.me/chekcoinsol\n\nnext: receipt of the week.",
+      "note": "after launch",
       "publishAfter": null
     },
     {
-      "id": "x-022",
+      "id": "x-321",
       "slot": "T+6h",
       "category": "community",
-      "text": "RECEIPT OF THE WEEK is open 🧾\n\nreply with the most absurd real receipt you have. hide card digits + address.\n\nbest one gets printed into the lore. no money prizes — just glory and a line in the long receipt.",
-      "asset": "content/memes/10-receipt-of-the-week.png",
-      "checks": [
-        "after posting: mark 'Receipt of the Week' LIVE on the site (content.ts) + build log entry"
-      ],
       "status": "ready",
+      "text": "RECEIPT OF THE WEEK is open 🧾\n\nprint a receipt for the most absurd claim you saw this week ({{SITE}}/print) and tag us.\n\nbest one gets printed into the lore. no money prizes — just glory and a line in the long receipt.",
+      "asset": "content/memes/10-receipt-of-the-week.png",
+      "note": "recurring format: people tag CHEK with a receipt; replies/quotes go to REVIEW",
       "publishAfter": null
     },
     {
-      "id": "x-023",
+      "id": "x-322",
       "slot": "T+24h",
       "category": "build",
-      "text": "24h receipt 🧾\n\n· live on pump.fun, same CA everywhere: {{CA_SHORT}}\n· transparency thread with every wallet we use\n· receipt of the week: {{ROTW_ENTRIES}} entries\n· build log: {{SITE}}/history\n\nnext: lore ch. 06 + the long receipt.\nno price talk. that's the recap.",
-      "asset": "content/memes/08-long-receipt.png",
-      "needs": [
-        "CA",
-        "ROTW_ENTRIES"
-      ],
-      "checks": [
-        "only real numbers — count entries yourself",
-        "no price, volume or market-cap claims"
-      ],
       "status": "ready",
+      "text": "24h receipt 🧾\n\n· live on pump.fun, same CA everywhere: {{CA_SHORT}}\n· launch + creator receipts, on-chain verified\n· receipts printed by people: {{RECEIPTS_PRINTED}}\n· build log: {{SITE}}/history\n\nno price talk. that's the recap.",
+      "asset": "content/memes/08-long-receipt.png",
+      "note": "real numbers only; owner re-checks wording",
       "publishAfter": null
     },
     {
-      "id": "x-024",
+      "id": "x-323",
       "slot": "T+2d",
       "category": "lore",
+      "status": "ready",
       "text": "lore, chapter 06: THE LONG RECEIPT\n\nchek decided to keep one receipt for everything the community does.\n\nit's already longer than chek.",
       "asset": "content/memes/08-long-receipt.png",
-      "status": "ready",
       "publishAfter": null
     },
     {
-      "id": "x-025",
+      "id": "x-324",
       "slot": "T+3d",
       "category": "meme",
+      "status": "ready",
       "text": "receipts fade.\ncommits don't.",
       "asset": "content/memes/07-receipts-fade.png",
-      "status": "ready",
       "publishAfter": null
     },
     {
-      "id": "x-026",
+      "id": "x-325",
       "slot": "T+4d",
       "category": "transparency",
+      "status": "ready",
       "text": "reminder, because the coupon never sleeps:\n\nwe never DM first.\nwe never ask for a seed phrase.\nthere is no “v2 migration”, no “airdrop claim”, no “wallet validation”.\n\nsame name ≠ same token. the only CA is on {{SITE}}.",
       "asset": "content/memes/03-never-dm-first.png",
-      "status": "ready",
       "publishAfter": null
     }
   ]

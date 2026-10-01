@@ -7,14 +7,15 @@ import { BUILT_AT, primaryCta, Shell } from "@/components/Shell";
 import { SideMascot } from "@/components/SideMascot";
 import { IconArrow, IconExternal, IconWarn, SocialIcon } from "@/components/icons";
 import { buildLog, faq, houseRules, lore, roadmap, utility, why } from "@/lib/content";
-import { ca, cashtag, formatUtc, isLive, notAffiliated, platformChecked, project, shortAddress, socials, tradeUrl, walletUrl } from "@/lib/project";
+import { ca, cashtag, formatUtc, isLive, networkPhrase, notAffiliated, platformChecked, project, shortAddress, socials, tradeUrl, walletUrl } from "@/lib/project";
+import { PrintCta } from "@/components/PrintCta";
 
 const T = cashtag;
 const M = project.mascot;
 const t = project.token;
 
 const SECTIONS = [
-  { id: "what", n: "01", label: `What is ${T}` },
+  { id: "what", n: "01", label: `What is ${project.name}` },
   { id: "story", n: "02", label: "The story" },
   { id: "why", n: "03", label: "Why it exists" },
   { id: "utility", n: "04", label: "Utility" },
@@ -56,12 +57,12 @@ export default function Home() {
           aria-hidden
           className="pointer-events-none absolute -right-6 bottom-6 hidden font-display text-[clamp(9rem,19vw,17rem)] leading-[0.8] font-black text-paper/[0.035] select-none lg:block"
         >
-          {T}
+          {project.name}
         </div>
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1fr_auto] gap-x-4 gap-y-6 px-4 pt-8 pb-14 sm:px-6 sm:pt-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-x-10 lg:pt-16 lg:pb-24">
           <div className="col-span-1 self-center">
             <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">
-              Meme coin · {project.network} · <span className="text-paper">{T}</span>
+              Meme coin · {isLive ? project.network : `Launching on ${project.network}`} · <span className="text-paper">{T}</span>
             </p>
             <h1
               id="hero-title"
@@ -76,13 +77,13 @@ export default function Home() {
               receipt?
               <span className="absolute -bottom-2 left-5 size-4 rotate-45 bg-paper" />
             </div>
-            <Mascot expr="skeptic" pose="hip" dark priority label={`${M}, the ${T} mascot: a thermal paper receipt with one eyebrow raised`} className="mx-auto h-auto w-full lg:max-w-[420px]" />
+            <Mascot expr="skeptic" pose="hip" dark priority label={`${M}, the ${project.name} mascot: a thermal paper receipt with one eyebrow raised`} className="mx-auto h-auto w-full lg:max-w-[420px]" />
           </div>
 
           <div className="col-span-2 lg:col-span-1">
             <p className="max-w-[560px] text-[15px] leading-relaxed text-paper/85 sm:text-base">
-              <strong className="text-paper">{T}</strong> is a meme coin on Solana with one rule: every claim comes with a receipt.
-              No promises. No fake partners. Just memes, lore and proof.
+              <strong className="text-paper">{project.name}</strong> is a meme coin {networkPhrase} with one rule: every claim comes with a receipt.
+              Token: <strong className="text-paper">{T}</strong>. No promises. No fake partners. Just memes, lore and proof.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a
@@ -114,17 +115,14 @@ export default function Home() {
               <CaBox ca={ca} note={notAffiliated} />
             </div>
             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-semibold tracking-[0.18em] text-fog uppercase">
-              {socials.map((s) =>
-                s.href ? (
-                  <a key={s.key} href={s.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-paper">
+              {socials
+                .filter((s) => s.href)
+                .map((s) => (
+                  <a key={s.key} href={s.href!} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-paper">
                     <SocialIcon k={s.key} className="size-4" /> {s.label}
+                    {s.key === "x" || s.key === "telegram" ? <span className="text-fog/70 normal-case tracking-normal">@{s.href!.split("/").pop()}</span> : null}
                   </a>
-                ) : (
-                  <span key={s.key} className="inline-flex items-center gap-2 text-fog/50" title="Opening soon">
-                    <SocialIcon k={s.key} className="size-4" /> {s.label} · soon
-                  </span>
-                ),
-              )}
+                ))}
             </div>
           </div>
         </div>
@@ -173,14 +171,14 @@ export default function Home() {
 
           {/* 01 WHAT */}
           <section id="what" data-mood="what" className="scroll-mt-24 pt-14" aria-labelledby="what-title">
-            <SectionHead n="01" id="what-title" title={`What is ${T}?`} kicker="10-second version" />
+            <SectionHead n="01" id="what-title" title={`What is ${project.name}?`} kicker="10-second version" />
             <div className="grid gap-10 md:grid-cols-[1.25fr_1fr]">
               <div className="reveal space-y-4 text-[15px] leading-relaxed">
                 <p>
                   <span className="marker font-bold">A meme coin.</span> We say it plainly because most projects won&apos;t.
                 </p>
                 <p>
-                  {T} has no app, no yield and no secret tech. It&apos;s a character — <strong>{M}</strong>, a slip of thermal paper that only prints
+                  {project.name} has no app, no yield and no secret tech. It&apos;s a character — <strong>{M}</strong>, a slip of thermal paper that only prints
                   what it can prove — and a community that makes memes, runs challenges and keeps every claim checkable.
                 </p>
                 <p className="text-[13px] leading-relaxed text-faded">
@@ -290,6 +288,10 @@ export default function Home() {
             </div>
           </section>
 
+          <div className="pt-14">
+            <PrintCta />
+          </div>
+
           {/* 05 TOKENOMICS */}
           <section id="tokenomics" data-mood="tokenomics" className="scroll-mt-24 pt-20" aria-labelledby="tokenomics-title">
             <SectionHead n="05" id="tokenomics-title" title="Tokenomics" kicker="Itemized" />
@@ -314,7 +316,12 @@ export default function Home() {
                 value={t.creatorWallet ? <a className="underline" href={walletUrl(t.creatorWallet)} target="_blank" rel="noopener noreferrer">{shortAddress(t.creatorWallet)}</a> : pending}
                 muted={!t.creatorWallet}
               />
-              <Row label="Creator buy at launch" value={t.creatorBuy ?? pending} muted={!t.creatorBuy} />
+              <Row label="Free allocation to the creator" value="0%" />
+              <Row
+                label="Creator buy at creation"
+                value={t.creatorBuy ?? `Planned ≈ ${project.token.creatorBuyTargetUsd ?? 200} — exact SOL, ${T} and % from the chain`}
+                muted={!t.creatorBuy}
+              />
               <Row
                 label="Treasury wallet"
                 value={t.treasuryWallet ? <a className="underline" href={walletUrl(t.treasuryWallet)} target="_blank" rel="noopener noreferrer">{shortAddress(t.treasuryWallet)}</a> : "None"}

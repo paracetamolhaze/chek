@@ -45,7 +45,7 @@ export default function ReceiptBoard() {
       <div className="mx-auto max-w-[1280px] px-4 pt-10 sm:px-6 sm:pt-14">
         <div className="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
           <div>
-            <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{cashtag} · receipt board</p>
+            <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{project.name} · receipt board</p>
             <h1 className="mt-3 max-w-[18ch] text-[clamp(2.2rem,6vw,4.5rem)] leading-[0.95] font-extrabold tracking-[-0.03em] text-paper [font-stretch:112.5%]">
               Every action gets a receipt.
             </h1>

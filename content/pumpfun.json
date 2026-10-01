@@ -1,12 +1,14 @@
 {
-  "$comment": "Values for the pump.fun create form — the one source (dashboard copy buttons, npm run check). Website/X/Telegram are taken from config/project.json. Pump.fun says coin details, social links and banner are set at creation and may not be editable later: nothing here may change after the mint.",
+  "$comment": "Values for the pump.fun create form — the one source (dashboard copy buttons, the FINAL PUMP.FUN FORM card, npm run check). Website/X/Telegram are taken from config/project.json. Pump.fun coin data (name, ticker, image, description, socials, banner) is immutable after creation: nothing here may change after the mint. scripts/set-domain.mjs rewrites the website in the description when the canonical domain changes.",
   "name": "CHEK",
-  "ticker": "CHEK",
-  "description": "CHEK is a meme coin with one rule: every claim comes with a receipt.\n\nChek is a slip of thermal paper that only prints what it can prove. No presale, no team mint, no promises — memes, lore and proof.\n\nOfficial CA, creator wallet and the full build log: chekcoin.vercel.app\nA name or ticker is not proof — only the address on our site is. We never DM first.",
+  "ticker": "CHEKD",
+  "description": "CHEK is a meme coin with one rule: every claim comes with a receipt.\n\nChek is a slip of thermal paper that only prints what it can prove. No presale, no free team allocation, no promises — memes, lore and proof. Print your own receipt on the site.\n\nOfficial CA, creator wallet and the full build log: chekcoin.vercel.app\nA name or ticker is not proof — only the address on our site is. We never DM first.",
   "image": "brand/social/token-1000.png",
   "banner": "brand/social/x-header-1500x500.png",
   "pair": "SOL",
   "creatorRewardsTo": "Creator",
+  "holderRewards": false,
   "mayhemMode": false,
-  "creatorBuy": "owner's decision — published on the site either way"
+  "creatorBuyTargetUsd": 200,
+  "creatorBuy": "≈ $200 target, recalculated into SOL right before creation (live calculator); the real SOL, CHEKD and % are published from the chain"
 }

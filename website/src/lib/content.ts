@@ -68,15 +68,15 @@ export const utility: { title: string; body: string; status: TagKind; href?: str
   { title: "Grab the meme kit", body: `${M} in every mood, the villains, logo and stamps.`, status: "live", href: "/kit" },
   {
     title: "Join the community",
-    body: "Memes, lore drops and updates on X and Telegram.",
+    body: "Memes, lore drops and updates on X (@chekcoinsol) and Telegram (t.me/chekcoinsol).",
     status: hasCommunity ? "live" : "planned",
     note: hasCommunity ? undefined : "Opens before launch",
   },
   {
     title: "Receipt Generator",
-    body: "Turn any claim into a CHEK receipt — “JOHN STILL OWES ME $20”. Free for everyone, made to share.",
-    status: "planned",
-    note: "Phase 2 · after launch",
+    body: "Turn any claim into a CHEK receipt — “JOHN STILL OWES ME 20 BUCKS”. Free for everyone, no wallet, made to share. Also in Telegram: write to @chekcoinsol_bot.",
+    status: "live",
+    href: "/print",
   },
   {
     title: "Proof of Hold",
@@ -106,7 +106,7 @@ export const utility: { title: string; body: string; status: TagKind; href?: str
     title: "Receipt of the Week",
     body: "Post the most absurd real receipt you have. The best one gets printed into the lore.",
     status: "planned",
-    note: "Starts when the community opens",
+    note: "Starts after launch",
   },
   {
     title: "Community bounties",
@@ -136,7 +136,7 @@ export const roadmap: { phase: string; title: string; items: { t: string; s: Tag
     phase: "01",
     title: "Receipts on autopilot",
     items: [
-      { t: "Autonomous X + Telegram publishing (with owner approval for sensitive posts)", s: "next" },
+      { t: "Autonomous X + Telegram publishing (with owner approval for sensitive posts) — 24 h dry run first", s: "next" },
       { t: "On-chain receipts: creator fees, creator wallet, project payouts", s: "next" },
       { t: "News desk — verified sources only", s: "next" },
     ],
@@ -145,9 +145,9 @@ export const roadmap: { phase: string; title: string; items: { t: string; s: Tag
     phase: "02",
     title: "Receipt Generator",
     items: [
-      { t: "Public Receipt Generator + shareable images", s: "later" },
-      { t: "Automatic receipt posts", s: "later" },
-      { t: "Community submissions (always credited)", s: "later" },
+      { t: "Public Receipt Generator + shareable images", s: "done" },
+      { t: "Receipt bot in Telegram", s: "done" },
+      { t: "Community submissions (opt-in, always credited)", s: "next" },
     ],
   },
   {
@@ -185,7 +185,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Is there a presale or a team allocation?",
-    a: "No presale, no whitelist, no team mint. The plan is a fair launch on Pump.fun, where everyone buys from the same bonding curve. If the creator wallet buys at launch, the wallet and the amount will be listed in Tokenomics.",
+    a: `No presale, no whitelist, no free team allocation (0%). The plan is a fair launch on Pump.fun, where everyone buys from the same bonding curve. The creator makes one public buy at creation (target ≈ $200) from the creator wallet — the exact SOL spent, ${T} received and share of supply are read from the creation transaction and shown in Tokenomics and on the Transparency page.`,
   },
   {
     q: "When is the launch?",
@@ -213,7 +213,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Who runs the X and Telegram accounts?",
-    a: "An automated system run by the project owner. It writes and publishes routine posts on its own; posts about the CHEK price, partnerships, people or anything sensitive wait for the owner's approval. Every automatic action is logged.",
+    a: "An automated system run by the project owner. It writes and publishes routine posts on its own; posts about the CHEK price, partnerships, people or anything sensitive wait for the owner's approval. Every automatic action is logged. The X account @chekcoinsol is an existing account of the founder, renamed and repurposed for CHEK — it was not created for CHEK, so its join date is older than the project.",
   },
   {
     q: "Who is behind it?",

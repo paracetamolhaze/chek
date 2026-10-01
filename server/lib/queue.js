@@ -3,7 +3,7 @@
 import { fill, placeholders, slotTime } from "../../shared/content-core.mjs";
 import { audit, getSetting } from "./core.js";
 import { db } from "./db.js";
-import { officialCa, project, seedQueue } from "./project.js";
+import { officialCa, project, seedQueue, withLiveToken } from "./project.js";
 
 // Which placeholder needs which fact before a post may go out.
 const NEEDS = {
@@ -21,23 +21,29 @@ const NEEDS = {
   FREEZE_AUTH: "live",
   CREATOR: "live",
   CREATOR_BUY: "live",
+  CREATOR_SOL: "live",
+  CREATOR_TOKENS: "live",
+  CREATOR_PCT: "live",
+  LAUNCH_RECEIPT_N: "input:LAUNCH_RECEIPT_N",
+  CREATOR_RECEIPT_N: "input:CREATOR_RECEIPT_N",
   CREATION_TX: "live",
   CREATION_FEE: "live",
   ROTW_ENTRIES: "input:ROTW_ENTRIES",
 };
 
 // Seed posts whose wording a human must re-confirm against reality at posting time.
-const SEED_REVIEW = new Set(["x-022", "x-023", "tg-010", "tg-011"]);
+const SEED_REVIEW = new Set(["x-321", "x-322", "tg-320"]);
 // Seed wording a human already reviewed (lore quoting a fake promise, chat rules naming scammers).
-const SEED_ACK = { "x-002": ["partnership / listing claim"], "tg-002": ["legal / accusation topic"] };
+const SEED_ACK = { "x-102": ["partnership / listing claim"] };
 // Extra ordering conditions: post only after another item was published.
-const SEED_AFTER = { "x-009": ["tg-001"], "x-017": ["tg-007"], "x-018": ["tg-007"] };
+const SEED_AFTER = {};
 
 export function requiresFor(item) {
-  const text = [item.text, ...(item.thread || [])].join("\n");
+  const text = [item.text, ...(item.thread || []), item.imageUrl || ""].join("\n");
   const req = new Set();
   for (const m of text.matchAll(/\{\{([A-Z_]+)\}\}/g)) if (NEEDS[m[1]]) req.add(NEEDS[m[1]]);
-  if (/^T[+-]/.test(item.slot)) req.add("launchAt");
+  if (/^T-/.test(item.slot)) req.add("launchAt");
+  if (/^T\+/.test(item.slot)) req.add("live");
   for (const id of SEED_AFTER[item.id] || []) req.add(`posted:${id}`);
   return [...req];
 }
@@ -51,7 +57,7 @@ export async function syncSeed() {
   for (const [platform, file] of [["x", q.x], ["telegram", q.telegram]]) {
     for (const item of file.posts) {
       if (item.kind === "welcome") continue; // bot welcome text, not a post
-      const payload = { parts: [item.text, ...(item.thread || [])], asset: item.asset ?? null, pin: item.pin ?? null, where: item.where ?? null, note: item.note ?? null, ack: SEED_ACK[item.id] ?? [] };
+      const payload = { parts: [item.text, ...(item.thread || [])], asset: item.asset ?? null, imageUrl: item.imageUrl ?? null, pin: item.pin ?? null, where: item.where ?? null, launch: Boolean(item.launch), why: item.note ?? null, ack: SEED_ACK[item.id] ?? [] };
       const level = SEED_REVIEW.has(item.id) ? "review" : "auto";
       const at = slotTime(item.slot, schedule);
       const status = item.status === "posted" ? "published" : item.status === "skipped" ? "skipped" : "ready";
@@ -60,7 +66,7 @@ export async function syncSeed() {
         on conflict (id) do update set
           payload = excluded.payload, requires = excluded.requires, slot = excluded.slot, category = excluded.category,
           publish_after = excluded.publish_after, level = excluded.level, updated_at = now()
-        where chek.queue.status in ('ready','review','failed','expired')`;
+        where chek.queue.status in ('ready','review','failed','expired','dry_published')`;
       n++;
     }
   }
@@ -105,13 +111,17 @@ export async function conditionsMet(row, ctx) {
 }
 
 export async function context() {
-  const p = project();
-  return { project: p, ca: officialCa(p), schedule: await getSetting("schedule"), inputs: (await getSetting("inputs")) || {} };
+  const p = withLiveToken(project(), await getSetting("token_live"));
+  const sql = await db();
+  const [m] = await sql`select coalesce(sum(value),0)::int as n from chek.metrics where key in ('rg_gen','tg_receipts')`;
+  const inputs = { RECEIPTS_PRINTED: m.n.toLocaleString("en-US"), ...((await getSetting("inputs")) || {}) };
+  return { project: p, ca: officialCa(p), schedule: await getSetting("schedule"), inputs };
 }
 
 // Final text at the moment of publishing.
 export function render(row, ctx, now = new Date()) {
   const values = placeholders(ctx.project, ctx.schedule, ctx.inputs, now);
   const parts = row.payload.parts.map((t) => fill(t, values));
-  return { parts: parts.map((p) => p.text), missing: [...new Set(parts.flatMap((p) => p.missing))] };
+  const img = row.payload.imageUrl ? fill(row.payload.imageUrl, values) : null;
+  return { parts: parts.map((p) => p.text), imageUrl: img?.text ?? null, missing: [...new Set([...parts.flatMap((p) => p.missing), ...(img?.missing ?? [])])] };
 }

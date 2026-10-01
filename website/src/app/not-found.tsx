@@ -1,7 +1,7 @@
 import { Mascot } from "@/components/Mascot";
 import { Stamp } from "@/components/receipt";
 import { Shell } from "@/components/Shell";
-import { cashtag } from "@/lib/project";
+import { project } from "@/lib/project";
 
 export default function NotFound() {
   return (
@@ -12,7 +12,7 @@ export default function NotFound() {
           <p className="text-[11px] font-semibold tracking-[0.28em] text-faded uppercase">Error 404</p>
           <h1 className="mt-3 text-4xl leading-none font-extrabold tracking-[-0.02em] [font-stretch:112.5%] sm:text-5xl">No receipt for this page.</h1>
           <p className="mt-5 max-w-[42ch] text-[14px] leading-relaxed">
-            It doesn&apos;t exist. And if someone DMed you a link to {cashtag} — we never DM first.
+            It doesn&apos;t exist. And if someone DMed you a link about {project.name} — we never DM first.
           </p>
           <a href="/" className="btn-hard mt-8 inline-block bg-ink px-5 py-3 text-[12px] font-bold tracking-[0.16em] text-paper uppercase">
             Back to the receipt

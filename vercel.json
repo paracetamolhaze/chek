@@ -9,6 +9,7 @@
     }
   },
   "crons": [{ "path": "/api/cron", "schedule": "15 4 * * *" }],
+  "rewrites": [{ "source": "/r", "destination": "/api/r" }],
   "headers": [
     {
       "source": "/(.*)",

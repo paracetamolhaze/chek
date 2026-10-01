@@ -74,23 +74,41 @@ const hist = join(target, "content/history.json");
 let h = readFileSync(hist, "utf8");
 for (const m of map) h = h.split(`commit ${m.old}`).join(`commit ${m.new}`);
 writeFileSync(hist, h);
+const today = new Date().toISOString().slice(0, 10);
+writeFileSync(
+  join(target, "docs/repository-sanitization.md"),
+  `# This repository was sanitized before publication
+
+On ${today} (UTC), before the repository went public, its history was rewritten once for privacy.
+
+**Removed from every commit:**
+- local file paths that contained the owner's operating-system username;
+- hosting/deployment identifiers (team and project ids);
+- mentions of the owner's location and local network;
+- private owner notes (kept outside the repository);
+${UTC ? "- local time-zone offsets: every commit time is stored in UTC (+0000) — the same instant, only the offset changed;\n" : ""}
+**Kept exactly:** every commit message, every commit moment (author and committer time), the order of commits, all project files.
+
+**What this means for you:** because file contents changed, every commit hash changed. Git history documents how CHEK was built, but commit times can technically be rewritten — so don't treat a git hash or a git date as independent proof. Cross-check with the other receipts: X and Telegram post timestamps, the deployed website, and after launch the blockchain itself.
+
+The table in [history-rewrite.md](history-rewrite.md) maps the hashes that appeared before publication (for example on the website's build log) to the published ones. It is a lookup, not evidence.
+`,
+);
 writeFileSync(
   join(target, "docs/history-rewrite.md"),
-  `# History rewrite before publication
+  `# Hash lookup (before → after the one-time sanitization)
 
-Before this repository went public, personal data (a local file path with the owner's username, a hosting team id, the owner's location) was removed from every commit.
-Commit **dates and messages were kept exactly**; only file contents changed, so every commit hash changed.
-Old hashes appear in early build-log entries and posts; this table maps them.
+See [repository-sanitization.md](repository-sanitization.md) for what was removed and why. Messages and moments are unchanged; this is a lookup, not evidence.
 
-| Author time (UTC) | Old | New | Commit |
+| Author time (UTC) | Before | Published | Commit |
 |---|---|---|---|
 ${map.map((m) => `| ${m.date} | \`${m.old}\` | \`${m.new}\` | ${m.subject.replace(/\|/g, "\\|")} |`).join("\n")}
 `,
 );
-git(["add", "content/history.json", "docs/history-rewrite.md"]);
+git(["add", "content/history.json", "docs/history-rewrite.md", "docs/repository-sanitization.md"]);
 const nowUtc = `${Math.floor(Date.now() / 1000)} +0000`;
 git(
-  ["commit", "--quiet", "-m", "publish: personal data removed from history; old → new hash map\n\nCommit times and messages unchanged. See docs/history-rewrite.md."],
+  ["commit", "--quiet", "-m", "publish: repository sanitized for privacy before publication\n\nCommit messages and moments unchanged; hashes changed. See docs/repository-sanitization.md."],
   target,
   UTC ? { GIT_AUTHOR_DATE: nowUtc, GIT_COMMITTER_DATE: nowUtc } : {},
 );

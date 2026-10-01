@@ -11,6 +11,8 @@ const BLOCK = [
   [/\b(?:buy|ape)\s+(?:now|before|fast)\b|\bdon'?t miss\b|\blast chance\b|\bnot financial advice but\b/i, "FOMO / shilling"],
   [/\b(?:anything|anyone|any token|any \$?[A-Z]{3,6})\b[^.\n]{0,80}\b(?:is|are|be|selling)\b[^.\n]{0,30}\b(?:fake|scam)\b/i, "calls same-name tokens fake"],
   [/\bprice floor\b|\bfloor price\b|\bguaranteed demand\b/i, "floor / demand promise"],
+  [/\$CHEK(?![A-Za-z])/, "old ticker $CHEK (the token symbol is $CHEKD)"],
+  [/check-?coin-?sol/i, "typo domain (CHECK spelling)"],
   [/(?:bit\.ly|tinyurl\.com|t\.co\/|goo\.gl|cutt\.ly)/i, "link shortener"],
   [/\bseed phrase\b[^.\n]{0,40}\b(?:send|share|enter|dm)\b(?![^.\n]{0,30}\bnever\b)/i, "asks for a seed phrase"],
 ];
@@ -19,7 +21,7 @@ const BLOCK = [
 const BOTLIKE = [/exciting news/i, /we'?re thrilled/i, /stay tuned/i, /big things (?:are )?coming/i, /\bgame[- ]?changer\b/i, /\brevolutionar/i, /\bunlock the power\b/i, /🚀{2,}/];
 
 const REVIEW = [
-  [/\$CHEK\b[^.\n]{0,60}\b(?:price|mcap|market cap|chart|ath|volume|pump(?!\.fun|swap)|dump)\b|\b(?:price|mcap|market cap|chart)\b[^.\n]{0,60}\$CHEK\b/i, "talks about the CHEK price/market"],
+  [/\$CHEKD?\b[^.\n]{0,60}\b(?:price|mcap|market cap|chart|ath|volume|pump(?!\.fun|swap)|dump)\b|\b(?:price|mcap|market cap|chart)\b[^.\n]{0,60}\$CHEKD?\b/i, "talks about the CHEK price/market"],
   [/\bpartner(?:ship|ed|ing)?\b|\bcollab(?:oration)?\b|\blisting\b|\blisted on\b/i, "partnership / listing claim"],
   [/\b(?:lawsuit|sued|fraud|scammer|arrested|sec\b|cftc\b|investigation)\b/i, "legal / accusation topic"],
   [/\b(?:trump|biden|harris|election|politic\w*|senator|congress(?:man|woman)?|president|parliament|government)\b/i, "politics"],
@@ -39,7 +41,8 @@ export function xLength(text) {
 }
 
 /**
- * @param {{platform:'x'|'telegram', parts:string[], origin:string, level:string, ack?:string[]}} item
+ * @param {{platform:'x'|'telegram', parts:string[], origin:string, level:string, ack?:string[], allowMentions?:string[]}} item
+ * allowMentions: handles that opted in (they mentioned us / asked for a receipt) — only those may be named.
  * @returns {{ ok:boolean, level:string, problems:string[] }}
  */
 export function checkContent(item) {
@@ -49,9 +52,10 @@ export function checkContent(item) {
   const ack = new Set(item.ack || []); // phrases a human already reviewed in seed content (e.g. lore quoting "100x guaranteed")
 
   // 1. CA guard — the most important rule: never publish an address that isn't ours.
-  const allowed = allowedAddresses();
+  const p = item.project || project();
+  const allowed = allowedAddresses(p);
   for (const a of addressesIn(text)) if (!allowed.has(a)) problems.push(`BLOCK: unknown address ${a.slice(0, 6)}…`);
-  if (/\bCA\b|contract address/i.test(text) && !officialCa() && /[1-9A-HJ-NP-Za-km-z]{32,44}/.test(text)) problems.push("BLOCK: CA mentioned before launch");
+  if (/\bCA\b|contract address/i.test(text) && !officialCa(p) &&/[1-9A-HJ-NP-Za-km-z]{32,44}/.test(text)) problems.push("BLOCK: CA mentioned before launch");
 
   for (const [re, why] of BLOCK) if (re.test(text) && !ack.has(why)) problems.push(`BLOCK: ${why}`);
   if (item.origin !== "seed") for (const re of BOTLIKE) if (re.test(text)) problems.push(`BLOCK: bot-like phrase ${re}`);
@@ -60,11 +64,15 @@ export function checkContent(item) {
     if (level === "auto") level = "review";
   }
 
+  if (p.status !== "live" && /\bbuilt on solana\b|\$CHEKD is live\b/i.test(text)) problems.push("BLOCK: pre-launch — say “launching on Solana”");
+  const own = (p.accounts?.x?.handle || "chekcoinsol").toLowerCase();
+  const okMentions = new Set([own, ...(item.allowMentions || []).map((h) => String(h).replace(/^@/, "").toLowerCase())]);
+
   // 2. Platform rules and limits
   if (item.platform === "x") {
-    item.parts.forEach((p, i) => xLength(p) > 280 && problems.push(`BLOCK: part ${i + 1} is ${xLength(p)} chars`));
-    item.parts.forEach((p, i) => (p.match(/\$[A-Za-z]{1,6}\b/g) || []).length > 1 && problems.push(`BLOCK: part ${i + 1} has more than one cashtag (X limit)`));
-    if (/(^|\s)@(?!chekcoin\b)\w{2,15}/i.test(text)) problems.push("BLOCK: @mentions someone (unsolicited mentions are not allowed via the API)");
+    item.parts.forEach((t, i) => xLength(t) > 280 && problems.push(`BLOCK: part ${i + 1} is ${xLength(t)} chars`));
+    item.parts.forEach((t, i) => (t.match(/\$[A-Za-z]{1,6}\b/g) || []).length > 1 && problems.push(`BLOCK: part ${i + 1} has more than one cashtag (X limit)`));
+    for (const m of text.matchAll(/(?:^|[^\w@.])@(\w{2,15})/g)) if (!okMentions.has(m[1].toLowerCase())) problems.push(`BLOCK: @${m[1]} — unsolicited mentions are not allowed`);
   }
   if (item.platform === "telegram") item.parts.forEach((p, i) => p.length > 4000 && problems.push(`BLOCK: part ${i + 1} too long for Telegram`));
   if (/\{\{[A-Z_]+\}\}/.test(text)) problems.push("BLOCK: unfilled placeholder");

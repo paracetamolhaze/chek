@@ -49,7 +49,9 @@ const gitLog = (n) =>
       return [h, short.length > 24 ? short.slice(0, 23) + "…" : short];
     });
 const ch = (opts) =>M.svg(M.character(opts), { w: "100%", h: "100%" });
-const sign = (dark) => `<div class="tag" style="color:${dark ? C.fog : C.ink}">${T} · ${HOST}</div>`;
+// subtle branding on every shared image: brand + X handle (domain-independent, so a domain switch needs no re-render)
+const HANDLE = `@${P.accounts?.x?.handle ?? "chekcoinsol"}`;
+const sign = (dark) => `<div class="tag" style="color:${dark ? C.fog : C.ink}">${P.name} · ${HANDLE}</div>`;
 const made = [];
 const shot = async (dir, name, html) => {
   const out = join(dir, `${name}.png`);
@@ -173,7 +175,7 @@ await shot(MEMES, "07-receipts-fade", `<div class="f dark">
     <div style="color:${C.fog}">$ git log --oneline</div>
     ${gitLog(5).map(([h, s]) => `<div><span style="color:${C.marker}">${h}</span> ${s}</div>`).join("")}
   </div>
-  <div style="position:absolute;right:60px;top:760px;width:520px;font-size:24px;line-height:1.5;color:${C.fog}">every step of ${T} is a commit. cross-check it with X, Telegram and, after launch, the chain.</div>
+  <div style="position:absolute;right:60px;top:760px;width:520px;font-size:24px;line-height:1.5;color:${C.fog}">every step of ${P.name} is a commit. cross-check it with X, Telegram and, after launch, the chain.</div>
   ${sign(true)}</div>`);
 
 await shot(MEMES, "08-long-receipt", `<div class="f yellow">

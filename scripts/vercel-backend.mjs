@@ -31,7 +31,7 @@ if (cmd === "env") {
   mkdirSync(join(ROOT, "private"), { recursive: true });
   const local = existsSync(LOCAL) ? Object.fromEntries(readFileSync(LOCAL, "utf8").split("\n").filter((l) => l.includes("=")).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)])) : {};
   const names = new Set((await envNames()).map((e) => e.key));
-  for (const key of ["APP_SECRET", "CRON_SECRET", "ADMIN_TOKEN", "TELEGRAM_WEBHOOK_SECRET"]) {
+  for (const key of ["APP_SECRET", "CRON_SECRET", "ADMIN_TOKEN", "TELEGRAM_WEBHOOK_SECRET", "AGENT_TOKEN"]) {
     if (names.has(key) && local[key]) {
       console.log(key, "already set");
       continue;

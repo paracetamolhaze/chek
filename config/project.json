@@ -1,14 +1,15 @@
 {
   "$comment": "THE single source of truth. Website, dashboard and post templates read every link and the contract address from here. Change it only via `npm run dashboard` (validates the CA on-chain) or a reviewed commit.",
   "name": "CHEK",
-  "ticker": "CHEK",
+  "ticker": "CHEKD",
+  "tickerConfirmed": true,
+  "tickerNote": "Brand is CHEK. CHEKD is only the token symbol (owner decision, 01 Oct 2026 UTC — $CHEK was crowded with unrelated tokens).",
   "mascot": "Chek",
   "tagline": "Receipts or it didn't happen.",
   "oneLiner": "A Solana meme coin with one rule: every claim comes with a receipt.",
   "network": "Solana",
   "publicSince": "2026-10-01",
   "status": "prelaunch",
-  "tickerConfirmed": false,
   "token": {
     "ca": null,
     "createdAt": null,
@@ -28,7 +29,9 @@
     "otherAllocations": "none",
     "creationTx": null,
     "creationFeeSol": null,
-    "creationSolSpent": null
+    "creationSolSpent": null,
+    "creatorFreeAllocationPct": 0,
+    "creatorBuyTargetUsd": 200
   },
   "launch": {
     "plannedAt": null,
@@ -36,10 +39,31 @@
   },
   "links": {
     "website": "https://chekcoin.vercel.app",
-    "x": null,
-    "telegram": null,
+    "x": "https://x.com/chekcoinsol",
+    "telegram": "https://t.me/chekcoinsol",
     "telegramChat": null,
     "github": null
+  },
+  "accounts": {
+    "x": {
+      "handle": "chekcoinsol",
+      "origin": "An existing account owned by the founder, renamed and repurposed for CHEK (verified 01 Oct 2026, 23:20 UTC). It was not created for CHEK; its join date is older than the project.",
+      "linkedAt": "2026-10-01"
+    },
+    "telegram": {
+      "handle": "chekcoinsol",
+      "title": "CHEK | Official",
+      "bot": "chekcoinsol_bot",
+      "linkedAt": "2026-10-01"
+    }
+  },
+  "domain": {
+    "canonical": "https://chekcoin.vercel.app",
+    "pending": "chekcoinsol.xyz",
+    "never": [
+      "checkcoinsol.xyz"
+    ],
+    "note": "Canonical stays chekcoin.vercel.app until the owner confirms the CHEK-spelled domain. The CHECK-spelled typo domain may only redirect."
   },
   "site": {
     "analytics": false

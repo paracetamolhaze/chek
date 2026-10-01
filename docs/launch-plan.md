@@ -1,54 +1,70 @@
 # Launch plan
 
-All times UTC. Real dates get written into the build log only when things happen.
+All times UTC. Real dates get written into the build log only when things happen. Brand: **CHEK**. Token symbol: **$CHEKD**.
 
-## Pre-launch (proposed: 5 days of public history before the token)
+## Before anything is posted
 
-The account day is **D1**. Proposed D1 = 2026-10-02 → launch D6 = **2026-10-07 15:00 UTC** (11:00 New York · 17:00 Berlin · 23:00 Singapore). Shift everything with one command if accounts open later:
+1. **24 h dry run** of the whole autopilot (scheduler, agents, guards, approvals) — it publishes nothing and logs every post it *would* have published (text, image, source, reasons) plus every rejected post. Report → owner.
+2. **Fresh production audit** (`node scripts/prod-audit.mjs`): the live site has no stale ticker, no “X/Telegram soon”, no retired claims, no typo domain, correct canonical domain. Live posting is refused while it fails or is older than 6 h.
+3. Owner confirms the launch time → it must be ≥ 26 h away, so the announcement goes out ≥ 24 h before the mint.
+
+## Pre-launch calendar (compressed: 2 days + launch day)
+
+Day 1 = the first day of public posting (`schedule.d1`, proposed 2026-10-03). Shift everything with one command:
 
 ```bash
-node scripts/schedule.mjs --d1 2026-10-03 --launch 2026-10-08T15:00:00Z
+node scripts/schedule.mjs --d1 2026-10-03
 ```
 
-| Day | Theme | X | Telegram |
+| When | X | Telegram channel | Theme |
 |---|---|---|---|
-| D1 | Brand appears | x-001 “day N, printing since oct 1” · x-002 first line · x-003 pics vs receipts | — |
-| D2 | Website | x-004 building · **x-005 site link (pin)** · x-006 $CHEK in 10s | — |
-| D3 | Community opens | x-007 build log · x-008 mechanics · x-009 telegram open | tg-001 pin · tg-002 rules · tg-004 open |
-| D4 | Lore + memes | x-010 The Shredder · x-011 The Coupon · x-012 vibe chek | tg-005 villains |
-| D5 | Transparency | x-013 launch thread · x-014 names prove nothing · **x-015 launch date (T-24h)** | tg-006 launch date |
-| D6 | Launch | x-016 T-3h, then the launch sequence below | tg-007 … |
+| D1 12:30 | — | tg-101 channel intro (pin) | origin |
+| D1 13:00 | x-101 “day N — a receipt started printing on oct 1” | — | origin |
+| D1 16:30 | x-102 the slip reads the internet → CLAIM … VOID | — | origin / lore |
+| D1 18:00 | — | tg-102 the bot prints receipts | utility |
+| D1 20:00 | x-103 build log so far | — | build |
+| D2 12:00 | x-201 print your own receipt → /print | — | utility (growth loop) |
+| D2 13:00 | — | tg-201 the villains | lore |
+| D2 15:00 | x-202 THE SHREDDER | — | lore |
+| D2 17:00 | x-203 how $CHEKD launches — thread (**pinned**) | tg-202 same, in full | transparency |
+| D2 20:30 | x-204 pics vs receipts | — | meme |
+| T−26 h | x-205 launch time announcement | tg-203 | announcement (≥ 24 h before) |
+| T−20 h | x-206 THE COUPON | — | lore |
+| T−5 h | x-301 names prove nothing | — | transparency |
+| T−30 m | x-302 reminder | tg-301 | optional |
+| T−5 m | x-303 final reminder | tg-302 | |
 
-Minimum honest version if waiting a week is too long: 48 hours (D1 brand + site, D2 community + transparency + launch date, D3 launch).
+Plus whatever the content engine adds (0–3 posts a day, quality over quantity) and news drafts that pass the evidence check. The token is not the subject of most posts; most posts carry no link (the site is in the profile and the pin).
 
-## Launch day, minute by minute
+## Launch minute
+
+There is **no waiting period** after the mint: Pump.fun coins are visible to trading terminals immediately, so the community gets the official address as fast as is safe.
 
 | When | Who | What |
 |---|---|---|
-| T-60m | owner | Dashboard open (`npm run dashboard`), all tiles green except TOKEN/CA. SOL in the pump.fun wallet. Posts T+5…T+30 open in the dashboard. |
-| T-15m | owner | Open pump.fun/create. Fill the form with the values below. **Stop before the final confirm.** |
-| **T+0** | owner | Confirm creation (+ creator buy if chosen). Copy the CA from **your** coin page. |
-| T+0 | dashboard | UPDATE CA → Verify (on-chain: mint, symbol CHEK, authorities, creation tx) → Publish → commit + build + deploy. Wait for "✓ DONE". |
-| T+0 | owner | X bio → live bio (dashboard copies it). Telegram: post + pin **tg-007** in the channel and the chat. |
-| T+0 | owner | Dashboard tiles: WEBSITE shows the CA, TELEGRAM pin done. Three places, one CA. |
-| T+5m | owner | x-017 "receipt printing… 5 minutes." |
-| T+10m | owner | **x-018 main launch post** (pin it on X) + tg-008. |
-| T+30m | owner | x-019 transparency thread + tg-009 (real values from the dashboard). |
-| T+60m | owner | x-020 meme. |
-| T+2h | owner | x-021 what's live. |
-| T+6h | owner | x-022 + tg-010 Receipt of the Week opens → mark it LIVE on the site + build-log line. |
-| T+24h | owner | x-023 + tg-011 honest recap — real numbers only, no price talk. |
+| T−2 h | system | Launch watcher arms (PC agent): it watches the announced creator wallet (kept private until launch). |
+| T0 | **owner** | Creates CHEK on Pump.fun with the creator buy (≈ $200 in SOL, recalculated right before) in the same transaction. Signs in the wallet. |
+| T0 + seconds | system | Creation tx confirmed → the server verifies it on-chain itself: Pump.fun coin, ticker CHEKD, created by the announced creator wallet, mint/freeze authority. Anything else is refused. |
+| T0 + seconds | system | 1. **Website**: the CA box switches via the API. 2. **X** launch post (x-310). 3. **Telegram** launch message + pin (tg-310). 4. Transparency / Creator Receipt switch to chain data. |
+| T0 + ~1–2 min | system | Static site rebuilt and redeployed with the verified facts (commit with its own timestamp); production audit re-run. |
+| T+12 m | system | First **ON-CHAIN VERIFIED** launch receipt (x-311, tg-311). |
+| T+40 m | system | **Creator receipt**: creator wallet, SOL spent, CHEKD received, % of supply, explorer link (x-312, tg-312). |
+| T+2 h | system | What's live (x-320). |
+| T+6 h | owner approves | Receipt of the Week (x-321). |
+| T+24 h | owner approves | Honest recap — real numbers only (x-322, tg-320). |
 
-No countdown hype, no "price is going up", no charts.
+If the watcher misses the create transaction (PC off), the owner pastes the CA into the dashboard once — the same verification and the same sequence run.
+
+The owner pins the X post by hand (X has no pin API); the system raises an alert with the link.
 
 ## Pump.fun form
 
-All values live in [`content/pumpfun.json`](../content/pumpfun.json) (name, ticker, description, image, banner, pair, creator rewards, Mayhem OFF); website / X / Telegram come from `config/project.json`. The dashboard has a copy button for each field.
+All values live in [`content/pumpfun.json`](../content/pumpfun.json) (name **CHEK**, ticker **CHEKD**, description, image, banner, pair **SOL**, creator rewards → **Creator**, holder rewards **OFF**, Mayhem **OFF**); website / X / Telegram come from `config/project.json`. Coin data is **immutable** after creation — the FINAL PUMP.FUN FORM card is generated only when the domain and every link are final.
 
-Before pressing create: open pump.fun only by typing `pump.fun` yourself (no links from DMs or search ads), re-check fees and the create form **on launch day** (`pump.fun/docs/fees`, `pump.fun/create`) and update `config/project.json → platform` if anything changed. Read every field once more — Pump.fun says coin details, social links and banner are set at creation and may not be editable later.
+Before pressing create: open pump.fun only by typing `pump.fun` yourself (no links from DMs or search ads), re-check fees and the create form **on launch day** (`pump.fun/docs/fees`, `pump.fun/create`) and update `config/project.json → platform` if anything changed.
 
-**Mint is blocked until all of these are final:** website, X, Telegram, token image, banner, description, name, ticker (`npm run check` → "READY TO MINT"). We don't promise an exact network cost in advance; after the mint the real creation transaction and its real cost are published.
+**Mint is blocked until all of these are final:** website (canonical domain), X, Telegram, token image, banner, description, name, ticker (`npm run check` → "READY TO MINT"). We don't promise an exact network cost in advance; after the mint the real creation transaction and its real cost are published.
 
 ## After launch: content mix
 
-40% memes/lore · 25% community · 15% build updates · 10% transparency · 10% token info. Never BUY BUY BUY.
+40% memes/lore · 25% community (receipts people print, opt-in and credited) · 15% build updates · 10% transparency · 10% token info. Never BUY BUY BUY. No countdown hype, no charts.

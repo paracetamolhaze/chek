@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { SectionHead } from "@/components/receipt";
 import { Shell } from "@/components/Shell";
 import { IconDownload } from "@/components/icons";
-import { cashtag, project } from "@/lib/project";
+import { project } from "@/lib/project";
 
 export const metadata: Metadata = {
   title: "Meme kit",
-  description: `${project.mascot} in every mood, villains, logo and colors. Free for ${cashtag} memes and fan art.`,
+  description: `${project.mascot} in every mood, villains, logo and colors. Free for ${project.name} memes and fan art.`,
   alternates: { canonical: "/kit" },
 };
 
@@ -42,7 +42,7 @@ export default function Kit() {
   return (
     <Shell>
       <div className="mx-auto max-w-[1280px] px-4 pt-10 sm:px-6 sm:pt-14">
-        <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{cashtag} · meme kit</p>
+        <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{project.name} · meme kit</p>
         <h1 className="mt-3 max-w-[18ch] text-[clamp(2.2rem,6vw,4.5rem)] leading-[0.95] font-extrabold tracking-[-0.03em] text-paper [font-stretch:112.5%]">
           Make your own receipts.
         </h1>

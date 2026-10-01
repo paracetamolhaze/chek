@@ -6,7 +6,7 @@ import { OfficialRecord } from "@/components/OfficialRecord";
 import { SectionHead, Stamp } from "@/components/receipt";
 import { Shell } from "@/components/Shell";
 import { houseRules } from "@/lib/content";
-import { ca, cashtag, isLive, notAffiliated, onlyTheAddress, project, tradeUrl } from "@/lib/project";
+import { ca, cashtag, formatUtc, isLive, notAffiliated, onlyTheAddress, project, tradeUrl } from "@/lib/project";
 
 export const metadata: Metadata = {
   title: "Transparency",
@@ -31,7 +31,7 @@ export default function Transparency() {
       <div className="mx-auto max-w-[1280px] px-4 pt-10 sm:px-6 sm:pt-14">
         <div className="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
           <div>
-            <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{T} · transparency</p>
+            <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{project.name} · transparency</p>
             <h1 className="mt-3 max-w-[16ch] text-[clamp(2.2rem,6vw,4.5rem)] leading-[0.95] font-extrabold tracking-[-0.03em] text-paper [font-stretch:112.5%]">
               Only things you can check.
             </h1>
@@ -69,8 +69,9 @@ export default function Transparency() {
               />
             </div>
             <p className="reveal mt-3 text-[13px] leading-relaxed">
-              The creator buys at creation through the platform&apos;s normal mechanism — a real purchase, not a free allocation — from one public
-              wallet. No hidden wallets, no splitting the position across addresses.
+              Free allocation to the creator: <strong>0%</strong>. The creator does buy at creation — one real purchase on the same bonding curve as
+              everyone (target ≈ $200), from one public wallet. The exact SOL spent, {cashtag} received and share of supply are not estimated here:
+              they are read from the creation transaction and shown above the minute it exists. No hidden wallets, no splitting the position.
             </p>
           </section>
 
@@ -108,14 +109,15 @@ export default function Transparency() {
           <section className="pt-16" aria-labelledby="launch">
             <SectionHead n="05" id="launch" title="Launch day, minute by minute" kicker="Plan" />
             <p className="reveal max-w-[62ch] text-[14.5px] leading-relaxed">
-              The token is created last. Everything else exists first. At creation, the contract address goes to every official place in the same
-              minute — so there is never a window where only one source shows it.
+              The token is created last. Everything else exists first. The moment the creation transaction is confirmed, it is checked on-chain
+              and the contract address goes out everywhere within minutes — so there is never a long window where only scanners know it.
             </p>
             <ol className="mt-6 grid gap-px bg-ink/15 sm:grid-cols-2">
               {[
-                ["T+0", "Token created on Pump.fun. CA added to this site (a commit), X bio + pinned post, Telegram pinned message — the same minute."],
-                ["T+10 min", "Launch post: visual, name, ticker, the contract address, link to this site."],
-                ["T+30 min", "Transparency post: CA, network, platform, supply, creator wallet, explorer links."],
+                ["T−30 / T−5 min", "Reminders: where the CA will appear. Nothing else."],
+                ["T+0", "Token created on Pump.fun by the creator, with the creator buy in the same transaction. Checked on-chain, then: this site → pinned X post → pinned Telegram message."],
+                ["T+10–15 min", "First on-chain verified receipt: the creation transaction, supply, mint and freeze authority."],
+                ["T+30–60 min", "Creator receipt: creator wallet, SOL spent, " + cashtag + " received, share of supply, explorer link."],
                 ["T+24 h", "Honest recap: what shipped, what's next. No price charts, no fake milestones."],
               ].map(([k, v]) => (
                 <li key={k} className="reveal bg-paper p-5">
@@ -133,7 +135,8 @@ export default function Transparency() {
               {[
                 "Contract address + creation transaction and its real cost",
                 "Creator wallet address",
-                "Whether the creator bought at launch, how much, with the transaction link",
+                "The creator buy at creation: SOL spent, tokens received, % of supply — from the transaction",
+                "Free allocation to the creator: 0%",
                 "Mint authority and freeze authority status",
                 "Total supply and decimals as read from the chain",
                 "Any other wallet we control that holds the token (none planned)",
@@ -172,9 +175,10 @@ export default function Transparency() {
               <div className="reveal border-2 border-ink p-5">
                 <Stamp rotate={2} className="text-sm">CA can&apos;t be hijacked</Stamp>
                 <p className="mt-4 text-[14px] leading-relaxed">
-                  Pages are static HTML. A small backend keeps receipts, reads the chain and publishes posts — it holds no wallet keys and
-                  cannot change the contract address: that comes from one file in the project repository, and changing it means a commit
-                  with its own timestamp. Posts are blocked if they contain any address that isn&apos;t ours.
+                  Pages are static HTML. A small backend keeps receipts, reads the chain and publishes posts — it holds no wallet keys. It
+                  accepts a contract address only after its own on-chain check: a Pump.fun coin with our ticker, created by our creator wallet.
+                  The address is then written to the project repository in a commit with its own timestamp. Posts are blocked if they contain
+                  any address that isn&apos;t ours.
                 </p>
               </div>
               <div className="reveal border-2 border-ink p-5">
@@ -204,14 +208,21 @@ export default function Transparency() {
                       {l.href.replace(/^https?:\/\//, "")}
                     </a>
                   ) : (
-                    <span className="text-faded">{l.label === "Trading page" ? "after launch" : "opening soon"}</span>
+                    <span className="text-faded">{l.label === "Trading page" ? "after launch" : "not yet"}</span>
                   )}
                 </li>
               ))}
             </ul>
-            <p className="reveal mt-5 text-[13px] leading-relaxed">
-              Saw an account pretending to be us? Report it in our Telegram chat or reply on X. Never send anyone funds or a seed phrase to “fix”, “verify” or “claim”
-              anything.
+            {project.accounts?.x?.origin && (
+              <p className="reveal mt-5 text-[13px] leading-relaxed">
+                <strong>About our X account:</strong> @{project.accounts.x.handle} is an existing account of the founder, renamed and repurposed for{" "}
+                {project.name} on {formatUtc(project.accounts.x.linkedAt)}. It was not created for {project.name} — that&apos;s why its join date is older
+                than the project. Everything before that date has nothing to do with {project.name}.
+              </p>
+            )}
+            <p className="reveal mt-3 text-[13px] leading-relaxed">
+              Saw an account pretending to be us? Report it to us on X or in Telegram. Never send anyone funds or a seed phrase to “fix”, “verify” or
+              “claim” anything.
             </p>
             <a href="/" className="mt-8 inline-block text-[12px] font-bold tracking-[0.16em] uppercase underline underline-offset-4">
               ← Back to the receipt

@@ -3,7 +3,7 @@
 import { alert, audit, getSetting, setSetting } from "./core.js";
 import { enqueue } from "./queue.js";
 import { createReceipt, receiptLabel } from "./receipts.js";
-import { officialCa, project } from "./project.js";
+import { officialCa, project, withLiveToken } from "./project.js";
 import { b58decode, findPda, rpc } from "./solana.js";
 
 export const PUMP_PROGRAM = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
@@ -19,7 +19,7 @@ async function tokenBalance(owner, mint) {
 
 // Live creator position for the site (cached by the API layer).
 export async function creatorPosition() {
-  const p = project();
+  const p = withLiveToken(project(), await getSetting("token_live"));
   const ca = officialCa(p);
   const wallet = p.token.creatorWallet;
   if (!ca || !wallet) return { live: false };
@@ -55,7 +55,7 @@ function classify(tx, wallet, ca, supply) {
 }
 
 export async function runWatcher() {
-  const p = project();
+  const p = withLiveToken(project(), await getSetting("token_live"));
   const ca = officialCa(p);
   const wallet = p.token.creatorWallet;
   if (!ca || !wallet) {
@@ -82,7 +82,7 @@ export async function runWatcher() {
       const sold = c.tokenDelta < 0;
       r = {
         kind: "creator",
-        title: sold ? (c.solDelta > 0 ? "CREATOR SOLD CHEK" : "CREATOR MOVED CHEK") : c.solDelta < 0 ? "CREATOR BOUGHT CHEK" : "CREATOR RECEIVED CHEK",
+        title: `CREATOR ${sold ? (c.solDelta > 0 ? "SOLD" : "MOVED") : c.solDelta < 0 ? "BOUGHT" : "RECEIVED"} ${p.ticker}`,
         status: sold ? (c.solDelta > 0 ? "SOLD" : "MOVED") : "BOUGHT",
         amount: Math.abs(c.tokenDelta),
         currency: p.ticker,

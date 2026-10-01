@@ -27,7 +27,7 @@ export default function History() {
       <div className="mx-auto max-w-[860px] px-2 pt-10 pb-20 sm:px-4 sm:pt-14">
         <div className="mb-8 flex items-end justify-between gap-6 px-2 text-paper">
           <div>
-            <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{cashtag} · build log</p>
+            <p className="text-[11px] font-semibold tracking-[0.28em] text-fog uppercase">{project.name} · build log</p>
             <h1 className="mt-3 text-[clamp(2.2rem,6vw,4rem)] leading-[0.95] font-extrabold tracking-[-0.03em] [font-stretch:112.5%]">
               Still printing.
             </h1>

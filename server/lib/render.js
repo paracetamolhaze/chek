@@ -1,6 +1,8 @@
 // RECEIPT RENDERER: receipt data → branded SVG → PNG. No browser: resvg + the static fonts in fonts/ (scripts/build-fonts.py).
-//   renderReceipt(spec)      numbered project receipts (build log, on-chain events)
-//   renderTextReceipt(spec)  the public Receipt Generator (user text, meme receipts)
+//   renderReceipt(spec)       numbered project receipts (build log, on-chain events)
+//   renderTextReceipt(spec)   text receipts for automated posts (signed specs only)
+//   renderClaimReceipt(spec)  the public Receipt Generator: a visitor's claim, checked by shared/claim.mjs first
+//                             (website/src/lib/claimReceiptSvg.ts draws the same layout in the browser)
 // Visual language = brand/mascot.mjs + scripts/render-content.mjs: thermal paper with zig-zag tears, Doto display type,
 // Martian Mono text, dashed rules, dot leaders, red double-border stamps, highlighter, dark counter with a dot grid.
 import { randomInt } from "node:crypto";
@@ -9,6 +11,7 @@ import { fileURLToPath } from "node:url";
 import { Resvg } from "@resvg/resvg-js";
 // Brand art: the deployment keeps the repository layout, so the source module is always next door.
 import * as M from "../../brand/mascot.mjs";
+import { STAMP_COPY, DISCLAIMER, checkClaim, claimCode, printDate } from "../../shared/claim.mjs";
 
 // ── Fonts ─────────────────────────────────────────────────
 const FONT_FILES = [
@@ -33,8 +36,29 @@ const F = {
 };
 
 const C = { ink: M.INK, paper: M.PAPER, faded: M.FADED, stamp: M.STAMP, marker: M.MARKER, counter: "#141311", fog: "#a7a193" };
-const SITE = "chekcoin.vercel.app";
 const FOOTER = "RECEIPTS OR IT DIDN'T HAPPEN";
+
+// Site host and X handle printed on every image come from config/project.json (links.website, links.x) only.
+const PROJECT = (() => {
+  try {
+    return JSON.parse(readFileSync(new URL("../../config/project.json", import.meta.url), "utf8"));
+  } catch {
+    return {};
+  }
+})();
+const hostOf = (u) => {
+  try {
+    return new URL(u).host;
+  } catch {
+    return "";
+  }
+};
+const handleOf = (x) => {
+  const m = /^(?:https?:\/\/)?(?:www\.)?(?:x|twitter)\.com\/@?([A-Za-z0-9_]{1,15})/i.exec(x ?? "") ?? /^@?([A-Za-z0-9_]{1,15})$/.exec(x ?? "");
+  return m ? `@${m[1]}` : "@chekcoinsol";
+};
+export const SITE_HOST = hostOf(PROJECT.links?.website);
+export const X_HANDLE = handleOf(PROJECT.links?.x);
 
 // Canvas sizes. m = paper box margins [top, right, bottom, left]; Wd = paper design width (all type is set in these
 // units, then the paper is scaled to fit); max = largest scale; char = character height; titleLines = lines a title may
@@ -46,6 +70,8 @@ const FORMATS = {
   wide: { W: 1200, H: 675, m: [40, 44, 74, 44], Wd: 1040, cols: 2, max: 1.0, char: 430, titleLines: 3 },
 };
 export const FORMAT_NAMES = Object.keys(FORMATS);
+// X / Open Graph card (1.905:1). Used by claim receipts as their "wide" format; not in FORMAT_NAMES.
+const CARD = { W: 1200, H: 630, m: [34, 40, 66, 40], Wd: 1040, cols: 2, max: 1.0, char: 400, titleLines: 3 };
 
 const PAD_X = 46; // paper side padding
 const PAD_Y = 36; // paper top/bottom padding (inside the teeth)
@@ -516,8 +542,22 @@ function defs(tint) {
 </defs>`;
 }
 
-function stage(content, fmt, { character = null, long = false, rot = -1, tint = "", overlay = null } = {}) {
-  const L = FORMATS[fmt] ?? FORMATS.square;
+// Site tag under the paper: the host (from config), or with brand = CHEK mark + host + X handle.
+function siteTag(cx, y, brand) {
+  const size = 20;
+  const ls = 4;
+  const s = brand ? [SITE_HOST, X_HANDLE].filter(Boolean).join("  ·  ") : SITE_HOST;
+  if (!s) return "";
+  if (!brand) return text(cx, y, s, F.bold, size, { ls, anchor: "middle", fill: C.fog, opacity: 0.8 });
+  const mk = 34;
+  const tw = textW(s, F.bold, size, ls);
+  const x0 = cx - (mk + 12 + tw) / 2;
+  const mark = M.symbol({ stroke: false }).replace("<svg ", `<svg x="${r2(x0)}" y="${r2(y - (F.bold.cap * size) / 2 - mk / 2)}" width="${mk}" height="${mk}" `);
+  return mark + text(x0 + mk + 12, y, s, F.bold, size, { ls, fill: C.fog, opacity: 0.85 });
+}
+
+function stage(content, fmt, { character = null, long = false, rot = -1, tint = "", overlay = null, brand = false } = {}) {
+  const L = typeof fmt === "object" ? fmt : (FORMATS[fmt] ?? FORMATS.square);
   const cols = L.cols;
   const [mt, mr, mb, ml] = L.m;
   const side = character ? ((L.char * 2) / 3) * (1 - character.overlap) : 0; // visible part of the character beside the paper
@@ -575,7 +615,7 @@ ${charSvg}
   ${inner}${ghost}
   ${overlay ? overlay(Wd, DEPTH + PAD_Y + body.h / 2, body.h) : ""}
 </g>
-${text(L.W / 2, tagY, SITE, F.bold, 20, { ls: 4, anchor: "middle", fill: C.fog, opacity: 0.8 })}
+${siteTag(L.W / 2, tagY, brand)}
 </svg>`;
 }
 
@@ -687,6 +727,83 @@ export function textReceiptSvg(spec = {}) {
   return stage(content, fmt, { character, long: tpl === "long", rot: tpl === "long" ? -2 : -1, tint: tpl === "void" ? "aged" : "", overlay });
 }
 
+// ── Claim receipts (public Receipt Generator) ─────────────
+// A visitor's claim, printed as a receipt that proves nothing: quote, PROOF / STATUS rows, date, stamp, barcode of the
+// claim code, Chek looking skeptical. Branded (CHEK, host, X handle) and marked as printed by a visitor.
+// Keep in step with website/src/lib/claimReceiptSvg.ts (same steps, sizes and order).
+
+// The claim in quotes: the largest type whose lines fit `budget` (paper units) without splitting a word.
+// Doto (dot matrix) while it's big, then wide Martian Mono, then the narrow bold cut for long claims.
+const QUOTE_STEPS = [
+  ["doto", 62],
+  ["doto", 54],
+  ["doto", 46],
+  ["doto", 41],
+  ["doto", 36],
+  ["wide", 30],
+  ["wide", 27],
+  ["bold", 26],
+  ["bold", 24],
+  ["bold", 22],
+  ["bold", 20],
+];
+const quote = (str, budget) => (w) => {
+  const steps = QUOTE_STEPS.filter(([k]) => k !== "doto" || covers(F.doto, str));
+  const longest = Math.max(...str.split(" ").map(len));
+  for (const [i, [k, s0]] of steps.entries()) {
+    const f = F[k];
+    const size = k === "doto" ? s0 * 1.12 : s0;
+    const ls = k === "wide" ? -size * 0.02 : 0;
+    const lh = size * (k === "doto" ? 1.02 : 1.2);
+    let max = capacity(w, f, size, ls);
+    const last = i === steps.length - 1;
+    const lines = wrap(str, max);
+    if (!last && (lines.length * lh > budget || longest > max)) continue;
+    while (max > longest && wrap(str, max - 1).length === lines.length) max--; // balance the lines
+    return linesBlock(wrap(str, max, last ? Math.max(1, Math.floor(budget / lh)) : Infinity), { f, size, ls, lh }, w);
+  }
+};
+
+// Item rows a notch smaller when that keeps every "LABEL ··· VALUE" on one line (a 24-character name).
+const claimRows = (items) => (w) => {
+  const fits = (s) => items.every(([l, v]) => len(l) + 3 + len(v) <= capacity(w, F.mono, s, s * 0.04));
+  return rows(items, { size: [23, 22, 21, 20].find(fits) ?? 23 })(w);
+};
+
+const disclaimer = (str) => para(str, { f: F.mono, size: 14, ls: 14 * 0.06, lh: 22, align: "middle", fill: C.faded, maxLines: 1 });
+
+export function claimReceiptSvg(spec = {}) {
+  const r = checkClaim(spec);
+  if (!r.ok) throw Object.assign(new Error(`claim rejected: ${r.problems.join(" ")}`), { status: 400 });
+  const card = spec.format === "wide";
+  const code = claimCode(r.claim);
+  const copy = STAMP_COPY[r.stamp];
+  const quoted = `“${upper(r.claim, 200)}”`;
+  const items = [
+    ...(r.name ? [["CLAIMED BY", upper(r.name, 30)]] : []),
+    ["PROOF", copy.proof],
+    ["STATUS", r.stamp, "bad"],
+  ];
+  const metaEntries = [{ kind: "date", text: printDate(spec.date ?? Date.now()) }];
+  const stamp = { text: r.stamp };
+  const sub = "CLAIM CHECK · SELF-SERVICE";
+  const no = `RECEIPT ${code}`;
+  const content = card
+    ? {
+        top: [...header(sub, no, true), rule()],
+        a: [quote(quoted, 300)],
+        b: [claimRows(items), gap(8), meta(metaEntries, stamp, 6), gap(10), barcode(code)],
+        bottom: [rule(), footer(FOOTER), disclaimer(DISCLAIMER)],
+      }
+    : {
+        top: [...header(sub, no, false), rule()],
+        a: [quote(quoted, 250), rule(), claimRows(items)],
+        b: [rule(), meta(metaEntries, stamp), gap(16), barcode(code)],
+        bottom: [gap(10), footer(FOOTER), disclaimer(DISCLAIMER)],
+      };
+  return stage(content, card ? CARD : "square", { character: characterArt("chek", copy.mood), brand: true });
+}
+
 // ── PNG ───────────────────────────────────────────────────
 export function renderPng(svg, width) {
   const r = new Resvg(svg, {
@@ -698,3 +815,5 @@ export function renderPng(svg, width) {
 
 export const renderReceipt = (spec = {}) => renderPng(receiptSvg(spec), FORMATS[fmtOf(spec.format)].W);
 export const renderTextReceipt = (spec = {}) => renderPng(textReceiptSvg(spec), FORMATS[fmtOf(spec.format)].W);
+// spec: { claim, name?, stamp?, format: "square" | "wide", date? } — throws (status 400) when checkClaim rejects it
+export const renderClaimReceipt = (spec = {}) => renderPng(claimReceiptSvg(spec), spec.format === "wide" ? CARD.W : FORMATS.square.W);

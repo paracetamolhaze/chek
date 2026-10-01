@@ -15,6 +15,10 @@
       "detail": "First draft was RECEIPTS / $RCPT. A name check found the ticker already in use, so we renamed before publishing anything. Чек = receipt. The check = the bill. Check = what you should do.",
       "proof": {
         "label": "commit 39bcca1 · docs/concept.md"
+      },
+      "correction": {
+        "date": "2026-10-01T23:15Z",
+        "note": "Ticker changed later the same day: the token symbol is CHEKD (see the 23:15 UTC entry). The brand stays CHEK. This entry is kept as it was recorded."
       }
     },
     {
@@ -123,6 +127,22 @@
       "detail": "Automatic pre-launch check at 22:21 UTC: 36 passed, 12 waiting on the owner, 0 failed (of 48).",
       "proof": {
         "label": "content/checks.json"
+      }
+    },
+    {
+      "date": "2026-10-01T23:15:00Z",
+      "title": "Ticker decided: $CHEKD",
+      "detail": "The brand stays CHEK; the token symbol becomes CHEKD. Our name check (01 Oct 2026) found about ninety unrelated Pump.fun tokens already using the shorter ticker, so we added a letter instead of sharing a crowded symbol. Those tokens are not affiliated with this project.",
+      "proof": {
+        "label": "config/project.json"
+      }
+    },
+    {
+      "date": "2026-10-01T23:20:00Z",
+      "title": "X and Telegram linked",
+      "detail": "Official X: @chekcoinsol — an existing account of the founder, renamed and repurposed for CHEK. It was not created for CHEK, so its join date is older than this project. Official Telegram channel: t.me/chekcoinsol (CHEK | Official), with our bot @chekcoinsol_bot as admin. Nothing has been posted yet.",
+      "proof": {
+        "label": "config/project.json · /transparency"
       }
     }
   ]

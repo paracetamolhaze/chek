@@ -5,7 +5,7 @@ import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
 import { audit, bump } from "./core.js";
 import { db } from "./db.js";
-import { aiReady, structured } from "./llm.js";
+import { ask } from "./llm.js";
 import { enqueue } from "./queue.js";
 import { VOICE } from "./voice.js";
 
@@ -83,7 +83,7 @@ function articleText(html) {
 }
 const norm = (s) => s.toLowerCase().replace(/[“”"']/g, "").replace(/\s+/g, " ").trim();
 
-const Verdict = z.object({
+export const Verdict = z.object({
   relevant: z.boolean().describe("true only if this genuinely fits CHEK's proof/receipts angle or Solana/meme culture"),
   why: z.string(),
   angle: z.enum(["receipt_question", "receipt_roast", "meme_reaction", "solana_note", "none"]),
@@ -94,14 +94,16 @@ const Verdict = z.object({
   about_chek_price: z.boolean(),
 });
 
+const SYSTEM = `${VOICE}\n\nYou are the CHEK news desk. Decide whether a news item deserves a post. Most don't. Use ONLY facts in SOURCE TEXT. Every claim needs a verbatim quote from SOURCE TEXT.`;
+
+// Picks the best fresh items, fetches the source text (full mode only) and asks for a verdict.
+// With the PC agent the verdict arrives later via ai-jobs.js → applyVerdict(); the source text is kept for the evidence check.
 export async function evaluateNews(limit = 3) {
-  if (!aiReady()) return { skipped: "no AI key" };
   const sql = await db();
   const rows = await sql`select * from chek.news_items where status = 'new' and score >= 3 and fetched_at > now() - interval '36 hours'
     order by score desc, published_at desc nulls last limit ${limit}`;
-  let drafted = 0;
+  let asked = 0;
   for (const n of rows) {
-    const checkedAt = new Date().toISOString();
     let body = "";
     if (n.data?.mode === "headline") {
       // newsroom: only the feed's own headline + summary, never the article page
@@ -119,41 +121,55 @@ export async function evaluateNews(limit = 3) {
       await sql`update chek.news_items set status = 'rejected', reason = 'source text unavailable', checked_at = now() where id = ${n.id}`;
       continue;
     }
-    const v = await structured({
-      agent: "news",
+    const checkedAt = new Date().toISOString();
+    await sql`update chek.news_items set status = 'candidate', checked_at = now(), data = data || ${sql.json({ body })} where id = ${n.id}`;
+    const res = await ask({
+      kind: "news_verdict",
       schema: Verdict,
-      system: `${VOICE}\n\nYou are the CHEK news desk. Decide whether a news item deserves a post. Most don't. Use ONLY facts in SOURCE TEXT. Every claim needs a verbatim quote from SOURCE TEXT.`,
+      system: SYSTEM,
       prompt: `SOURCE: ${n.source}\nURL: ${n.url}\nPUBLISHED_AT: ${n.published_at ?? "unknown"}\nTITLE: ${n.title}\n\nSOURCE TEXT:\n${body}`,
+      meta: { newsId: Number(n.id), checkedAt },
       effort: "low",
+      ttlMin: 360,
+      onResult: applyVerdict,
     });
-    if (!v) continue;
-    const quotesOk = v.claims.length > 0 && v.claims.every((c) => c.quote.length >= 15 && norm(body).includes(norm(c.quote)));
-    if (!v.relevant || v.angle === "none" || !v.post) {
-      await sql`update chek.news_items set status = 'rejected', reason = ${v.why.slice(0, 300)}, checked_at = now() where id = ${n.id}`;
-      continue;
-    }
-    if (!quotesOk) {
-      await sql`update chek.news_items set status = 'rejected', reason = 'evidence quotes not found in source', checked_at = now() where id = ${n.id}`;
-      await audit("news", "draft.rejected_no_evidence", "skip", { ref: n.url, source: n.source });
-      continue;
-    }
-    // evidence-checked facts from established sources go out automatically; anything about people or the CHEK price waits for the owner
-    const sensitive = v.names_real_people || v.critical_of_someone || v.about_chek_price;
-    const source = { source: n.source, url: n.url, publishedAt: n.published_at, checkedAt, claims: v.claims };
-    await enqueue({
-      id: `news-${n.id}-x`,
-      platform: "x",
-      category: "news",
-      level: sensitive ? "review" : "auto",
-      origin: "news",
-      source,
-      payload: { parts: [v.post.replace("{{SOURCE_URL}}", n.url)] },
-      publishAfter: new Date(Date.now() + 20 * 60e3).toISOString(),
-    });
-    await sql`update chek.news_items set status = ${sensitive ? "review" : "drafted"}, reason = ${v.why.slice(0, 300)}, checked_at = now(), data = data || ${sql.json({ angle: v.angle })} where id = ${n.id}`;
-    drafted++;
-    await bump("news_drafted");
+    if (res.skipped) await sql`update chek.news_items set status = 'new' where id = ${n.id}`;
+    else asked++;
   }
-  await bump("news_reviewed", rows.length);
-  return { reviewed: rows.length, drafted };
+  await bump("news_reviewed", asked);
+  return { candidates: rows.length, asked };
+}
+
+// Evidence check + drafting. Every claim's quote must appear verbatim in the stored source text.
+export async function applyVerdict(v, meta) {
+  const sql = await db();
+  const [n] = await sql`select * from chek.news_items where id = ${meta.newsId}`;
+  if (!n) return { skipped: "news item gone" };
+  const body = n.data?.body ?? "";
+  const quotesOk = v.claims.length > 0 && v.claims.every((c) => c.quote.length >= 15 && norm(body).includes(norm(c.quote)));
+  if (!v.relevant || v.angle === "none" || !v.post) {
+    await sql`update chek.news_items set status = 'rejected', reason = ${v.why.slice(0, 300)}, checked_at = now() where id = ${n.id}`;
+    return { rejected: "not relevant" };
+  }
+  if (!quotesOk) {
+    await sql`update chek.news_items set status = 'rejected', reason = 'evidence quotes not found in source', checked_at = now(), data = data || ${sql.json({ draft: v.post, claims: v.claims })} where id = ${n.id}`;
+    await audit("news", "draft.rejected_no_evidence", "skip", { ref: n.url, source: n.source });
+    return { rejected: "no evidence" };
+  }
+  // evidence-checked facts from established sources go out automatically; anything about people or the CHEK price waits for the owner
+  const sensitive = v.names_real_people || v.critical_of_someone || v.about_chek_price;
+  const source = { source: n.source, url: n.url, publishedAt: n.published_at, checkedAt: meta.checkedAt ?? new Date().toISOString(), claims: v.claims };
+  await enqueue({
+    id: `news-${n.id}-x`,
+    platform: "x",
+    category: "news",
+    level: sensitive ? "review" : "auto",
+    origin: "news",
+    source,
+    payload: { parts: [v.post.replace("{{SOURCE_URL}}", n.url)], why: v.why },
+    publishAfter: new Date(Date.now() + 20 * 60e3).toISOString(),
+  });
+  await sql`update chek.news_items set status = ${sensitive ? "review" : "drafted"}, reason = ${v.why.slice(0, 300)}, checked_at = now(), data = data || ${sql.json({ angle: v.angle })} where id = ${n.id}`;
+  await bump("news_drafted");
+  return { drafted: true, sensitive };
 }

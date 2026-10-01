@@ -1,4 +1,4 @@
-# Brand system — CHEK ($CHEK)
+# Brand system — CHEK (token $CHEKD)
 
 The design comes from one object: a thermal-paper receipt. If a choice doesn't come from a receipt, a register, a stamp or a highlighter, it doesn't belong.
 
@@ -7,13 +7,15 @@ The design comes from one object: a thermal-paper receipt. If a choice doesn't c
 | | |
 |---|---|
 | Name | **CHEK** (wordmark always caps) |
-| Ticker | **$CHEK** — 4 letters, a clickable cashtag on X |
+| Token symbol | **$CHEKD** — the ticker only. The brand stays **CHEK** (never rename the visual brand to CHEKD). 5 letters, a clickable cashtag on X |
 | Mascot | **Chek** — a slip of thermal paper that only prints what it can prove |
 | Tagline | **Receipts or it didn't happen.** |
-| One-liner | $CHEK is a meme coin on Solana with one rule: every claim comes with a receipt. |
-| Handle | `chekcoin` everywhere (X, Telegram, Vercel) |
+| One-liner | CHEK is a meme coin launching on Solana with one rule: every claim comes with a receipt. (After launch: “on Solana”.) |
+| Handles | X **@chekcoinsol** (an existing founder-owned account, repurposed — never say it was created for CHEK) · Telegram channel **t.me/chekcoinsol** “CHEK | Official” · bot **@chekcoinsol_bot** |
 
-Never write "$CHECK" (that's a different coin) — always **$CHEK**.
+Never write "CHECK" for us (different spelling, different projects; `checkcoinsol.xyz` is a typo domain that only redirects). The old ticker `$CHEK` is retired — other tokens use it; ours is **$CHEKD**.
+
+Every shared image carries subtle branding: **CHEK · @chekcoinsol** (claim receipts also show the site host).
 
 ## Character
 

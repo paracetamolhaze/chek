@@ -126,7 +126,8 @@ async function uploadMedia(url) {
 const hasUrl = (t) => /https?:\/\/|\b[a-z0-9-]+\.(?:app|fun|io|xyz|com|org|net)\b/i.test(t);
 
 // Post a single post or a thread (self-reply chain). Returns { id, url, calls, cost }.
-export async function publishX({ parts, mediaUrl = null, poll = null }) {
+// replyTo: answer a post that mentioned us (opt-in, owner-approved). quoteOf: quote a community post with attribution.
+export async function publishX({ parts, mediaUrl = null, poll = null, replyTo = null, quoteOf = null }) {
   const prices = (await getSetting("prices")) || {};
   let calls = 0;
   let mediaId = null;
@@ -145,6 +146,8 @@ export async function publishX({ parts, mediaUrl = null, poll = null }) {
     if (i === 0 && mediaId) body.media = { media_ids: [mediaId] };
     if (i === 0 && poll) body.poll = { options: poll.options.slice(0, 4).map((o) => o.slice(0, 25)), duration_minutes: poll.minutes ?? 1440 };
     if (prev) body.reply = { in_reply_to_tweet_id: prev };
+    else if (replyTo) body.reply = { in_reply_to_tweet_id: String(replyTo) };
+    if (i === 0 && quoteOf && !replyTo) body.quote_tweet_id = String(quoteOf);
     const data = await call("/tweets", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     calls++;
     prev = data.data.id;

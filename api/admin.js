@@ -10,6 +10,12 @@ import { reschedule, syncSeed } from "../server/lib/queue.js";
 import { syncBuildLog } from "../server/lib/receipts.js";
 import { tg } from "../server/lib/telegram.js";
 import { xAccount } from "../server/lib/x.js";
+import { agentStatus } from "../server/lib/llm.js";
+import { confirmLaunch } from "../server/lib/launch.js";
+import { dryReport, dryReset, dryStart, liveGate } from "../server/lib/dryrun.js";
+import { cronSetup, runJob } from "../server/lib/jobs.js";
+import { runProdAudit } from "../server/lib/prodcheck.js";
+import { isPubkey } from "../shared/solana-inspect.mjs";
 
 export const maxDuration = 120;
 
@@ -33,8 +39,17 @@ async function status() {
   const costs = {};
   for (const d of [1, 7, 30]) costs[d] = Object.fromEntries(await Promise.all(PROVIDERS.map(async (p) => [p, await spend(d, p)])));
   const x = await xAccount().catch(() => null);
+  const [ai] = await sql`select count(*) filter (where status = 'queued')::int as queued, count(*) filter (where status = 'running')::int as running,
+    count(*) filter (where status = 'done' and finished_at > now() - interval '24 hours')::int as done24h,
+    count(*) filter (where status in ('failed','expired') and created_at > now() - interval '24 hours')::int as failed24h from chek.ai_jobs`;
   return {
-    integrations: integrations(),
+    integrations: { ...integrations(), agent: (await agentStatus()).online },
+    agent: { ...(await agentStatus()), jobs: ai },
+    dryRun: s.dry_run ?? null,
+    prodAudit: s.prod_audit ?? null,
+    tokenLive: s.token_live ?? null,
+    creatorWallet: s.creator_wallet ?? null,
+    gate: await liveGate(s),
     settings: { ...s, owner: { linked: Boolean(s.owner?.telegramUserId) }, owner_claim: undefined },
     xAccount: x ? { username: x.username } : null,
     counts,
@@ -73,6 +88,10 @@ export async function POST(request) {
       case "settings": {
         for (const [k, v] of Object.entries(b.values || {})) {
           if (!ALLOWED[k]?.(v)) throw new AppError(400, `bad setting ${k}`);
+          if (k === "autopilot" && v === "on") {
+            const gate = await liveGate(await allSettings());
+            if (!gate.ok) throw new AppError(409, `not ready for live: ${gate.missing.join("; ")}`);
+          }
           await setSetting(k, v);
           await audit("owner", `settings.${k}`, "ok", { detail: { value: v } });
         }
@@ -82,6 +101,8 @@ export async function POST(request) {
         const s = await getSetting("schedule");
         if (b.d1 && !/^\d{4}-\d{2}-\d{2}$/.test(b.d1)) throw new AppError(400, "bad d1");
         if (b.launchAt && Number.isNaN(Date.parse(b.launchAt))) throw new AppError(400, "bad launchAt");
+        // the launch time is announced ≥ 24 h before the mint (announcement slot T-26h)
+        if (b.launchAt && Date.parse(b.launchAt) - Date.now() < 26 * 3600e3 && !b.allowShortNotice) throw new AppError(409, "launch time must be ≥ 26 h away so the announcement goes out ≥ 24 h before the mint");
         await setSetting("schedule", { ...s, ...(b.d1 ? { d1: b.d1 } : {}), ...(b.launchAt !== undefined ? { launchAt: b.launchAt ? new Date(b.launchAt).toISOString() : null } : {}) });
         return json({ ok: true, rescheduled: await reschedule() });
       }
@@ -112,6 +133,27 @@ export async function POST(request) {
         await audit("owner", "telegram.webhook_set", "ok", { detail: { bot: me.username } });
         return json({ ok: true, bot: me.username, claim: `/start ${code}` });
       }
+      case "launch":
+        if (!isPubkey(b.ca)) throw new AppError(400, "bad CA");
+        return json(await confirmLaunch(b.ca, b.by === "watcher" ? "launch watcher" : "owner"));
+      case "creator_wallet": {
+        if (!isPubkey(b.address)) throw new AppError(400, "bad address");
+        await setSetting("creator_wallet", { address: b.address, setAt: new Date().toISOString() });
+        await audit("owner", "launch.creator_wallet", "ok", { detail: { address: b.address } });
+        return json({ ok: true });
+      }
+      case "dry_start":
+        return json(await dryStart({ hours: Number(b.hours) || 24, d1: b.d1 }));
+      case "dry_report":
+        return json(await dryReport(b.run));
+      case "dry_reset":
+        return json(await dryReset());
+      case "cron_setup":
+        return json(await cronSetup(Number(b.everyMin) || 5));
+      case "run_job":
+        return json(await runJob(String(b.name)));
+      case "prod_audit":
+        return json(await runProdAudit());
       case "x_connect_link": {
         if (!integrations().x) throw new AppError(400, "X_CLIENT_ID / X_CLIENT_SECRET not set");
         const exp = String(Date.now() + 15 * 60e3);

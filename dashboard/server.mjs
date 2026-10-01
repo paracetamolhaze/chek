@@ -9,6 +9,7 @@ import { extname, join, normalize, sep } from "node:path";
 import { fill, fmtUtc, paths, placeholders, readJson, ROOT, slotTime, writeJson, xLength } from "../scripts/lib/content.mjs";
 import { syncReadme } from "../scripts/lib/readme.mjs";
 import { inspectMint, isPubkey } from "./solana.mjs";
+import { LAUNCH_FILES, writeLaunchFiles } from "../scripts/lib/publish-ca.mjs";
 import { calculator, walletBalanceSol } from "./pumpcalc.mjs";
 
 const PORT = Number(process.env.DASHBOARD_PORT || 4747);
@@ -155,51 +156,17 @@ const ALLOWED_LINK = {
 
 async function applyCa({ ca }) {
   const project = readJson(paths.project);
-  const report = await inspectMint(ca, { name: project.name, ticker: project.ticker, website: project.links.website });
+  // the creator wallet announced (privately) in production is the anchor: a look-alike coin from another wallet is refused
+  const prod = await prodApi("GET");
+  const creatorWallet = prod?.creatorWallet?.address ?? null;
+  const report = await inspectMint(ca, { name: project.name, ticker: project.ticker, website: project.links.website, creatorWallet });
   if (!report.ok) return { error: "verification failed — nothing was changed", report };
-  const f = report.facts;
-  project.status = "live";
-  Object.assign(project.token, {
-    ca,
-    createdAt: f.createdAt,
-    totalSupply: f.totalSupply,
-    decimals: f.decimals,
-    tokenProgram: f.tokenProgram,
-    mintAuthority: f.mintAuthority,
-    freezeAuthority: f.freezeAuthority,
-    creatorWallet: f.creatorWallet,
-    creatorBuy: f.creatorBuy,
-    creationTx: f.creationTx,
-    creationFeeSol: f.creationFeeSol,
-    creationSolSpent: f.creationSolSpent,
-    creatorBuySol: f.creatorBuySol ?? null,
-    creatorTokens: f.creatorTokens ?? null,
-    creatorPct: f.creatorPct ?? null,
-    creatorBuyUsd: f.creatorBuySol ? await calculator([1]).then((c) => `$${Math.round(Number(f.creatorBuySol) * c.solUsd.usd)} at $${c.solUsd.usd.toFixed(2)}/SOL`).catch(() => null) : null,
-  });
-  project.launch.launchedAt = f.createdAt;
-  writeJson(paths.project, project);
-  syncReadme(project);
-
-  const schedule = readJson(paths.schedule);
-  schedule.launchAt = f.createdAt;
-  writeJson(paths.schedule, schedule);
-
-  const history = readJson(paths.history);
-  history.entries.push({
-    date: f.createdAt,
-    title: `Token created on ${project.token.launchPlatform}`,
-    detail: `Official contract address: ${ca}. Same address on this site, the pinned X post and the pinned Telegram message.`,
-    proof: { label: `creation tx ${f.creationTx.slice(0, 8)}…`, href: `https://solscan.io/tx/${f.creationTx}` },
-  });
-  writeJson(paths.history, history);
-  for (const file of [paths.x, paths.tg]) {
-    const q = readJson(file);
-    for (const p of q.posts) p.publishAfter = slotTime(p.slot, schedule);
-    writeJson(file, q);
-  }
-  const job = startJob("Publish CA", `launch: official contract address ${ca}\n\nVerified on-chain before publishing (symbol, mint/freeze authority, creation tx ${f.creationTx}).`, ["config/project.json", "README.md", "content/history.json", "content/schedule.json", "content/x/queue.json", "content/telegram/queue.json"]);
-  return { ok: true, report, job };
+  // production first (API, X, Telegram switch in seconds), then the static site
+  const launched = await prodApi("POST", { op: "launch", ca });
+  const usd = report.facts.creatorBuySol ? await calculator([1]).then((c) => `$${Math.round(Number(report.facts.creatorBuySol) * c.solUsd.usd)} at $${c.solUsd.usd.toFixed(2)}/SOL`).catch(() => null) : null;
+  const message = writeLaunchFiles(ca, report.facts, { creatorBuyUsd: usd });
+  const job = startJob("Publish CA", message, LAUNCH_FILES);
+  return { ok: true, report, launched, job };
 }
 
 function applyLinks(body) {
@@ -264,7 +231,7 @@ function localEnv() {
   if (!existsSync(f)) return {};
   return Object.fromEntries(readFileSync(f, "utf8").split(/\r?\n/).filter((l) => l.includes("=")).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).trim()]));
 }
-async function prod(method, body) {
+async function prodApi(method, body) {
   const token = localEnv().ADMIN_TOKEN;
   const site = readJson(paths.project).links.website;
   if (!token) return { error: "no ADMIN_TOKEN in private/.env.local" };
@@ -343,7 +310,7 @@ createServer(async (req, res) => {
     }
     if (req.method === "GET" && url.pathname === "/api/state") return json(res, 200, await state({ ROTW_ENTRIES: url.searchParams.get("rotw") || null }));
     if (req.method === "GET" && url.pathname.startsWith("/api/job/")) return json(res, 200, jobs.get(url.pathname.split("/").pop()) ?? { error: "no job" });
-    if (req.method === "GET" && url.pathname === "/api/prod") return json(res, 200, await prod("GET"));
+    if (req.method === "GET" && url.pathname === "/api/prod") return json(res, 200, await prodApi("GET"));
     if (req.method === "GET" && url.pathname === "/api/calc") return json(res, 200, await calculator());
     if (req.method === "GET" && url.pathname === "/api/premint") return json(res, 200, await premint({ usd: url.searchParams.get("usd") || 200, wallet: url.searchParams.get("wallet") }));
     if (req.method === "GET" && url.pathname.startsWith("/asset/")) {
@@ -368,7 +335,7 @@ createServer(async (req, res) => {
       if (url.pathname === "/api/prod") {
         const allowed = ["settings", "schedule", "decide", "sync", "input", "resolve_alert", "run", "telegram_setup", "x_connect_link"];
         if (!allowed.includes(b.op)) return json(res, 400, { error: "op not allowed" });
-        return json(res, 200, await prod("POST", b));
+        return json(res, 200, await prodApi("POST", b));
       }
       if (url.pathname === "/api/check") {
         const id = Math.random().toString(36).slice(2, 10);

@@ -84,3 +84,10 @@ export async function withinBudget(provider) {
   }
   return true;
 }
+
+// Point-in-time value (e.g. channel size) — overwritten for the day, not summed.
+export async function gauge(key, value) {
+  const sql = await db();
+  await sql`insert into chek.metrics (day, key, value) values (current_date, ${key}, ${value})
+    on conflict (day, key) do update set value = excluded.value`;
+}

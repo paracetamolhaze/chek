@@ -7,14 +7,14 @@
 | Item | Value |
 |---|---|
 | Network | Solana |
-| Ticker | $CHEK |
+| Name / ticker | CHEK / $CHEKD |
 | Launch platform | Pump.fun (fair launch on a bonding curve) |
 | Presale / whitelist / private round | **None** |
-| Team mint / team allocation | **None** |
+| Team mint / free team allocation | **None (0%)** |
 | Treasury wallet | None |
 | Other allocations | None |
 | Token tax | None |
-| Creator buy at launch | Published at launch: amount, % of supply, transaction link |
+| Creator buy at creation | One public buy in the creation transaction, target ≈ $200, recalculated into SOL right before. **Not hard-coded anywhere**: the exact SOL spent, CHEKD received and % of supply are read from the chain and published (T+40 min creator receipt, live on /transparency). Never described as zero after launch. |
 | Creator wallet | Published at launch |
 
 ## What a standard Pump.fun coin looks like today
@@ -30,7 +30,7 @@ As checked 2026-10-01 against Pump.fun docs and fresh mints on mainnet (see `doc
 
 - Bonding curve: 1.25% per trade — 0.95% protocol, **0.30% to the coin creator**.
 - After graduation (PumpSwap): tiered by market cap; the creator share starts at 0.30% and changes by tier.
-- We disclose the creator fee because it is real income for the creator wallet. Pump.fun offers a "send creator rewards to holders" option; we don't use it, because it would look like a yield promise — and we don't make those.
+- We disclose the creator fee because it is real income for the creator wallet. Pump.fun offers holder rewards (creator rewards sent to holders); we intentionally don't use them at launch, because it would look like a yield promise — and we don't make those. Mayhem Mode is OFF.
 
 ## What will never happen
 

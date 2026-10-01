@@ -17,3 +17,10 @@ export const seedQueue = () => ({ x: load("content/x/queue.json"), telegram: loa
 export function officialCa(p = project()) {
   return p.status === "live" && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(p.token.ca || "") ? p.token.ca : null;
 }
+
+// After the mint is verified, the launch op stores the chain-confirmed token facts in settings.token_live, so every
+// surface (API, posts, guards) switches in seconds — before the static site rebuild + redeploy lands.
+export function withLiveToken(p, live) {
+  if (!live?.ca) return p;
+  return { ...p, status: "live", token: { ...p.token, ...live } };
+}

@@ -30,6 +30,8 @@ export type Project = {
     creationTx: string | null;
     creationFeeSol: string | null;
     creationSolSpent: string | null;
+    creatorFreeAllocationPct?: number;
+    creatorBuyTargetUsd?: number;
   };
   launch: { plannedAt: string | null; launchedAt: string | null };
   links: {
@@ -38,6 +40,10 @@ export type Project = {
     telegram: string | null;
     telegramChat: string | null;
     github: string | null;
+  };
+  accounts?: {
+    x?: { handle: string; origin?: string; linkedAt: string };
+    telegram?: { handle: string; title?: string; bot?: string; linkedAt: string };
   };
   site?: { analytics?: boolean };
   platform: {
@@ -61,7 +67,10 @@ export const ca: string | null =
 
 export const isLive = ca !== null;
 
-export const cashtag = `$${project.ticker}`;
+export const cashtag = `${project.ticker}`;
+
+// Before the token exists: "launching on Solana", never "built on Solana" / "live".
+export const networkPhrase = isLive ? `on ${project.network}` : `launching on ${project.network}`;
 
 // "01 Oct 2026" — for values that can change ("as checked …").
 export const platformChecked = new Date(`${project.platform.checkedAt}T00:00:00Z`).toLocaleDateString("en-GB", {

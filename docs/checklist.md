@@ -1,58 +1,62 @@
 # Pre-launch checklist
 
-Run the automated part any time: `npm run check` (✓ ok · ✗ failed · · waiting on the owner).
-Status below as of 2026-10-01, 20:10 UTC. READY TO MINT = every line ✓.
+Run the automated part any time: `npm run check` (✓ ok · ✗ failed · · waiting on the owner) and `node scripts/prod-audit.mjs` (fresh fetch of the live site).
+Status below as of 2026-10-01, 23:40 UTC. READY TO MINT = every line ✓. Exact check counts live only in `content/checks.json`.
 
-## Website — automated ✓
+## Website
 
-- [x] Production on HTTPS: https://chekcoin.vercel.app (Vercel, HSTS)
-- [x] All pages 200: /, /history, /transparency, /kit; 404 page works
-- [x] Desktop / tablet / mobile checked by screenshots, no horizontal scroll
-- [x] Speed (live, throttled 4G + 4× slower CPU): LCP 1.8 s, CLS 0
-- [x] Metadata: title, description, OpenGraph + Twitter card (1200×630)
-- [x] Favicon (.ico 16/32/48, SVG), apple-touch icon, web manifest, sitemap, robots
-- [x] Security headers: CSP, X-Frame-Options, nosniff, HSTS, permissions policy
+- [x] Production on HTTPS: https://chekcoin.vercel.app (canonical until the CHEK-spelled domain is confirmed)
+- [x] All pages 200: /, /history, /transparency, /receipts, /kit, /print; 404 page works
+- [x] Metadata, OG/Twitter card, favicon, manifest, sitemap, robots, security headers
 - [x] Contract shown as NOT LAUNCHED YET; no address-like placeholder anywhere
-- [x] Scam warnings: "we never DM first", "always verify the Contract Address"
-- [x] Launch state rehearsed (real pump.fun coin in a throwaway copy): CA + copy button, VIEW TOKEN, official record, 6 verify links
-- [ ] Analytics — waiting: one click in Vercel (see runbook), then `site.analytics: true`
+- [x] “Launching on Solana” before launch (never “Built on Solana”)
+- [x] Receipt Generator `/print` + share cards `/r` + Telegram receipt bot
+- [ ] Canonical domain confirmed by the owner (`chekcoinsol.xyz` pending) → `node scripts/set-domain.mjs https://…` switches everything in one commit
+- [x] Typo domain `checkcoinsol.xyz` only redirects (never canonical)
+- [ ] Analytics — optional (Vercel Web Analytics, then `site.analytics: true`)
 
 ## Brand & token data
 
-- [x] Name `CHEK`, ticker `$CHEK` (name check done, `docs/concept.md`)
+- [x] Brand `CHEK`, token symbol `$CHEKD` (owner decision; collision report in `docs/concept.md`)
 - [x] Token image 1000×1000 1:1 (`brand/social/token-1000.png`), banner 1500×500
-- [x] Token description (`docs/launch-plan.md`, < 2000 chars)
-- [x] Supply expectations documented (1B, Token-2022, authorities disabled) — **final values read from chain at launch**
-- [x] Launch platform: Pump.fun; facts and fees re-checked 2026-10-01 (`docs/pumpfun.md`)
+- [x] Token description < 2000 chars (`content/pumpfun.json`)
+- [x] Pump.fun settings: pair SOL · creator rewards → Creator · holder rewards OFF · Mayhem OFF
+- [x] Creator: 0% free allocation; ≈ $200 creator buy at creation, recalculated into SOL right before; real values from the chain after
 - [ ] Re-check pump.fun fees/options on launch day
 
-## Socials — owner
+## Socials
 
-- [ ] X @chekcoin created, avatar + header + bio + link set, 2FA on
-- [ ] Telegram channel t.me/chekcoin + chat t.me/chekchat, avatars, descriptions, pinned rules
-- [ ] Links saved in the dashboard (→ site rebuilds with them)
-- [ ] Public GitHub repo (owner picks the account) → link saved
+- [x] X @chekcoinsol — existing founder-owned account, repurposed for CHEK (documented in /history and on /transparency)
+- [x] Telegram channel t.me/chekcoinsol “CHEK | Official”; bot @chekcoinsol_bot is an admin
+- [ ] X profile: name, bio, avatar, header, link, “Automated” label (see `content/x/queue.json → profile`)
+- [ ] Public GitHub repo (sanitized history, see `docs/repository-sanitization.md`) → link saved
 
-## Content — ready ✓
+## Autopilot
 
-- [x] 26 X posts (all ≤ 280 chars), 2 threads, launch post, transparency thread, 24h recap
-- [x] 11 Telegram posts + channel/chat descriptions, rules, welcome text, CA pin template
-- [x] 10 memes, 5 mascot images, 1 reaction GIF/MP4 + 2 scripted animation ideas
-- [x] Schedule: D1…D5 pre-launch, T-3h…T+4d (`content/schedule.json`)
-- [ ] Launch date/time confirmed by owner (proposed 2026-10-07 15:00 UTC)
+- [ ] Database migrated (Supabase project dedicated to CHEK), pg_cron every 5 min
+- [ ] Telegram webhook + owner linked (`/start <code>` once)
+- [ ] PC agent running (AI writer + launch watcher)
+- [ ] 24 h dry run finished, report reviewed
+- [ ] Production audit passing (fresh)
+- [ ] X connection (decision pending: official API vs. other)
+
+## Content
+
+- [x] 21 X posts and 11 Telegram posts for D1, D2, the launch sequence and T+4d (`content/x/queue.json`, `content/telegram/queue.json`)
+- [x] 10 memes, 5 mascot images; every shared image carries “CHEK · @chekcoinsol”
+- [ ] Launch date/time confirmed by owner (proposed 2026-10-05 15:00 UTC; must be ≥ 26 h away when confirmed)
 
 ## Launch day — owner
 
 - [ ] pump.fun opens from the owner's network
-- [ ] Logged into pump.fun (email/Google — wallet sign-in was retired 2026-09-25); wallet funded with SOL
-- [ ] Dashboard running: `VERCEL_TOKEN_FILE=… npm run dashboard`
-- [ ] All tiles green except TOKEN/CA
-- [ ] Form filled from `docs/launch-plan.md`; Mayhem OFF; pair SOL; rewards → Creator
+- [ ] Logged into pump.fun; wallet funded with SOL (≈ $200 buy + fees)
+- [ ] Creator wallet address announced privately to the system (dashboard → Mint)
+- [ ] FINAL PUMP.FUN FORM card received; every field copied from it
 
 ## Security ✓
 
 - [x] No keys/seeds/tokens in repo, site or build (`npm run check` scans tracked files)
-- [x] `.env*` ignored; deploy refuses key-like content
+- [x] `.env*` and `private/` ignored; deploy refuses key-like content
 - [x] One config for every official link and the CA (`config/project.json`)
-- [x] Dashboard local-only (127.0.0.1, host/origin checks)
-- [x] Backup: git history + `git bundle` copy outside the project folder
+- [x] The server publishes a CA only after its own on-chain check (creator wallet + ticker + authorities)
+- [x] Dashboard local-only (127.0.0.1)

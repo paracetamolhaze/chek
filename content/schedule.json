@@ -1,7 +1,8 @@
 {
-  "$comment": "Times are UTC. d1 = the day the X account goes public. launchAt stays null until the owner confirms the launch time; T+ posts get their publishAfter from it. Recompute with: node scripts/schedule.mjs",
-  "d1": "2026-10-02",
+  "$comment": "Times are UTC. d1 = the first day of public posting (after the 24 h dry run is signed off). launchAt = the ANNOUNCED launch time — stays null until the owner confirms it; it must be ≥ 26 h away so the announcement (slot T-26h) goes out ≥ 24 h before the mint. launchedAt = the REAL launch minute, set automatically when the mint is verified on-chain; every T+ post counts from it. Recompute with: node scripts/schedule.mjs",
+  "d1": "2026-10-03",
   "launchAt": null,
-  "proposedLaunchAt": "2026-10-07T15:00:00Z",
-  "why": "15:00 UTC = 11:00 New York, 17:00 Berlin, 23:00 Singapore — US, EU and Asia are all awake."
+  "launchedAt": null,
+  "proposedLaunchAt": "2026-10-05T15:00:00Z",
+  "why": "Proposal only — the owner decides. 15:00 UTC = 11:00 New York, 17:00 Berlin, 23:00 Singapore."
 }

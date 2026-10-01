@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { doto, martian } from "./fonts";
-import { cashtag, project, siteUrl } from "@/lib/project";
+import { cashtag, networkPhrase, project, siteUrl } from "@/lib/project";
+import { Beacon } from "@/components/Beacon";
 import "./globals.css";
 
 const title = `${project.name} (${cashtag}) — ${project.tagline}`;
-const description = `${cashtag} is a Solana meme coin with one rule: every claim comes with a receipt. No promises, no fake partners — memes, lore and proof.`;
+const description = `${project.name} is a meme coin ${networkPhrase} with one rule: every claim comes with a receipt. Token: ${cashtag}. No promises, no fake partners — memes, lore and proof.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

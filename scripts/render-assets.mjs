@@ -102,7 +102,7 @@ await shot(
   [1500, 500],
   `<div class="dots" style="position:relative;width:1500px;height:500px;overflow:hidden">
     <div class="paper zzt" style="position:absolute;left:430px;top:96px;width:700px;padding:34px 44px 40px;transform:rotate(-2.5deg);box-shadow:0 30px 50px -20px #000">
-      <div style="display:flex;justify-content:space-between;font-size:15px;letter-spacing:.3em;font-weight:700;color:#6b665c"><span>REGISTER #4</span><span>${T}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;letter-spacing:.3em;font-weight:700;color:#6b665c"><span>REGISTER #4</span><span>${P.name}</span></div>
       <div class="doto" style="font-size:150px;line-height:.95;margin-top:8px">${P.name}</div>
       <div style="height:2px;margin:18px 0 14px;background:repeating-linear-gradient(90deg,${C.ink} 0 8px,transparent 8px 14px);opacity:.5"></div>
       <div style="font-size:26px;font-weight:800;font-stretch:112.5%;letter-spacing:-.01em">Receipts or it didn't happen.</div>
@@ -116,7 +116,7 @@ await shot(
 // ── OpenGraph / Twitter card 1200×630 ──
 const og = `<div class="dots" style="position:relative;width:1200px;height:630px;overflow:hidden">
   <div style="position:absolute;left:70px;top:70px;width:640px">
-    <div style="font-size:18px;letter-spacing:.3em;color:${C.fog};font-weight:700">${T} · MEME COIN ON SOLANA</div>
+    <div style="font-size:18px;letter-spacing:.3em;color:${C.fog};font-weight:700">${P.name} · ${T} · ${P.status === "live" ? "ON SOLANA" : "LAUNCHING ON SOLANA"}</div>
     <div style="margin-top:22px;font-size:78px;line-height:.98;font-weight:800;font-stretch:112.5%;letter-spacing:-.035em">Receipts or it didn't happen.</div>
     <div style="margin-top:26px;font-size:22px;line-height:1.45;color:rgba(244,240,230,.85)">One rule: every claim comes with a receipt.</div>
   </div>
@@ -131,8 +131,9 @@ const og = `<div class="dots" style="position:relative;width:1200px;height:630px
 </div>`;
 await shot(join(APP, "opengraph-image.png"), [1200, 630], og);
 await shot(join(APP, "twitter-image.png"), [1200, 630], og);
-writeFileSync(join(APP, "opengraph-image.alt.txt"), `${P.name} (${T}) — Receipts or it didn't happen. A meme coin on Solana.`);
-writeFileSync(join(APP, "twitter-image.alt.txt"), `${P.name} (${T}) — Receipts or it didn't happen. A meme coin on Solana.`);
+const ALT = `${P.name} — Receipts or it didn't happen. A meme coin ${P.status === "live" ? "on" : "launching on"} Solana; token ${T}.`;
+writeFileSync(join(APP, "opengraph-image.alt.txt"), ALT);
+writeFileSync(join(APP, "twitter-image.alt.txt"), ALT);
 
 // ── Meme kit: transparent poses + villains ──
 const POSES = [

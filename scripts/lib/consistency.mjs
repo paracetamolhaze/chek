@@ -105,9 +105,9 @@ export function audit() {
   const home = C.pages.home.text;
   const soc = [];
   for (const [label, link, host] of [["X", p.links.x, "x.com/"], ["Telegram", p.links.telegram, "t.me/"], ["GitHub", p.links.github, "github.com/"]]) {
-    const soon = new RegExp(`${label} · soon`).test(home);
-    if (!link && !soon) soc.push(`${label}: not linked in config but home doesn't say “${label} · soon”`);
-    if (link && soon) soc.push(`${label}: linked in config but home still says “soon”`);
+    // a missing account is simply not shown (no “soon” promises); a linked one must be linked on the home page
+    if (new RegExp(`${label} · soon`).test(home)) soc.push(`${label}: home still says “${label} · soon”`);
+    if (link && !C.pages.home.raw.includes(`href="${link}"`)) soc.push(`${label}: linked in config but the home page doesn't link ${link}`);
     if (!link) for (const [k, v] of Object.entries(C.pages)) if (v.raw.includes(`href="https://${host}`)) soc.push(`${label}: not linked in config but site:${k} links to ${host}`);
   }
   const community = Boolean(p.links.x && p.links.telegram);
@@ -142,8 +142,8 @@ export function audit() {
   const np = [];
   if (!/not affiliated with this project/i.test(home)) np.push("home: missing the not-affiliated sentence");
   if (!/name or ticker (?:is not proof|proves nothing)/i.test(C.pages.transparency.text)) np.push("transparency: missing “a name or ticker is not proof”");
-  if (!/names? prove nothing|name or ticker is not proof/i.test(C.drafts["x:x-018"])) np.push("x-018 launch post: missing names-prove-nothing line");
-  if (!/name or ticker is not proof/i.test(C.drafts["tg:tg-007"])) np.push("tg-007 CA pin: missing name-or-ticker line");
+  if (!/names? prove nothing|name or ticker is not proof/i.test(C.drafts["x:x-310"])) np.push("x-310 launch post: missing names-prove-nothing line");
+  if (!/name or ticker is not proof/i.test(C.drafts["tg:tg-310"])) np.push("tg-310 CA pin: missing name-or-ticker line");
   if (!/name or ticker is never proof/i.test(C.docs["README.md"])) np.push("README: missing name-or-ticker line");
   rule("names", "“A name or ticker is not proof” is stated on site, pins and README", np);
 
@@ -173,10 +173,13 @@ export function audit() {
     [/(?<![\w-])(\d+) (?:body )?poses/g, F.poses, "body poses"],
     [/(?<![\w-])(\d+) villains/g, F.villains, "villains"],
   ];
-  for (const [where, text] of Object.entries({ ...all, ...C.historical })) for (const [re, n, what] of want) for (const m of text.matchAll(re)) if (Number(m[1]) !== n) cnt.push(`${where}: “${m[0]}” but there are ${n} ${what}`);
-  // dated build-log text shown on the site is a historical record, not a current claim
+  // dated records (build log entries, CHANGELOG) describe the past — they are not current claims
   const histStrings = F.history.flatMap((e) => [e.title, e.detail, e.correction?.note].filter(Boolean).map((s) => visibleText(s)));
   const current = (text) => histStrings.reduce((t, s) => t.split(s).join(" "), text);
+  for (const [where, text] of Object.entries(all)) {
+    if (/CHANGELOG/.test(where)) continue;
+    for (const [re, n, what] of want) for (const m of current(text).matchAll(re)) if (Number(m[1]) !== n) cnt.push(`${where}: “${m[0]}” but there are ${n} ${what}`);
+  }
   for (const [where, text] of Object.entries(all)) if (/\b\d+ (?:automatic|automated) checks\b/i.test(current(text))) cnt.push(`${where}: hard-coded check count — the only source is content/checks.json`);
   const kitImgs = (C.pages.kit?.raw.match(/src="\/kit\/chek-[a-z]+\.png"/g) ?? []).length;
   if (kitImgs !== F.kitMoods) cnt.push(`kit page shows ${kitImgs} moods, files: ${F.kitMoods}`);
@@ -220,6 +223,9 @@ export function audit() {
   if (F.pumpfun.description.length >= 2000) pf.push("description ≥ 2000 chars");
   if (!F.pumpfun.description.includes((p.links.website || "").replace(/^https?:\/\//, ""))) pf.push("description doesn't name the official website");
   if (F.pumpfun.mayhemMode !== false) pf.push("Mayhem mode must be OFF");
+  if (F.pumpfun.holderRewards !== false) pf.push("Holder rewards must be OFF at launch");
+  if (F.pumpfun.creatorRewardsTo !== "Creator") pf.push("creator rewards must go to the Creator");
+  if (F.pumpfun.pair !== "SOL") pf.push("pair must be SOL");
   rule("pumpfun", "Pump.fun form data matches config", pf);
 
   return { results, facts: F };

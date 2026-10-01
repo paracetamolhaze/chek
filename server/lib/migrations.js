@@ -136,4 +136,76 @@ alter table chek.metrics enable row level security;
 alter table chek.vault enable row level security;
 `,
   },
+  {
+    version: "002_dry_run_agents",
+    sql: `
+-- Dry run: a post the system WOULD have published is marked dry_published (consumed for that run) and logged in full.
+alter table chek.queue drop constraint if exists queue_status_check;
+alter table chek.queue add constraint queue_status_check
+  check (status in ('ready','review','approved','rejected','publishing','published','failed','skipped','expired','dry_published'));
+alter table chek.queue add column if not exists dry_at timestamptz;
+
+-- Everything the publisher decided during a dry run: exact text, media, source, reasons.
+create table chek.dry_log (
+  id bigserial primary key,
+  at timestamptz not null default now(),
+  run text not null,
+  queue_id text not null,
+  platform text not null,
+  verdict text not null check (verdict in ('would_publish','rejected','review','approved','expired','waiting')),
+  due_at timestamptz,
+  slot text,
+  level text,
+  origin text,
+  category text,
+  parts jsonb,
+  media text,
+  source jsonb,
+  reasons jsonb not null default '[]'::jsonb
+);
+create unique index dry_log_once on chek.dry_log (run, queue_id, verdict);
+create index dry_log_run_idx on chek.dry_log (run, at);
+
+-- AI work for the owner's PC agent (Claude through the owner's subscription; no API key in the cloud).
+-- The cloud only queues prompts and validates answers; the PC agent claims a job, runs Claude, returns text.
+create table chek.ai_jobs (
+  id bigserial primary key,
+  kind text not null,
+  status text not null default 'queued' check (status in ('queued','running','done','failed','expired')),
+  model text,
+  system text not null,
+  prompt text not null,
+  meta jsonb not null default '{}'::jsonb,
+  result text,
+  error text,
+  attempts integer not null default 0,
+  created_at timestamptz not null default now(),
+  claimed_at timestamptz,
+  finished_at timestamptz,
+  expires_at timestamptz not null
+);
+create index ai_jobs_status_idx on chek.ai_jobs (status, created_at);
+
+-- Mentions, replies and community submissions. Nothing here is answered automatically: candidates go to REVIEW.
+create table chek.interactions (
+  id text primary key,
+  platform text not null check (platform in ('x','telegram')),
+  kind text not null check (kind in ('mention','reply','quote','submission')),
+  author text,
+  author_id text,
+  text text,
+  url text,
+  at timestamptz,
+  status text not null default 'new' check (status in ('new','candidate','queued','ignored','handled')),
+  consent text check (consent in ('credit','anonymous','no')),
+  data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+create index interactions_status_idx on chek.interactions (status, created_at desc);
+
+alter table chek.dry_log enable row level security;
+alter table chek.ai_jobs enable row level security;
+alter table chek.interactions enable row level security;
+`,
+  },
 ];

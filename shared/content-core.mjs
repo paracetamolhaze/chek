@@ -3,7 +3,9 @@
 
 const UNIT = { m: 60e3, h: 3600e3, d: 86400e3 };
 
-// "D3 14:00" → d1 + 2 days at 14:00 UTC.  "T+10m" / "T-3h" / "T+0" → launchAt ± offset (null without launchAt).
+// "D3 14:00" → d1 + 2 days at 14:00 UTC.
+// "T-30m" / "T-26h" → before the ANNOUNCED launch time (launchAt).
+// "T+0" / "T+12m" → after the REAL launch minute (launchedAt, set when the mint is verified); null until then.
 export function slotTime(slot, schedule) {
   let m = /^D(\d+) (\d{2}):(\d{2})$/.exec(slot);
   if (m) {
@@ -14,9 +16,10 @@ export function slotTime(slot, schedule) {
   }
   m = /^T([+-])(\d+)?([mhd])?$/.exec(slot);
   if (m) {
-    if (!schedule.launchAt) return null;
     const off = m[2] ? Number(m[2]) * UNIT[m[3] || "m"] : 0;
-    return new Date(new Date(schedule.launchAt).getTime() + (m[1] === "-" ? -off : off)).toISOString();
+    const base = m[1] === "-" ? schedule.launchAt : schedule.launchedAt || null;
+    if (!base) return null;
+    return new Date(new Date(base).getTime() + (m[1] === "-" ? -off : off)).toISOString();
   }
   throw new Error(`bad slot: ${slot}`);
 }
@@ -58,6 +61,9 @@ export function placeholders(project, schedule, extra = {}, now = new Date()) {
     FREEZE_AUTH: t.freezeAuthority,
     CREATOR: t.creatorWallet,
     CREATOR_BUY: t.creatorBuy,
+    CREATOR_SOL: t.creatorBuySol,
+    CREATOR_TOKENS: t.creatorTokens,
+    CREATOR_PCT: t.creatorPct,
     ...extra,
   };
 }
@@ -81,13 +87,19 @@ export const SAMPLE = {
   CA: "X".repeat(44),
   CA_SHORT: "XXXX…XXXX",
   LAUNCH_UTC: "Oct 7, 15:00 UTC",
-  TG: "t.me/chekcoin",
+  TG: "t.me/chekcoinsol",
   CREATED_AT: "Oct 7, 15:00 UTC",
   SUPPLY: "1,000,000,000",
   MINT_AUTH: "disabled",
   FREEZE_AUTH: "disabled",
   CREATOR: "X".repeat(44),
-  CREATOR_BUY: "25,000,000 CHEK (2.50% of supply) in the creation tx",
+  CREATOR_BUY: "56,670,000 CHEKD (5.67% of supply) in the creation tx",
+  CREATOR_SOL: "1.6936",
+  CREATOR_TOKENS: "56,670,000",
+  CREATOR_PCT: "5.67%",
+  LAUNCH_RECEIPT_N: "12",
+  CREATOR_RECEIPT_N: "13",
+  RECEIPTS_PRINTED: "1,234",
   ROTW_ENTRIES: "12",
   DAY_N: "9",
   CREATION_TX: "X".repeat(88),

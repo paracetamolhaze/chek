@@ -1,12 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconCheck, IconCopy } from "./icons";
 
+const BASE58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+
 // Contract address strip. Before launch it shows a stamp, never a placeholder that looks like an address.
-export function CaBox({ ca, note, tone = "dark" }: { ca: string | null; note: string; tone?: "dark" | "paper" }) {
+// At the launch minute the static page may still be the pre-launch build for a minute or two: it asks the API, which
+// switches only after the server verified the mint on-chain (creator wallet, ticker, authorities), and shows the CA at once.
+export function CaBox({ ca: staticCa, note, tone = "dark" }: { ca: string | null; note: string; tone?: "dark" | "paper" }) {
   const [copied, setCopied] = useState(false);
+  const [live, setLive] = useState<{ ca: string; verifiedAt?: string } | null>(null);
   const dark = tone === "dark";
+  const ca = staticCa ?? live?.ca ?? null;
+
+  useEffect(() => {
+    if (staticCa) return;
+    let stop = false;
+    const started = Date.now();
+    const check = async () => {
+      if (stop || document.visibilityState !== "visible") return;
+      try {
+        const r = await fetch("/api/public?op=token", { cache: "no-store" });
+        const j = await r.json();
+        if (j?.live && BASE58.test(j.ca)) {
+          setLive({ ca: j.ca, verifiedAt: j.verifiedAt });
+          stop = true;
+        }
+      } catch {}
+    };
+    check();
+    const id = setInterval(() => (Date.now() - started > 45 * 60e3 ? clearInterval(id) : check()), 20_000);
+    return () => {
+      stop = true;
+      clearInterval(id);
+    };
+  }, [staticCa]);
 
   async function copy() {
     if (!ca) return;
@@ -45,7 +74,14 @@ export function CaBox({ ca, note, tone = "dark" }: { ca: string | null; note: st
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
-      ) : (
+      ) : null}
+      {ca && !staticCa && live ? (
+        <p className={`mt-2 text-[11px] leading-snug ${dark ? "text-fog" : "text-faded"}`}>
+          Just launched — verified on-chain{live.verifiedAt ? ` at ${new Date(live.verifiedAt).toISOString().slice(11, 16)} UTC` : ""}. It must match the pinned X
+          post and the pinned Telegram message.
+        </p>
+      ) : null}
+      {ca ? null : (
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className={`stamp text-sm sm:text-base ${dark ? "stamp-dark" : ""}`} style={{ ["--r" as string]: "-3deg" }}>
             Not launched yet
