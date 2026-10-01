@@ -1,0 +1,18 @@
+{
+  "name": "receipts",
+  "private": true,
+  "type": "module",
+  "description": "RECEIPTS ($RCPT) — meme coin project: website, brand, content, owner dashboard",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "assets": "node scripts/render-assets.mjs",
+    "dashboard": "node dashboard/server.mjs",
+    "build": "npm --prefix website run build",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
+}

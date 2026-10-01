@@ -1,0 +1,10 @@
+{
+  "$comment": "Build log. Add an entry only when the thing has actually happened. Never edit dates. Times are UTC. proof.href = a commit, post or transaction anyone can open.",
+  "entries": [
+    {
+      "date": "2026-10-01T19:01:00Z",
+      "title": "Project started",
+      "detail": "Empty folder. Idea: a meme coin about a receipt that only prints what it can prove."
+    }
+  ]
+}

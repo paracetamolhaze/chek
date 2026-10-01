@@ -1,0 +1,23 @@
+# secrets — never commit (seed phrases, private keys, API tokens, Telegram sessions)
+.env
+.env*
+*.pem
+*.key
+id.json
+*keypair*.json
+wallet*.json
+secrets/
+
+# dependencies / build output
+node_modules/
+website/.next/
+website/out/
+*.tsbuildinfo
+next-env.d.ts
+
+# local tooling
+.vercel/
+.preview/
+test-artifacts/
+.DS_Store
+Thumbs.db

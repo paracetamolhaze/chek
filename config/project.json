@@ -1,0 +1,35 @@
+{
+  "$comment": "THE single source of truth. Website, dashboard and post templates read every link and the contract address from here. Change it only via `npm run dashboard` (validates the CA on-chain) or a reviewed commit.",
+  "name": "CHEK",
+  "ticker": "CHEK",
+  "mascot": "Chek",
+  "tagline": "Receipts or it didn't happen.",
+  "oneLiner": "A Solana meme coin with one rule: every claim comes with a receipt.",
+  "network": "Solana",
+  "status": "prelaunch",
+  "token": {
+    "ca": null,
+    "createdAt": null,
+    "launchPlatform": "Pump.fun",
+    "totalSupply": null,
+    "decimals": null,
+    "tokenProgram": null,
+    "mintAuthority": null,
+    "freezeAuthority": null,
+    "creatorWallet": null,
+    "creatorBuy": null,
+    "treasuryWallet": null,
+    "otherAllocations": "none"
+  },
+  "launch": {
+    "plannedAt": null,
+    "launchedAt": null
+  },
+  "links": {
+    "website": "https://chekcoin.vercel.app",
+    "x": null,
+    "telegram": null,
+    "telegramChat": null,
+    "github": null
+  }
+}
