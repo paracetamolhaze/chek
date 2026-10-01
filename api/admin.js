@@ -129,7 +129,7 @@ export async function POST(request) {
         const me = await tg("getMe");
         await tg("setWebhook", { url: `${env.siteUrl}/api/telegram`, secret_token: env.telegramWebhookSecret, allowed_updates: ["message", "callback_query", "my_chat_member", "chat_member"], drop_pending_updates: true });
         const code = randomBytes(4).toString("hex");
-        await setSetting("owner_claim", { code, expiresAt: Date.now() + 3600e3 });
+        await setSetting("owner_claim", { code, expiresAt: Date.now() + 72 * 3600e3 }); // valid 72 h: the owner may read it later
         await audit("owner", "telegram.webhook_set", "ok", { detail: { bot: me.username } });
         return json({ ok: true, bot: me.username, claim: `/start ${code}` });
       }
