@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CHEK · launch dashboard</title>
+<style>
+  :root { --ink:#1b1a17; --paper:#f4f0e6; --counter:#141311; --fog:#a7a193; --stamp:#d8332a; --marker:#f6e05e; --ok:#3fa36a; --line:rgba(244,240,230,.12); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--counter); color:var(--paper); font:14px/1.45 ui-monospace,"Cascadia Mono",Consolas,monospace; }
+  header { display:flex; align-items:center; gap:14px; padding:16px 28px; border-bottom:1px solid var(--line); }
+  header h1 { margin:0; font-size:18px; letter-spacing:.08em; }
+  .badge { font-size:11px; letter-spacing:.2em; padding:3px 8px; border:1px solid var(--line); color:var(--fog); text-transform:uppercase; }
+  main { padding:22px 28px 60px; max-width:1500px; margin:0 auto; }
+  .tiles { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; }
+  .tile { background:#1c1b18; border:1px solid var(--line); padding:12px 14px; min-height:104px; }
+  .tile .k { font-size:11px; letter-spacing:.2em; color:var(--fog); }
+  .tile .v { font-size:20px; font-weight:800; margin-top:6px; word-break:break-all; }
+  .tile .d { font-size:11.5px; color:var(--fog); margin-top:4px; word-break:break-word; }
+  .ok .v { color:var(--ok); } .bad .v { color:var(--stamp); } .wait .v { color:var(--marker); }
+  .actions { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 22px; }
+  button, .btn { font:inherit; font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; padding:11px 14px; border:2px solid var(--paper); background:var(--paper); color:var(--ink); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+  button.ghost, .btn.ghost { background:transparent; color:var(--paper); }
+  button.hot { background:var(--marker); border-color:var(--marker); }
+  button.danger { background:var(--stamp); border-color:var(--stamp); color:var(--paper); }
+  button:disabled, .btn.off { opacity:.35; cursor:not-allowed; pointer-events:none; }
+  .grid { display:grid; grid-template-columns:1.25fr 1fr; gap:18px; }
+  section.card { background:#1c1b18; border:1px solid var(--line); padding:16px 18px; margin-bottom:18px; }
+  section.card h2 { margin:0 0 12px; font-size:12px; letter-spacing:.22em; color:var(--fog); text-transform:uppercase; }
+  input { font:inherit; background:#0f0e0c; color:var(--paper); border:1px solid var(--line); padding:9px 10px; width:100%; }
+  label { font-size:11px; letter-spacing:.14em; color:var(--fog); text-transform:uppercase; display:block; margin:8px 0 4px; }
+  .row { display:flex; gap:8px; align-items:end; }
+  .checks div { padding:3px 0; }
+  .checks .y::before { content:"✓ "; color:var(--ok); } .checks .n::before { content:"✗ "; color:var(--stamp); } .checks .s::before { content:"· "; color:var(--marker); }
+  pre.log { background:#0b0a09; padding:10px; max-height:240px; overflow:auto; font-size:12px; white-space:pre-wrap; margin:10px 0 0; }
+  .post { border-top:1px dashed var(--line); padding:12px 0; display:grid; grid-template-columns:150px 1fr 230px; gap:14px; }
+  .post .meta { font-size:12px; color:var(--fog); }
+  .post .meta b { color:var(--paper); }
+  .post .text { white-space:pre-wrap; background:#0f0e0c; padding:10px 12px; border-left:3px solid var(--line); font-size:13px; }
+  .post .text + .text { margin-top:6px; }
+  .post.due .text { border-left-color:var(--marker); }
+  .post.posted { opacity:.45; }
+  .chip { display:inline-block; font-size:10.5px; letter-spacing:.12em; padding:2px 6px; margin:2px 4px 2px 0; border:1px solid var(--line); text-transform:uppercase; }
+  .chip.red { border-color:var(--stamp); color:var(--stamp); } .chip.y { border-color:var(--marker); color:var(--marker); } .chip.g { border-color:var(--ok); color:var(--ok); }
+  .post .side { display:flex; flex-direction:column; gap:6px; }
+  .post .side button { padding:7px 10px; font-size:11px; }
+  .thumb { max-width:100%; max-height:120px; border:1px solid var(--line); display:block; }
+  .tabs { display:flex; gap:6px; margin-bottom:6px; }
+  .tabs button { padding:6px 10px; font-size:11px; }
+  .hidden { display:none; }
+  .toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--marker); color:var(--ink); padding:10px 16px; font-weight:800; display:none; }
+  .warn { color:var(--marker); font-size:12px; }
+  a { color:var(--paper); }
+  .hist div { padding:4px 0; border-bottom:1px dotted var(--line); font-size:12.5px; }
+  .hist time { color:var(--fog); margin-right:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🧾 CHEK · LAUNCH DASHBOARD</h1>
+  <span class="badge">local only · 127.0.0.1</span>
+  <span class="badge" id="clock"></span>
+  <span style="flex:1"></span>
+  <button class="ghost" onclick="load()">Refresh</button>
+</header>
+<main>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="actions">
+    <button id="copyLaunch" class="hot">Copy launch post</button>
+    <button id="copyCa">Copy CA</button>
+    <a class="btn ghost" id="openSite" target="_blank" rel="noopener">Open website</a>
+    <a class="btn ghost" id="openX" target="_blank" rel="noopener">Open X</a>
+    <a class="btn ghost" id="openTg" target="_blank" rel="noopener">Open Telegram</a>
+    <a class="btn ghost" id="openToken" target="_blank" rel="noopener">Open token</a>
+    <button id="updCa" class="ghost" onclick="toggle('caPanel')">Update CA</button>
+    <button class="ghost" onclick="toggle('queuePanel')">View content queue</button>
+  </div>
+
+  <div class="grid">
+    <div>
+      <section class="card hidden" id="caPanel">
+        <h2>Update CA — verify on-chain, then publish</h2>
+        <p class="warn">Paste the address from YOUR pump.fun coin page. Nothing is published until every critical check passes.</p>
+        <div class="row"><div style="flex:1"><label>Contract address</label><input id="caInput" placeholder="…pump" autocomplete="off" spellcheck="false" /></div><button onclick="verifyCa()">Verify</button></div>
+        <div class="checks" id="caChecks"></div>
+        <div id="caApply" class="hidden" style="margin-top:12px">
+          <p class="warn">Publishing writes the CA to config/project.json, adds a build-log line, commits, rebuilds and deploys the site. X bio/pin and the Telegram pin you update by hand with the texts in “Next up”.</p>
+          <button class="danger" onclick="applyCa()">Publish this CA on the website</button>
+        </div>
+        <pre class="log hidden" id="caLog"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Next up</h2>
+        <div id="next"></div>
+      </section>
+
+      <section class="card hidden" id="queuePanel">
+        <h2>Content queue</h2>
+        <div class="tabs"><button class="ghost" onclick="filt='all';renderQueue()">All</button><button class="ghost" onclick="filt='x';renderQueue()">X</button><button class="ghost" onclick="filt='telegram';renderQueue()">Telegram</button><span style="flex:1"></span><label style="margin:0">ROTW entries</label><input id="rotw" style="width:70px" placeholder="n" onchange="load()" /></div>
+        <div id="queue"></div>
+      </section>
+    </div>
+
+    <div>
+      <section class="card">
+        <h2>Launch time & schedule (UTC)</h2>
+        <div class="row">
+          <div style="flex:1"><label>Day 1 (X goes public)</label><input id="d1" type="date" /></div>
+          <div style="flex:1.4"><label>Launch (UTC)</label><input id="launchAt" type="datetime-local" /></div>
+          <button onclick="saveSchedule()">Save</button>
+        </div>
+        <p class="warn" id="schedNote"></p>
+      </section>
+
+      <section class="card">
+        <h2>Official links</h2>
+        <label>X</label><input id="lx" placeholder="https://x.com/chekcoin" />
+        <label>Telegram channel</label><input id="ltg" placeholder="https://t.me/chekcoin" />
+        <label>Telegram chat</label><input id="ltgc" placeholder="https://t.me/chekchat" />
+        <label>GitHub repo</label><input id="lgh" placeholder="https://github.com/…/chek" />
+        <div style="margin-top:10px"><button onclick="saveLinks()">Save links → site</button></div>
+        <pre class="log hidden" id="linkLog"></pre>
+      </section>
+
+      <section class="card">
+        <h2>X profile texts</h2>
+        <div id="profile"></div>
+      </section>
+
+      <section class="card">
+        <h2>Build log (latest)</h2>
+        <div class="hist" id="hist"></div>
+      </section>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+let S = null, filt = "all", verified = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const toast = (t) => { const el = $("toast"); el.textContent = t; el.style.display = "block"; clearTimeout(el._t); el._t = setTimeout(() => (el.style.display = "none"), 1600); };
+const copy = async (t) => { await navigator.clipboard.writeText(t); toast("Copied"); };
+const toggle = (id) => $(id).classList.toggle("hidden");
+const post = (path, data) => fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) }).then((r) => r.json());
+const local = (iso) => (iso ? new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—");
+const utc = (iso) => (iso ? new Date(iso).toISOString().slice(5, 16).replace("T", " ") + " UTC" : "—");
+
+setInterval(() => ($("clock").textContent = new Date().toISOString().slice(11, 16) + " UTC"), 1000);
+
+async function load() {
+  S = await (await fetch("/api/state" + ($("rotw").value ? "?rotw=" + encodeURIComponent($("rotw").value) : ""))).json();
+  render();
+}
+
+function tile(k, v, d, cls) { return `<div class="tile ${cls}"><div class="k">${k}</div><div class="v">${esc(v)}</div><div class="d">${esc(d)}</div></div>`; }
+
+function render() {
+  const p = S.project, st = S.status, ca = p.status === "live" ? p.token.ca : null;
+  $("tiles").innerHTML =
+    tile("WEBSITE", st.website.ok ? "READY" : "CHECK", st.website.detail, st.website.ok ? "ok" : "bad") +
+    tile("X", st.x.ok ? "READY" : "NOT SET", st.x.detail, st.x.ok ? "ok" : "bad") +
+    tile("TELEGRAM", st.telegram.ok ? "READY" : "NOT SET", st.telegram.detail, st.telegram.ok ? "ok" : "bad") +
+    tile("CONTENT", `${st.content.ready}/${st.content.total}`, `${st.content.posted} posted`, st.content.ok ? "ok" : "wait") +
+    tile("TOKEN", st.token.detail, p.token.launchPlatform, st.token.ok ? "ok" : "wait") +
+    tile("CA", ca ? ca.slice(0, 6) + "…" + ca.slice(-6) : "—", ca ? "same on site? " + (st.website.ok ? "yes" : "NO") : "not launched", ca ? "ok" : "wait") +
+    tile("LAUNCH", st.launch, S.schedule.launchUtc ?? "launch time not set", st.launch === "LIVE" ? "ok" : st.launch.startsWith("DUE") ? "bad" : "wait");
+
+  const launchPost = S.posts.find((x) => x.id === "x-018");
+  $("copyLaunch").disabled = !ca;
+  $("copyLaunch").onclick = () => copy(launchPost.parts.join("\n\n"));
+  $("copyCa").disabled = !ca;
+  $("copyCa").onclick = () => copy(ca);
+  const link = (id, href) => { $(id).href = href || "#"; $(id).classList.toggle("off", !href); };
+  link("openSite", p.links.website); link("openX", p.links.x); link("openTg", p.links.telegram); link("openToken", ca ? "https://pump.fun/coin/" + ca : null);
+  $("updCa").textContent = ca ? "Update CA (live)" : "Update CA";
+
+  $("lx").value = p.links.x || ""; $("ltg").value = p.links.telegram || ""; $("ltgc").value = p.links.telegramChat || ""; $("lgh").value = p.links.github || "";
+  $("d1").value = S.schedule.d1;
+  $("launchAt").value = S.schedule.launchAt ? S.schedule.launchAt.slice(0, 16) : "";
+  $("schedNote").textContent = S.schedule.launchAt ? `Launch: ${S.schedule.launchUtc} = ${local(S.schedule.launchAt)} (your time)` : `Proposed: ${utc(S.schedule.proposedLaunchAt)} — ${S.schedule.why}`;
+
+  const pr = S.profile, bio = ca ? pr.bioLive.replace("{{CA}}", ca) : pr.bioPrelaunch;
+  $("profile").innerHTML = [["Username", "@" + pr.username], ["Display name", pr.displayName], ["Bio (" + bio.length + "/160)", bio], ["Location", pr.location], ["Website", pr.url]]
+    .map(([k, v]) => `<div style="margin-bottom:8px"><label>${k}</label><div class="row"><div style="flex:1;white-space:pre-wrap">${esc(v)}</div><button class="ghost" data-c="${esc(v)}">Copy</button></div></div>`).join("") +
+    `<div class="row" style="gap:12px;margin-top:8px"><a href="/asset/${pr.avatar}" download>avatar.png</a><a href="/asset/${pr.header}" download>header.png</a><a href="/asset/brand/social/token-1000.png" download>token-1000.png</a><a href="/asset/brand/social/telegram-avatar-640.png" download>telegram-avatar.png</a></div>`;
+
+  const upcoming = S.posts.filter((x) => x.status === "ready").slice(0, 4);
+  $("next").innerHTML = upcoming.map(postHtml).join("") || "<p>Nothing queued.</p>";
+  $("hist").innerHTML = S.history.map((h) => `<div><time>${utc(h.date)}</time>${esc(h.title)}</div>`).join("");
+  renderQueue();
+  bindCopy();
+}
+
+function postHtml(x) {
+  const chips = [
+    `<span class="chip">${x.kind === "x" ? "X" : "TG · " + x.where}</span>`,
+    `<span class="chip">${esc(x.category)}</span>`,
+    x.pin ? `<span class="chip y">pin: ${x.pin}</span>` : "",
+    x.status === "posted" ? `<span class="chip g">posted</span>` : x.due ? `<span class="chip y">due now</span>` : "",
+    ...x.missing.map((m) => `<span class="chip red">needs ${m}</span>`),
+    ...(x.chars || []).filter((n) => n > 280).map((n) => `<span class="chip red">${n} chars</span>`),
+  ].join("");
+  const asset = x.asset ? (x.asset.endsWith(".mp4") ? `<video class="thumb" src="/asset/${x.asset}" muted loop autoplay></video>` : `<img class="thumb" src="/asset/${x.asset}" alt="">`) + `<a href="/asset/${x.asset}" download style="font-size:11px">download asset</a>` : "";
+  const text = x.parts.map((t, i) => `<div class="text">${x.parts.length > 1 ? `<b>${i + 1}/${x.parts.length}</b> ` : ""}${esc(t)}</div>`).join("");
+  const checks = x.checks.length ? `<div class="warn" style="margin-top:6px">before posting: ${x.checks.map(esc).join(" · ")}</div>` : "";
+  return `<div class="post ${x.due ? "due" : ""} ${x.status}">
+    <div class="meta"><b>${esc(x.id)}</b><br>${esc(x.slot)}<br>${utc(x.publishAfter)}<br>${local(x.publishAfter)} (local)<br>${chips}</div>
+    <div>${text}${checks}${x.postedUrl ? `<div style="margin-top:6px"><a href="${esc(x.postedUrl)}" target="_blank">${esc(x.postedUrl)}</a></div>` : ""}</div>
+    <div class="side">${x.parts.map((t, i) => `<button ${x.missing.length ? "disabled" : ""} data-c="${esc(t)}">Copy${x.parts.length > 1 ? " " + (i + 1) : ""}</button>`).join("")}
+      ${asset}
+      ${x.status === "posted" ? `<button class="ghost" onclick="mark('${x.kind}','${x.id}','ready')">Undo</button>` : `<button class="ghost" onclick="mark('${x.kind}','${x.id}','posted')">Mark posted</button><button class="ghost" onclick="mark('${x.kind}','${x.id}','skipped')">Skip</button>`}
+    </div></div>`;
+}
+
+function renderQueue() {
+  const list = S.posts.filter((x) => filt === "all" || x.kind === filt);
+  $("queue").innerHTML = list.map(postHtml).join("");
+  bindCopy();
+}
+
+function bindCopy() { document.querySelectorAll("[data-c]").forEach((b) => (b.onclick = () => copy(b.dataset.c))); }
+
+async function mark(kind, id, status) {
+  let url = null;
+  if (status === "posted") url = prompt("Link to the published post (x.com/… or t.me/…), optional:") || null;
+  const r = await post("/api/post-status", { kind, id, status, url });
+  if (r.error) alert(r.error);
+  load();
+}
+
+async function verifyCa() {
+  $("caChecks").innerHTML = "checking on-chain…";
+  $("caApply").classList.add("hidden");
+  const r = await post("/api/verify-ca", { ca: $("caInput").value });
+  verified = r.ok ? $("caInput").value.trim() : null;
+  $("caChecks").innerHTML = (r.checks || []).map((c) => `<div class="${c.ok ? "y" : c.critical === false ? "s" : "n"}">${esc(c.label)} — <span style="color:var(--fog)">${esc(c.detail)}</span></div>`).join("") +
+    (r.facts && r.facts.createdAt ? `<div style="margin-top:8px;color:var(--fog)">created ${utc(r.facts.createdAt)} · supply ${esc(r.facts.totalSupply)} · creator ${esc(r.facts.creatorWallet)} · creator buy: ${esc(r.facts.creatorBuy)}</div>` : "");
+  $("caApply").classList.toggle("hidden", !r.ok);
+}
+
+async function poll(id, el) {
+  el.classList.remove("hidden");
+  for (;;) {
+    const j = await (await fetch("/api/job/" + id)).json();
+    el.textContent = j.log.join("\n") + (j.done ? `\n\n${j.ok ? "✓ DONE" : "✗ FAILED — read the log"}` : "\n…");
+    el.scrollTop = el.scrollHeight;
+    if (j.done) return load();
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+}
+
+async function applyCa() {
+  if (!verified || verified !== $("caInput").value.trim()) return alert("Verify this exact address first.");
+  if (!confirm(`Publish ${verified} as the OFFICIAL contract address on the website?`)) return;
+  const r = await post("/api/apply-ca", { ca: verified });
+  if (r.error) return alert(r.error);
+  poll(r.job, $("caLog"));
+}
+
+async function saveLinks() {
+  const r = await post("/api/links", { x: $("lx").value, telegram: $("ltg").value, telegramChat: $("ltgc").value, github: $("lgh").value });
+  if (r.error) return alert(r.error);
+  poll(r.job, $("linkLog"));
+}
+
+async function saveSchedule() {
+  const l = $("launchAt").value;
+  const r = await post("/api/schedule", { d1: $("d1").value, launchAt: l ? l + ":00Z" : null });
+  if (r.error) return alert(r.error);
+  toast("Saved"); load();
+}
+
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>

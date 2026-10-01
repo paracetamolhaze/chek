@@ -1,10 +1,41 @@
 {
-  "$comment": "Build log. Add an entry only when the thing has actually happened. Never edit dates. Times are UTC. proof.href = a commit, post or transaction anyone can open.",
+  "$comment": "Build log. Add an entry only when the thing has actually happened. Never edit dates. Times are UTC. proof.label names the receipt (commit hash, post, tx); proof.href is added once it is publicly reachable.",
   "entries": [
     {
       "date": "2026-10-01T19:01:00Z",
       "title": "Project started",
-      "detail": "Empty folder. Idea: a meme coin about a receipt that only prints what it can prove."
+      "detail": "Empty folder. Idea: a meme coin about a receipt that only prints what it can prove.",
+      "proof": { "label": "commit 39bcca1" }
+    },
+    {
+      "date": "2026-10-01T19:24:00Z",
+      "title": "Name picked: CHEK ($CHEK)",
+      "detail": "First draft was RECEIPTS / $RCPT. A name check found the ticker already in use, so we renamed before publishing anything. Чек = receipt. The check = the bill. Check = what you should do.",
+      "proof": { "label": "commit 39bcca1 · docs/concept.md" }
+    },
+    {
+      "date": "2026-10-01T19:24:00Z",
+      "title": "Mascot drawn",
+      "detail": "Chek exists: 7 expressions, 6 poses, drawn as code so every image comes from one source.",
+      "proof": { "label": "commit 39bcca1 · brand/mascot.mjs" }
+    },
+    {
+      "date": "2026-10-01T19:24:00Z",
+      "title": "Website v0 deployed",
+      "detail": "chekcoin.vercel.app claimed. Static site, contract shown as NOT LAUNCHED YET.",
+      "proof": { "label": "commit 1c2ce13" }
+    },
+    {
+      "date": "2026-10-01T19:36:00Z",
+      "title": "Brand system + villains",
+      "detail": "Logo mark, avatars, X header, token image, OG card, meme kit. Two villains join the lore: The Shredder and The Coupon.",
+      "proof": { "label": "commit cb610de" }
+    },
+    {
+      "date": "2026-10-01T19:36:00Z",
+      "title": "Website v1",
+      "detail": "Transparency page, meme kit, 404. Every section of the receipt is live.",
+      "proof": { "label": "commit b30a175" }
     }
   ]
 }

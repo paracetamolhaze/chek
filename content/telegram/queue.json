@@ -1,0 +1,153 @@
+{
+  "$comment": "Telegram: one public channel (announcements) + one chat (community). Nothing is posted automatically. Same slots/placeholders as content/x/queue.json.",
+  "setup": {
+    "channel": {
+      "username": "chekcoin",
+      "title": "CHEK 🧾 $CHEK",
+      "description": "Official channel of $CHEK — a meme coin with one rule: every claim comes with a receipt.\n\nSite: chekcoin.vercel.app\nX: x.com/chekcoin\n\nAdmins never DM first. We never ask for seed phrases.",
+      "avatar": "brand/social/telegram-avatar-640.png"
+    },
+    "chat": {
+      "username": "chekchat",
+      "usernameFallbacks": [
+        "chekcoin_chat",
+        "chek_chat"
+      ],
+      "title": "CHEK 🧾 chat",
+      "description": "Community chat for $CHEK. Memes welcome. Read the pinned message first.\nOfficial links only in the pin. Admins never DM first.",
+      "avatar": "brand/social/telegram-avatar-640.png"
+    }
+  },
+  "posts": [
+    {
+      "id": "tg-001",
+      "where": "channel",
+      "slot": "D3 13:00",
+      "pin": "prelaunch",
+      "category": "transparency",
+      "text": "🧾 CHEK — official channel\n\nWhat: a meme coin on Solana with one rule — every claim comes with a receipt.\nStatus: NOT LAUNCHED. No contract address exists yet. Anyone selling $CHEK now is selling a fake.\n\nOfficial links (only these):\n• Site: {{SITE_URL}}\n• X: {{X_URL}}\n• Chat: {{TG_CHAT_URL}}\n• Build log: {{SITE_URL}}/history\n\n⚠️ Admins never DM first. We never ask for a seed phrase, private key or “wallet validation”.",
+      "status": "ready",
+      "publishAfter": "2026-10-04T13:00:00.000Z"
+    },
+    {
+      "id": "tg-002",
+      "where": "chat",
+      "slot": "D3 13:05",
+      "pin": "prelaunch",
+      "category": "community",
+      "kind": "rules",
+      "text": "🧾 Welcome to the CHEK chat.\n\nRules (short, like a receipt):\n1. Memes > price talk.\n2. No shilling other tokens, no referral links, no “DM me”.\n3. No financial advice, no promises. Nobody here knows the future.\n4. Be decent. Bots and scammers get shredded.\n\nSafety:\n• Admins NEVER DM first. Anyone who does is a scammer.\n• Never share a seed phrase or private key. With anyone. Ever.\n• The only contract address is on {{SITE_URL}}, in the X pin and in the channel pin. All three must match.\n\nOfficial links: {{SITE_URL}} · {{X_URL}} · {{TG_URL}}",
+      "status": "ready",
+      "publishAfter": "2026-10-04T13:05:00.000Z"
+    },
+    {
+      "id": "tg-003",
+      "where": "chat",
+      "slot": "D3 13:05",
+      "kind": "welcome",
+      "category": "community",
+      "text": "gm {name} 🧾 welcome to CHEK.\nread the pinned message. admins never DM first — if someone does, report and block.\nofficial site: {{SITE_URL}}",
+      "note": "Welcome text for a moderation bot (e.g. Rose / Combot / Shieldy). {name} is the bot's own placeholder.",
+      "status": "ready",
+      "publishAfter": "2026-10-04T13:05:00.000Z"
+    },
+    {
+      "id": "tg-004",
+      "where": "channel",
+      "slot": "D3 14:30",
+      "category": "community",
+      "text": "the telegram is open 🧾\n\nchannel = announcements (you're here)\nchat = memes and people: {{TG_CHAT_URL}}\n\nwhat exists today: site, build log, meme kit, this channel.\nwhat doesn't exist yet: the token. no CA until launch day.",
+      "asset": "content/mascot/02-receipt.png",
+      "status": "ready",
+      "publishAfter": "2026-10-04T14:30:00.000Z"
+    },
+    {
+      "id": "tg-005",
+      "where": "channel",
+      "slot": "D4 15:00",
+      "category": "lore",
+      "text": "lore drop: the villains 🧾\n\nTHE SHREDDER — eats evidence. deleted tweets, wiped sites, vanished devs.\nTHE COUPON — “100X OFF! TODAY ONLY!” always expiring, never real.\n\nboth are free in the meme kit: {{SITE_URL}}/kit",
+      "asset": "content/memes/05-the-shredder.png",
+      "status": "ready",
+      "publishAfter": "2026-10-05T15:00:00.000Z"
+    },
+    {
+      "id": "tg-006",
+      "where": "channel",
+      "slot": "D5 20:00",
+      "category": "announcement",
+      "text": "🧾 $CHEK launches {{LAUNCH_UTC}} on pump.fun.\n\nThe contract address will appear at the same minute:\n• on {{SITE_URL}}\n• in the X pin\n• pinned here\n\nNo CA exists before that. Anything earlier is fake. Admins never DM first.",
+      "asset": "content/mascot/02-receipt.png",
+      "status": "ready",
+      "publishAfter": "2026-10-06T20:00:00.000Z"
+    },
+    {
+      "id": "tg-007",
+      "where": "channel",
+      "slot": "T+0",
+      "pin": "live",
+      "category": "token",
+      "text": "OFFICIAL CONTRACT ADDRESS:\n{{CA}}\n\nOfficial links:\n• Website: {{SITE_URL}}\n• X: {{X_URL}}\n• Pump.fun: https://pump.fun/coin/{{CA}}\n• Explorer: https://solscan.io/token/{{CA}}\n\nWARNING:\nAdmins will never DM first.\nAlways verify the Contract Address from official sources.",
+      "needs": [
+        "CA"
+      ],
+      "checks": [
+        "pin this message (replace the pre-launch pin)",
+        "forward to the chat and pin there too"
+      ],
+      "status": "ready",
+      "publishAfter": null
+    },
+    {
+      "id": "tg-008",
+      "where": "channel",
+      "slot": "T+10m",
+      "category": "token",
+      "text": "🧾 $CHEK is live.\n\nA meme coin with one rule: every claim comes with a receipt.\n\nCA: {{CA}}\n\nVerify it matches the site: {{SITE_URL}}\nNo presale. No team mint. Creator wallet and creator buy are published on the site.",
+      "asset": "content/mascot/05-live.png",
+      "needs": [
+        "CA"
+      ],
+      "status": "ready",
+      "publishAfter": null
+    },
+    {
+      "id": "tg-009",
+      "where": "channel",
+      "slot": "T+30m",
+      "category": "transparency",
+      "text": "the receipt for the launch 🧾\n\nCA: {{CA}}\nNetwork: Solana · Platform: pump.fun\nCreated: {{CREATED_AT}}\nSupply: {{SUPPLY}}\nMint authority: {{MINT_AUTH}} · Freeze authority: {{FREEZE_AUTH}}\nCreator wallet: {{CREATOR}}\nCreator buy at launch: {{CREATOR_BUY}}\nOther allocations: none\n\nCheck it yourself:\nhttps://solscan.io/token/{{CA}}\nhttps://rugcheck.xyz/tokens/{{CA}}",
+      "needs": [
+        "CA",
+        "CREATED_AT",
+        "SUPPLY",
+        "CREATOR"
+      ],
+      "status": "ready",
+      "publishAfter": null
+    },
+    {
+      "id": "tg-010",
+      "where": "chat",
+      "slot": "T+6h",
+      "category": "community",
+      "text": "RECEIPT OF THE WEEK is open 🧾\n\nPost the most absurd real receipt you have (hide card digits and your address).\nBest one gets printed into the lore. No money prizes — just glory and a line in the long receipt.",
+      "asset": "content/memes/10-receipt-of-the-week.png",
+      "status": "ready",
+      "publishAfter": null
+    },
+    {
+      "id": "tg-011",
+      "where": "channel",
+      "slot": "T+24h",
+      "category": "build",
+      "text": "24h receipt 🧾\n\n• launched on pump.fun, CA {{CA_SHORT}} — same on site, X and here\n• transparency post with every wallet we use\n• receipt of the week: {{ROTW_ENTRIES}} entries\n• build log: {{SITE_URL}}/history\n\nNext: lore chapter 06 and the long receipt page.\nNo price talk. That's the recap.",
+      "needs": [
+        "CA",
+        "ROTW_ENTRIES"
+      ],
+      "status": "ready",
+      "publishAfter": null
+    }
+  ]
+}

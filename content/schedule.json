@@ -1,0 +1,7 @@
+{
+  "$comment": "Times are UTC. d1 = the day the X account goes public. launchAt stays null until the owner confirms the launch time; T+ posts get their publishAfter from it. Recompute with: node scripts/schedule.mjs",
+  "d1": "2026-10-02",
+  "launchAt": null,
+  "proposedLaunchAt": "2026-10-07T15:00:00Z",
+  "why": "15:00 UTC = 11:00 New York, 17:00 Berlin — US and EU are both awake."
+}
