@@ -24,3 +24,4 @@ Thumbs.db
 
 # owner-only notes (personal paths, local setup) — never public
 private/
+server/.samples/
