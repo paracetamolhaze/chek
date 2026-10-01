@@ -319,7 +319,7 @@ export default function Home() {
               <Row label="Free allocation to the creator" value="0%" />
               <Row
                 label="Creator buy at creation"
-                value={t.creatorBuy ?? `Planned ≈ ${project.token.creatorBuyTargetUsd ?? 200} — exact SOL, ${T} and % from the chain`}
+                value={t.creatorBuy ?? `Planned ≈ $${project.token.creatorBuyTargetUsd ?? 200} — exact SOL, ${T} and % from the chain`}
                 muted={!t.creatorBuy}
               />
               <Row

@@ -67,7 +67,7 @@ export const ca: string | null =
 
 export const isLive = ca !== null;
 
-export const cashtag = `${project.ticker}`;
+export const cashtag = `$${project.ticker}`;
 
 // Before the token exists: "launching on Solana", never "built on Solana" / "live".
 export const networkPhrase = isLive ? `on ${project.network}` : `launching on ${project.network}`;
