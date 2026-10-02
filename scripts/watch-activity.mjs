@@ -1,7 +1,7 @@
 // Watches site and drop activity from the PC (admin API, read-only) and exits when something needs a look,
 // so a background run wakes the operator. Every check is appended to private/activity.log.
 //   node scripts/watch-activity.mjs [--every 120] [--max 60]
-//   exits on: a new X drop entry (the first ones are checked by hand), an X drop form error (500), a new open alert,
+//   exits on: an X drop form error (500) or a new open alert,
 //   or after --max minutes with a summary.
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -53,8 +53,7 @@ for (;;) {
   }
   appendFileSync(LOG, `${s.at} ${brief(s)}${xdrop(s.metrics) ? ` · form: ${xdrop(s.metrics)}` : ""}\n`);
   const events = [];
-  if (s.x > prev.x) events.push(`new X drop entries: ${prev.x} → ${s.x}`);
-  if (s.tg > prev.tg) events.push(`new Telegram drop entries: ${prev.tg} → ${s.tg}`);
+  // entries flow steadily now: they go into the hourly summary, only problems wake the operator
   if ((s.metrics.xdrop_error ?? 0) > (prev.metrics.xdrop_error ?? 0)) events.push(`X drop form errors: ${s.metrics.xdrop_error}`);
   const newAlerts = s.alerts.filter((a) => !prev.alerts.includes(a));
   if (newAlerts.length) events.push(`new alerts: ${newAlerts.join(" | ")}`);
