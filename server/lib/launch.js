@@ -12,7 +12,8 @@ import { db } from "./db.js";
 import { AppError } from "./http.js";
 import { project } from "./project.js";
 import { runPublisher } from "./publisher.js";
-import { reschedule } from "./queue.js";
+import { context, render, reschedule } from "./queue.js";
+import { notifyOwner } from "./telegram.js";
 import { createReceipt } from "./receipts.js";
 
 const num = (s) => (s == null ? null : Number(String(s).replace(/[,%]/g, "")));
@@ -87,6 +88,20 @@ export async function confirmLaunch(ca, by = "owner") {
   const x = await runPublisher(now, { ids: ["x-310"], platforms: ["x"] }).catch((e) => ({ error: e.message }));
   const tg = await runPublisher(now, { ids: ["tg-310"], platforms: ["telegram"] }).catch((e) => ({ error: e.message }));
   await audit("launch", "launch.announced", "ok", { ref: ca, detail: { x, tg } });
+
+  // X not connected or the post failed → the owner gets the exact launch post with a one-tap “open in X” button
+  if (x?.x?.published !== "x-310") {
+    const [row] = await sql`select * from chek.queue where id = 'x-310'`;
+    const out = row ? render(row, await context()) : null;
+    const text = out?.parts?.[0];
+    const owner = (await getSetting("owner"))?.telegramUserId;
+    if (text && owner) {
+      await notifyOwner(owner, `🧾 LAUNCH — post this on X now (then pin it):
+
+${text}`, [[{ text: "Open X with this post", url: `https://x.com/intent/post?${new URLSearchParams({ text })}` }]]).catch(() => null);
+      await alert("warn", "launch_x_manual", "The X launch post was not published automatically — the owner got it in Telegram with a one-tap button.");
+    }
+  }
   return { ok: true, live, receipts: { launch: launchR.number, creator: creatorR?.number ?? null }, x, tg, checks: report.checks };
 }
 

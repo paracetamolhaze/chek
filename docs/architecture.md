@@ -26,8 +26,8 @@ Goal: CHEK runs as an autonomous meme/community project. The owner only creates 
 | Backend | Vercel Node functions `api/*.js` (8 of 12) | $0 |
 | Database | Postgres, schema `chek`, Supabase project dedicated to CHEK | $0 (Free) |
 | Scheduler | Supabase pg_cron + pg_net → `POST /api/cron` every 5 min; Vercel daily cron as backup | $0 |
-| AI | Claude through the owner's subscription: the cloud queues prompts in `chek.ai_jobs`, the **PC agent** runs them with Claude Code and returns the text; the cloud validates it (zod) before use. No AI key in the cloud. `ANTHROPIC_API_KEY` stays possible as a paid fallback. | $0 extra |
-| X | Decision pending: official API (pay-per-use) or another method — see the report | API: ~$0.015 per post without a link |
+| AI | Claude through the owner's subscription via the local Claude bridge already running on the PC (shared, one CHEK job at a time, waits when busy): the cloud queues prompts in `chek.ai_jobs`, the **PC agent** runs them with Claude Code and returns the text; the cloud validates it (zod) before use. No AI key in the cloud. `ANTHROPIC_API_KEY` stays possible as a paid fallback. | $0 extra |
+| X | Owner chose browser automation (like the owner's other project); setting it up for CHEK was blocked by the Claude Code safety system (non-API automation of x.com). Ready alternatives: official API (pay-per-use) or one-tap posting from the Telegram bot. At launch the bot always sends the owner the exact X post as a fallback. | API: ~$0.015 per post without a link |
 | Telegram | Official Bot API (webhook) | $0 |
 | Solana | Public RPC, read-only | $0 |
 | Images | Rendered in-house from code (SVG → PNG, resvg) | $0 |

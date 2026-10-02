@@ -50,6 +50,7 @@ const tokenMention = (t) => /\$CHEKD\b/i.test(t);
 export async function runEngine() {
   const sql = await db();
   const cadence = await getSetting("cadence");
+  const schedule = await getSetting("schedule");
   const today = new Date().toISOString().slice(0, 10);
   let queued = 0;
 
@@ -88,10 +89,11 @@ export async function runEngine() {
   const res = await ask({
     kind: "engine_plan",
     schema: Plan,
-    system: `${VOICE}\n\nYou plan today's extra CHEK posts on top of the prepared calendar. Return 0–3 posts. Mix formats; never repeat a recent joke or a planned post. Receipt images should be recognizable without a logo: itemized lines, a status, a total. At most one post may mention $CHEKD. No links unless the post is about the website itself.`,
+    system: `${VOICE}\n\nYou plan today's extra CHEK posts on top of the prepared calendar. Return 0–3 posts. Mix formats; never repeat a recent joke or a planned post. Receipt images should be recognizable without a logo: itemized lines, a status, a total. At most one post may mention $CHEKD. No links unless the post is about the website itself.\n\nPre-launch story, in this order: CHEK EXISTS (the character and the meme) → CHEK BUILDS (real build receipts) → PEOPLE USE CHEK (the Receipt Generator, community receipts) → THEN $CHEKD LAUNCHES. Before launch, X gets roughly 3–5 quality posts a day IN TOTAL including the planned calendar — only add what's missing to reach that, and never force it. Prefer shareable receipt images, memes and character content; no fake urgency, no fake engagement, no fake community.`,
     prompt: [
       `Today (UTC): ${today}`,
       `Project status: ${p.status === "live" ? "token live" : "pre-launch — the token does not exist yet"}`,
+      `Public posting day: ${schedule?.d1 ? Math.floor((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${schedule.d1}T00:00:00Z`)) / 86400e3) + 1 : "?"} (day 1 = ${schedule?.d1 ?? "?"}) · launch time: ${schedule?.launchAt ? `announced for ${schedule.launchAt}` : "not announced yet — never hint at a date"}`,
       `Live features people can use without buying anything: the build log (/history), the Receipt Board (/receipts), the Receipt Generator (/print — anyone writes a claim and gets a shareable receipt).`,
       `Cadence slots: morning ${cadence.morning}, day ${cadence.day}, evening ${cadence.evening}`,
       `Already planned for today (do not duplicate):\n${planned.map((r) => `- [${r.platform} ${r.slot ?? ""}] ${r.text}`).join("\n") || "(nothing)"}`,
