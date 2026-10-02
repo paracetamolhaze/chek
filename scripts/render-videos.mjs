@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import * as M from "../brand/mascot.mjs";
 import { FONT_CSS, close, open } from "./lib/render.mjs";
 
@@ -317,14 +317,19 @@ function ffmpeg(args) {
   });
 }
 
-async function render(name, v) {
+// v.w / v.h: frame size (default square); v.out: output folder (default content/animations)
+export async function render(name, v) {
+  const W = v.w ?? S;
+  const H = v.h ?? S;
+  const out = v.out ?? OUT;
+  mkdirSync(out, { recursive: true });
   const dir = join(TMP, name);
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
   const b = await open();
   const page = await b.newPage();
-  await page.setViewport({ width: S, height: S });
-  await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${FONT_CSS}${CSS}</style></head><body>${v.html}</body></html>`, { waitUntil: "load" });
+  await page.setViewport({ width: W, height: H });
+  await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${FONT_CSS}${CSS}.f{width:${W}px;height:${H}px}</style></head><body>${v.html}</body></html>`, { waitUntil: "load" });
   await page.evaluate(() => document.fonts.ready);
   const frames = Math.round(v.duration * FPS);
   for (let i = 0; i < frames; i++) {
@@ -342,14 +347,19 @@ async function render(name, v) {
   await page.evaluate((t) => {
     for (const an of document.getAnimations()) an.currentTime = t;
   }, v.poster * 1000);
-  await page.screenshot({ path: join(OUT, `${name}.png`), type: "png" });
+  await page.screenshot({ path: join(out, `${name}.png`), type: "png" });
   await page.close();
-  await ffmpeg(["-framerate", String(FPS), "-i", join(dir, "%04d.jpg"), "-c:v", "libx264", "-preset", "medium", "-crf", "21", "-pix_fmt", "yuv420p", "-movflags", "+faststart", join(OUT, `${name}.mp4`)]);
+  await ffmpeg(["-framerate", String(FPS), "-i", join(dir, "%04d.jpg"), "-c:v", "libx264", "-preset", "medium", "-crf", "21", "-pix_fmt", "yuv420p", "-movflags", "+faststart", join(out, `${name}.mp4`)]);
   rmSync(dir, { recursive: true, force: true });
-  console.log(`✓ content/animations/${name}.mp4 (${v.duration}s) + poster`);
+  console.log(`✓ ${join(out, name).replace(ROOT, "")}.mp4 (${v.duration}s) + poster`);
 }
 
-mkdirSync(OUT, { recursive: true });
-const pick = process.argv.slice(2);
-for (const [name, v] of Object.entries(VIDEOS)) if (!pick.length || pick.includes(name)) await render(name, v);
-await close();
+// shared with scripts/render-shorts.mjs (vertical videos)
+export { C, CSS, FPS, HANDLE, HOST, M, P, ROOT, S, T, a, ch, close, tag, villain };
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  mkdirSync(OUT, { recursive: true });
+  const pick = process.argv.slice(2);
+  for (const [name, v] of Object.entries(VIDEOS)) if (!pick.length || pick.includes(name)) await render(name, v);
+  await close();
+}
