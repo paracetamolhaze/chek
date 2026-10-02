@@ -280,4 +280,12 @@ create table chek.drop_rounds (
 alter table chek.drop_rounds enable row level security;
 `,
   },
+  {
+    version: "007_inbox_kinds",
+    sql: `
+-- channel direct messages and answered comment questions are kept with the other interactions
+alter table chek.interactions drop constraint if exists interactions_kind_check;
+alter table chek.interactions add constraint interactions_kind_check check (kind in ('mention','reply','quote','submission','dm','comment'));
+`,
+  },
 ];

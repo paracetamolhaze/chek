@@ -16,6 +16,7 @@ import { tg } from "../server/lib/telegram.js";
 import { attachLink, confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
 import { dropClosed } from "../server/lib/xdrop.js";
 import { refreshRoundLinks } from "../server/lib/roundlinks.js";
+import { commentQuestion, dmMessage, ownerPick, ownerReply } from "../server/lib/inbox.js";
 import { isPubkey } from "../shared/solana-inspect.mjs";
 import { chatFromLink } from "../server/lib/telegram.js";
 
@@ -88,7 +89,10 @@ async function groupMessage(m, s) {
     return;
   }
   const wallet = text.match(/\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/)?.[0];
-  if (!wallet) return;
+  if (!wallet) {
+    if (!admin) await commentQuestion(m).catch(() => {}); // launch / giveaway / chat / project questions get a short answer
+    return;
+  }
   const r = await registerDrop(m.from.id, wallet);
   const react = (emoji) => tg("setMessageReaction", { chat_id: m.chat.id, message_id: m.message_id, reaction: [{ type: "emoji", emoji }] }).catch(() => {});
   if (r.ok) return react("👍");
@@ -173,7 +177,13 @@ export async function POST(request) {
         return json({ ok: true });
       }
       if (!owner || q.from.id !== owner) return json({ ok: true });
-      const [act, id] = String(q.data || "").split(":");
+      const [act, id, ...rest] = String(q.data || "").split(":");
+      if (act === "dm") {
+        const ok = await ownerPick(id, rest[0], rest[1]).catch(() => false);
+        await tg("answerCallbackQuery", { callback_query_id: q.id, text: ok ? "Sent ✅" : "Couldn't send" });
+        if (ok && q.message) await tg("editMessageReplyMarkup", { chat_id: q.message.chat.id, message_id: q.message.message_id, reply_markup: { inline_keyboard: [] } }).catch(() => {});
+        return json({ ok: true });
+      }
       if (act === "xp" || act === "xs") {
         const done = act === "xp" ? await confirmPosted(id, null, owner) : { ok: await skipHandoff(id) };
         await tg("answerCallbackQuery", { callback_query_id: q.id, text: !done.ok ? "Already handled" : act === "xs" ? "Skipped" : done.published ? "Logged as posted ✅" : done.waitingForLink ? "Paste the post link here" : `Next: part ${done.next}` });
@@ -199,6 +209,11 @@ export async function POST(request) {
     }
 
     const m = u.message;
+    // messages to the channel (its direct messages chat)
+    if (m?.chat?.is_direct_messages) {
+      await dmMessage(m, owner);
+      return json({ ok: true });
+    }
     // comments under channel posts arrive from the linked discussion group
     if (m && (m.chat.type === "supergroup" || m.chat.type === "group")) {
       await groupMessage(m, s);
@@ -219,6 +234,11 @@ export async function POST(request) {
     }
 
     const isOwner = owner && m.from.id === owner;
+    // the owner answered a forwarded channel message → send it as the channel
+    if (isOwner && m.reply_to_message && (await ownerReply(m).catch(() => false))) {
+      await reply(m.chat.id, "✅ Sent as the channel.");
+      return json({ ok: true });
+    }
     // the owner pasted the link of an X post they just made → log it (and send the next thread part)
     if (isOwner && tweetIdOf(m.text)) {
       const id = await openHandoff();
