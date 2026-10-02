@@ -63,7 +63,7 @@ ok(render(x201, ctx).parts[0].includes("/print"), "x-201 links the Receipt Gener
 await core.setSetting("autopilot", "dry");
 await core.setSetting("dry_run", { id: "test-run", startedAt: "2026-10-02T00:00:00Z", endsAt: "2026-10-03T00:00:00Z" });
 await core.setSetting("schedule", { d1: "2026-10-02", launchAt: null });
-await sql`update chek.queue set publish_after = '2026-10-04T00:00:00Z' where id like 'xd-%' or id like 'tg-drop-%'`;
+await sql`update chek.queue set publish_after = '2026-10-04T00:00:00Z' where id like 'xg-%' or id like 'xt-%' or id like 'tg-gw-%'`;
 await sql`update chek.queue set publish_after = case id when 'tg-101' then '2026-10-02T12:30:00Z'::timestamptz when 'x-101' then '2026-10-02T13:00:00Z'::timestamptz else publish_after end`;
 await runPublisher(new Date("2026-10-02T15:01:00Z"));
 await runPublisher(new Date("2026-10-02T15:02:00Z"));

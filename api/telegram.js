@@ -14,6 +14,7 @@ import { enqueue } from "../server/lib/queue.js";
 import { renderClaimReceipt } from "../server/lib/render.js";
 import { tg } from "../server/lib/telegram.js";
 import { confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
+import { dropClosed } from "../server/lib/xdrop.js";
 import { isPubkey } from "../shared/solana-inspect.mjs";
 import { chatFromLink } from "../server/lib/telegram.js";
 
@@ -24,7 +25,7 @@ const PER_HOUR = 8;
 
 function welcome() {
   const p = project();
-  const drop = p.drop?.status === "open" ? `\n\n🎁 ${p.drop.name}: send /drop and your public Solana address to enter (subscribe to ${p.links.telegram.replace("https://", "")} first).` : "";
+  const drop = p.drop?.status === "open" ? `\n\n🎁 Telegram drop: send /drop and your public Solana address to enter (subscribe to ${p.links.telegram.replace("https://", "")} first). The main drop runs on X: ${p.links.website}/drop` : "";
   return `🧾 I print receipts.\n\nSend me any claim — “partnership soon”, “just one more trade”, anything — and I'll print it as a ${p.name} receipt you can share.\n\nOptional: add a stamp on a new line — VOID, PROOF PENDING or NO RECEIPT.${drop}\n\nI never ask for seed phrases, private keys, signatures or fees. Official links: ${p.links.website}`;
 }
 
@@ -32,7 +33,7 @@ function welcome() {
 // Returns { ok, n } or { error } — the caller answers (private chat: a message; comments: a reaction).
 async function registerDrop(userId, wallet) {
   const p = project();
-  if (p.drop?.status !== "open") return { error: "closed" };
+  if (!p.drop?.telegram || (await dropClosed(p))) return { error: "closed" };
   if (!isPubkey(wallet)) return { error: "invalid" };
   const member = await tg("getChatMember", { chat_id: chatFromLink(p.links.telegram), user_id: userId }).catch(() => null);
   if (!["member", "administrator", "creator"].includes(member?.status)) return { error: "not_subscribed" };
@@ -47,10 +48,12 @@ async function registerDrop(userId, wallet) {
   return { ok: true, n };
 }
 
+// Terms of the Telegram drop (the X drop is separate: reply on X + the link at /drop).
 function dropTerms(p) {
-  const d = p.drop;
+  const d = p.drop.telegram;
   const t = `$${p.ticker}`;
-  return `Airdrop: the first ${d.airdrop.wallets} valid entries get ${d.airdrop.each.toLocaleString("en-US")} ${t} each. Draw: ${d.draw.winners} random wallets × ${d.draw.each.toLocaleString("en-US")} ${t}. All from the creator's own launch buy, sent within 48 h after the draw (24 h after launch), only if ${t} launches.`;
+  const n = (v) => v.toLocaleString("en-US");
+  return `Telegram drop — airdrop: the first ${n(d.airdrop.wallets)} valid entries get ${n(d.airdrop.each)} ${t} each. Draw: ${n(d.draw.winners)} random wallets × ${n(d.draw.each)} ${t}. All from the creator's own launch buy, sent within 48 h after the draw (24 h after launch), only if ${t} launches.\n\nThe main drop runs on X with its own list: reply to a drop post on X with your address, then paste the link at ${p.links.website}/drop. You can enter both.`;
 }
 
 async function enterDrop(m, wallet) {

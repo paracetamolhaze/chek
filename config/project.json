@@ -81,24 +81,41 @@
   "drop": {
     "name": "CHEK Receipt Drop",
     "status": "open",
-    "airdrop": {
-      "wallets": 500,
-      "each": 10000
-    },
-    "draw": {
-      "winners": 100,
-      "each": 100000
-    },
+    "openedAt": "2026-10-02T11:30:00Z",
     "poolTokens": 15000000,
     "poolPctSupply": "1.5%",
-    "winners": 100,
-    "perWinner": 100000,
+    "x": {
+      "name": "X drop",
+      "airdrop": {
+        "wallets": 300,
+        "each": 10000
+      },
+      "draw": {
+        "winners": 70,
+        "each": 100000
+      },
+      "tokens": 10000000,
+      "entry": "follow @chekcoinsol, repost a drop post, reply to it with your public Solana address, then paste the link to your reply at chekcoinsol.xyz/drop",
+      "check": "the site checks that the link is a public reply to @chekcoinsol, written after the drop opened, that contains a valid Solana address; one entry per X account and per address; follow and repost are asked, not checked"
+    },
+    "telegram": {
+      "name": "Telegram drop",
+      "airdrop": {
+        "wallets": 200,
+        "each": 10000
+      },
+      "draw": {
+        "winners": 30,
+        "each": 100000
+      },
+      "tokens": 5000000,
+      "entry": "subscribe to t.me/chekcoinsol and leave your public Solana address in the comments under the pinned Telegram drop post (or send it to @chekcoinsol_bot) — one address per Telegram account, channel subscribers only"
+    },
+    "separate": "two separate drops with separate lists and separate draws — you can enter both",
     "source": "the creator wallet’s own launch buy (bought on the curve like everyone; free allocation stays 0%)",
-    "entry": "subscribe to t.me/chekcoinsol and leave your public Solana address in the comments under the drop post (or send it to @chekcoinsol_bot) — one address per Telegram account",
-    "x": "follow @chekcoinsol and repost the drop post (asked, not verifiable)",
-    "draw_rules": "24 hours after launch; draw winners picked at random with a published Solana blockhash as the seed, anyone can re-check",
+    "draw_rules": "entries close 24 hours after launch; each drop’s winners are picked at random with a published Solana blockhash as the seed, anyone can re-check",
     "send": "from the creator wallet within 48 hours after the draw; every transfer published as an on-chain receipt",
-    "condition": "only if $CHEKD launches; airdrop for the first 500 valid entries, draw among all valid entries",
+    "condition": "only if $CHEKD launches; in each drop the airdrop goes to the first valid entries in order, the draw is among all valid entries",
     "never": "no claim site, no wallet connect, no signing, no fees, no DMs from us"
   }
 }

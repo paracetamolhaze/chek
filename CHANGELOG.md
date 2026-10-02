@@ -9,6 +9,7 @@ Dates are UTC. Entries are added when the change ships — never backdated.
 - X via the owner's Telegram (one tap per post); bot quiet hours at night.
 - Six brand videos; the content engine can attach videos and memes from an asset library.
 - Pre-launch posting live at 09:50 UTC; dry run ended after 10 h at the owner's request; news desk off.
+- Receipt Drop: the main drop runs on X (entry = a reply with your address, checked from its public link at /drop), with a separate drop in Telegram; 15M $CHEKD in total from the creator's launch buy.
 
 ## 2026-10-01 (final decisions, from 23:15 UTC)
 

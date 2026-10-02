@@ -32,6 +32,7 @@ export function fmtUtc(iso) {
 }
 
 const host = (u) => (u ? u.replace(/^https?:\/\//, "").replace(/\/$/, "") : null);
+const num = (n) => (typeof n === "number" ? n.toLocaleString("en-US") : null);
 
 export function placeholders(project, schedule, extra = {}, now = new Date()) {
   const t = project.token;
@@ -64,11 +65,16 @@ export function placeholders(project, schedule, extra = {}, now = new Date()) {
     CREATOR_SOL: t.creatorBuySol,
     CREATOR_TOKENS: t.creatorTokens,
     CREATOR_PCT: t.creatorPct,
-    DROP_WINNERS: project.drop ? String(project.drop.winners) : null,
-    DROP_EACH: project.drop ? project.drop.perWinner.toLocaleString("en-US") : null,
-    DROP_POOL: project.drop ? project.drop.poolTokens.toLocaleString("en-US") : null,
-    AIRDROP_WALLETS: project.drop?.airdrop ? String(project.drop.airdrop.wallets) : null,
-    AIRDROP_EACH: project.drop?.airdrop ? project.drop.airdrop.each.toLocaleString("en-US") : null,
+    // Receipt Drop: the main drop on X + a separate drop in Telegram (config.drop is the only source of these numbers)
+    DROP_POOL: num(project.drop?.poolTokens),
+    X_AIRDROP: num(project.drop?.x?.airdrop.wallets),
+    X_AIRDROP_EACH: num(project.drop?.x?.airdrop.each),
+    X_WINNERS: num(project.drop?.x?.draw.winners),
+    X_EACH: num(project.drop?.x?.draw.each),
+    TG_AIRDROP: num(project.drop?.telegram?.airdrop.wallets),
+    TG_AIRDROP_EACH: num(project.drop?.telegram?.airdrop.each),
+    TG_WINNERS: num(project.drop?.telegram?.draw.winners),
+    TG_EACH: num(project.drop?.telegram?.draw.each),
     ...extra,
   };
 }
@@ -105,8 +111,9 @@ export const SAMPLE = {
   LAUNCH_RECEIPT_N: "12",
   CREATOR_RECEIPT_N: "13",
   RECEIPTS_PRINTED: "1,234",
-  DROP_ENTRIES: "1,234",
-  DROP_ENTER: "comment your SOL address under t.me/chekcoinsol/123",
+  X_ENTRIES: "1,234",
+  TG_ENTRIES: "1,234",
+  TG_ENTER: "comment your SOL address under t.me/chekcoinsol/123",
   ROTW_ENTRIES: "12",
   DAY_N: "9",
   CREATION_TX: "X".repeat(88),

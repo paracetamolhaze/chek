@@ -223,4 +223,28 @@ create table chek.drop_entries (
 alter table chek.drop_entries enable row level security;
 `,
   },
+  {
+    version: "004_x_drop",
+    sql: `
+-- X drop entries: a public reply to @chekcoinsol that contains a Solana address, checked from its public link.
+-- One entry per X account and per address. drop_entries stays the separate Telegram drop list.
+create table chek.x_drop_entries (
+  id bigserial primary key,
+  x_user_id text not null unique,
+  x_handle text not null,
+  wallet text not null unique check (char_length(wallet) between 32 and 44),
+  reply_id text not null unique,
+  parent_id text,
+  replied_at timestamptz,
+  created_at timestamptz not null default now(),
+  winner boolean not null default false,
+  sent_tx text
+);
+-- rate limit for the public entry form: salted hashes only, never raw IPs; old rows are pruned
+create table chek.rate_hits (key text not null, at timestamptz not null default now());
+create index on chek.rate_hits (key, at);
+alter table chek.x_drop_entries enable row level security;
+alter table chek.rate_hits enable row level security;
+`,
+  },
 ];

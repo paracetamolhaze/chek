@@ -118,15 +118,16 @@ export async function context() {
   const p = withLiveToken(project(), await getSetting("token_live"));
   const sql = await db();
   const [m] = await sql`select coalesce(sum(value),0)::int as n from chek.metrics where key in ('rg_gen','tg_receipts')`;
-  const [de] = await sql`select count(*)::int as n from chek.drop_entries`;
-  const [dp] = await sql`select external_url from chek.queue where id = 'tg-drop-1' and status = 'published'`;
+  const [de] = await sql`select (select count(*) from chek.x_drop_entries)::int as x, (select count(*) from chek.drop_entries)::int as tg`;
+  const [dp] = await sql`select external_url from chek.queue where id = 'tg-gw-1' and status = 'published'`;
   const discussion = (await getSetting("tg_discussion"))?.chatId;
-  const tgDrop = dp?.external_url ? dp.external_url.replace("https://", "") : "t.me/chekcoinsol";
+  const tgDrop = dp?.external_url ? dp.external_url.replace("https://", "") : null;
   const inputs = {
     RECEIPTS_PRINTED: m.n.toLocaleString("en-US"),
-    DROP_ENTRIES: de.n.toLocaleString("en-US"),
-    // where people enter: comments under the Telegram drop post once comments exist, the bot until then
-    DROP_ENTER: discussion ? `comment your SOL address under ${tgDrop}` : "send your SOL address to t.me/chekcoinsol_bot",
+    X_ENTRIES: de.x.toLocaleString("en-US"),
+    TG_ENTRIES: de.tg.toLocaleString("en-US"),
+    // Telegram drop entry: comments under the pinned Telegram drop post once it exists, the bot until then
+    TG_ENTER: discussion && tgDrop ? `comment your SOL address under ${tgDrop}` : "send your SOL address to t.me/chekcoinsol_bot",
     ...((await getSetting("inputs")) || {}),
   };
   return { project: p, ca: officialCa(p), schedule: await getSetting("schedule"), inputs };

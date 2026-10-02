@@ -219,45 +219,23 @@ const VIDEOS = {
     })(),
   },
 
-  "v07-receipt-drop": (() => {
-    const d = P.drop;
-    const rows = [
-      ["airdrop", `first ${d.airdrop.wallets} × ${d.airdrop.each.toLocaleString("en-US")}`],
-      ["draw", `${d.draw.winners} × ${d.draw.each.toLocaleString("en-US")}`],
-      ["source", "creator's launch buy"],
-      ["entry", "telegram · 1 per account"],
-      ["draw date", "launch + 24 h"],
-      ["proof", "on-chain receipts"],
-    ];
-    return {
-      duration: 9,
-      poster: 5.0,
-      html: `<div class="f dark">
-        <div class="abs" style="left:110px;top:58px;font-size:22px;letter-spacing:.3em;color:${C.fog};font-weight:700;animation:${a("fade-in", 0.4, 0.1)}">🎁 ${P.name} · ${T}</div>
-        <div class="abs" style="left:100px;top:100px;width:740px;height:48px;border-radius:24px;background:#0b0a09;box-shadow:inset 0 3px 6px #000"></div>
-        <div class="abs" style="left:155px;top:122px;width:630px;height:900px;overflow:hidden">
-          <div class="paper teeth" style="padding:40px 46px 64px;animation:${a("print", 2.4, 0.4, "steps(24,end)")}">
-            <div class="doto" style="font-size:58px;text-align:center;line-height:1;white-space:nowrap">RECEIPT DROP</div>
-            <div style="text-align:center;font-size:19px;letter-spacing:.3em;color:${C.faded};margin-top:10px">${T} · OPEN TO EVERYONE</div>
-            <div class="dash"></div>
-            ${rows.map(([l, v]) => `<div class="row" style="font-size:26px">${l}<span class="l"></span><b>${v}</b></div>`).join("")}
-            <div class="dash"></div>
-            <div class="row" style="font-size:26px">claim site<span class="l"></span><b style="color:${C.stamp}">none · sent to you</b></div>
-            <div class="row" style="font-size:26px;font-weight:800">cost to enter<span class="l"></span>0</div>
-            <div style="height:20px"></div>
-          </div>
-        </div>
-        <div class="abs stamp" style="left:470px;top:735px;font-size:74px;--r:-12deg;background:${C.marker};animation:${a("slam", 0.45, 3.0)}">open</div>
-        <div class="abs" style="left:805px;top:430px;width:260px;height:390px;animation:${a("in-right", 0.6, 3.6)}">${ch({ expr: "happy", pose: "point", dark: true })}</div>
-        <div class="abs bubble" style="left:790px;top:355px;font-size:34px;--r:-4deg;animation:${a("pop", 0.4, 4.2)}">it's real.</div>
-        <div class="abs dark" style="left:0;right:0;top:850px;height:170px;padding:22px 110px;animation:${a("in-up", 0.5, 5.2)}">
-          <div class="cap" style="font-size:40px;color:${C.marker}">enter in telegram: t.me/chekcoinsol</div>
-          <div style="margin-top:12px;font-size:22px;color:${C.fog};letter-spacing:.06em">no DMs · no wallet connect · no fees</div>
-        </div>
-        ${tag(true)}
-      </div>`,
-    };
-  })(),
+  "v07-receipt-drop": dropScene({
+    part: P.drop.x,
+    title: "X DROP",
+    sub: `${T} · MAIN DROP · ON X`,
+    entry: "reply · 1 per account",
+    bubble: "it's real.",
+    cta: `reply on X → ${HOST}/drop`,
+  }),
+
+  "v08-telegram-drop": dropScene({
+    part: P.drop.telegram,
+    title: "TG DROP",
+    sub: `${T} · DROP #2 · TELEGRAM`,
+    entry: "telegram · 1 per account",
+    bubble: "drop #2.",
+    cta: "enter in telegram → t.me/chekcoinsol",
+  }),
 
   "v06-the-coupon": {
     duration: 8.5,
@@ -276,6 +254,47 @@ const VIDEOS = {
     </div>`,
   },
 };
+
+
+// A drop receipt printing out of the register (v07 X drop, v08 Telegram drop).
+function dropScene({ part, title, sub, entry, bubble, cta }) {
+  const rows = [
+    ["airdrop", `first ${part.airdrop.wallets} × ${part.airdrop.each.toLocaleString("en-US")}`],
+    ["draw", `${part.draw.winners} × ${part.draw.each.toLocaleString("en-US")}`],
+    ["source", "creator's launch buy"],
+    ["entry", entry],
+    ["draw date", "launch + 24 h"],
+    ["proof", "on-chain receipts"],
+  ];
+  return {
+    duration: 9,
+    poster: 5.0,
+    html: `<div class="f dark">
+        <div class="abs" style="left:110px;top:58px;font-size:22px;letter-spacing:.3em;color:${C.fog};font-weight:700;animation:${a("fade-in", 0.4, 0.1)}">🎁 ${P.name} · RECEIPT DROP</div>
+        <div class="abs" style="left:100px;top:100px;width:740px;height:48px;border-radius:24px;background:#0b0a09;box-shadow:inset 0 3px 6px #000"></div>
+        <div class="abs" style="left:155px;top:122px;width:630px;height:900px;overflow:hidden">
+          <div class="paper teeth" style="padding:40px 46px 64px;animation:${a("print", 2.4, 0.4, "steps(24,end)")}">
+            <div class="doto" style="font-size:58px;text-align:center;line-height:1;white-space:nowrap">${title}</div>
+            <div style="text-align:center;font-size:19px;letter-spacing:.24em;color:${C.faded};margin-top:10px;white-space:nowrap">${sub}</div>
+            <div class="dash"></div>
+            ${rows.map(([l, v]) => `<div class="row" style="font-size:26px">${l}<span class="l"></span><b>${v}</b></div>`).join("")}
+            <div class="dash"></div>
+            <div class="row" style="font-size:26px">claim site<span class="l"></span><b style="color:${C.stamp}">none · sent to you</b></div>
+            <div class="row" style="font-size:26px;font-weight:800">cost to enter<span class="l"></span>0</div>
+            <div style="height:20px"></div>
+          </div>
+        </div>
+        <div class="abs stamp" style="left:470px;top:735px;font-size:74px;--r:-12deg;background:${C.marker};animation:${a("slam", 0.45, 3.0)}">open</div>
+        <div class="abs" style="left:805px;top:430px;width:260px;height:390px;animation:${a("in-right", 0.6, 3.6)}">${ch({ expr: "happy", pose: "point", dark: true })}</div>
+        <div class="abs bubble" style="left:790px;top:355px;font-size:34px;--r:-4deg;animation:${a("pop", 0.4, 4.2)}">${bubble}</div>
+        <div class="abs dark" style="left:0;right:0;top:850px;height:170px;padding:22px 110px;animation:${a("in-up", 0.5, 5.2)}">
+          <div class="cap" style="font-size:34px;color:${C.marker};white-space:nowrap">${cta}</div>
+          <div style="margin-top:12px;font-size:22px;color:${C.fog};letter-spacing:.06em">no DMs · no wallet connect · no fees</div>
+        </div>
+        ${tag(true)}
+      </div>`,
+  };
+}
 
 // ───────────────────────── renderer ─────────────────────────
 function ffmpeg(args) {

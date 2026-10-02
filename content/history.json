@@ -193,6 +193,14 @@
       "proof": {
         "label": "/drop"
       }
+    },
+    {
+      "date": "2026-10-02T11:40:00Z",
+      "title": "Drop split: main drop on X, separate drop in Telegram",
+      "detail": "Before any drop post went out and with 0 entries, the drop was split in two. X drop (main): the first 300 entries get 10,000 $CHEKD each, plus a draw of 70 × 100,000; entry = a reply to @chekcoinsol with a public Solana address, checked from its public link at /drop. Telegram drop (separate list): the first 200 entries × 10,000 plus a draw of 30 × 100,000. Still 15M $CHEKD (1.5% of supply) in total from the creator’s own launch buy, only if $CHEKD launches.",
+      "proof": {
+        "label": "/drop"
+      }
     }
   ]
 }

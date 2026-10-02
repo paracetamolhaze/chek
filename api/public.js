@@ -2,11 +2,14 @@
 //   GET  ?op=token     official token facts once the mint is verified (the CA box switches from this within seconds)
 //   GET  ?op=receipts  Receipt Board
 //   GET  ?op=creator   live creator position (read from the chain)
+//   GET  ?op=drop      Receipt Drop entry counts (X drop + Telegram drop), no addresses
 //   POST ?op=hit {e}   anonymous counter (receipt generator usage, visits from X/Telegram) — no cookies, no IPs stored
+//   POST ?op=x_drop {link}  X drop entry: the link of your reply to @chekcoinsol with your address (checked from the public post)
 import { bump, getSetting } from "../server/lib/core.js";
 import { AppError, cached, handle, json, readJson } from "../server/lib/http.js";
 import { creatorPosition } from "../server/lib/onchain.js";
 import { listReceipts, publicReceipt } from "../server/lib/receipts.js";
+import { enterXDrop } from "../server/lib/xdrop.js";
 
 const EVENTS = { gen: "rg_gen", share: "rg_share", download: "rg_download", copy: "rg_copy", visit_x: "visit_x", visit_tg: "visit_tg", visit_other: "visit_other" };
 
@@ -23,8 +26,8 @@ export async function GET(request) {
       const { project } = await import("../server/lib/project.js");
       const d = project().drop;
       const sql = await (await import("../server/lib/db.js")).db();
-      const [{ n }] = await sql`select count(*)::int as n from chek.drop_entries`;
-      return cached({ status: d?.status ?? "none", entries: n, winners: d?.winners ?? 0, perWinner: d?.perWinner ?? 0 }, 30);
+      const [c] = await sql`select (select count(*) from chek.x_drop_entries)::int as x, (select count(*) from chek.drop_entries)::int as tg`;
+      return cached({ status: d?.status ?? "none", x: { entries: c.x }, telegram: { entries: c.tg }, entries: c.x + c.tg }, 30);
     }
     if (op === "ping") return json({ ok: true });
     throw new AppError(404, "unknown op");
@@ -34,6 +37,11 @@ export async function GET(request) {
 export async function POST(request) {
   return handle(async () => {
     const op = new URL(request.url).searchParams.get("op");
+    if (op === "x_drop") {
+      const b = await readJson(request, 2000).catch(() => ({}));
+      const ip = (request.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+      return json(await enterXDrop(b?.link, ip));
+    }
     if (op !== "hit") throw new AppError(404, "unknown op");
     const b = await readJson(request).catch(() => ({}));
     const key = EVENTS[b?.e];

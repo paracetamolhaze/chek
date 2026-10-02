@@ -48,10 +48,10 @@ export type Project = {
   drop?: {
     name: string;
     status: string;
-    airdrop: { wallets: number; each: number };
-    draw: { winners: number; each: number };
     poolTokens: number;
     poolPctSupply: string;
+    x: DropPart;
+    telegram: DropPart;
   };
   site?: { analytics?: boolean };
   platform: {
@@ -63,6 +63,13 @@ export type Project = {
     graduationFee: string;
     note: string;
   };
+};
+
+export type DropPart = {
+  name: string;
+  airdrop: { wallets: number; each: number };
+  draw: { winners: number; each: number };
+  tokens: number;
 };
 
 export const project = raw as Project;
