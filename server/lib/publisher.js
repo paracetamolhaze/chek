@@ -12,7 +12,7 @@ import { chatFromLink, messageUrl, notifyOwner, publishTelegram } from "./telegr
 import { publishX, xReady } from "./x.js";
 import { handoffX, ownerAwake } from "./xhandoff.js";
 
-const MEDIA_DIRS = /^content\/(mascot|memes|animations)\//;
+const MEDIA_DIRS = /^content\/(mascot|memes|animations|shorts)\//;
 // ?v=<deployment>: Telegram caches files fetched by URL, so a re-rendered video would otherwise arrive in its old version
 const MEDIA_V = process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_URL || "";
 export const mediaUrl = (asset) =>

@@ -145,7 +145,7 @@ let launching = false;
 async function watchLaunch() {
   if (!launch.armed || launching) return;
   try {
-    const r = await findCreation(launch.creatorWallet, lastSig);
+    const r = await findCreation(launch.creatorWallet, null); // no cursor: a signature one RPC knows and the fallback does not breaks "until"
     if (!r.mint) {
       lastSig = r.newest ?? lastSig;
       return;

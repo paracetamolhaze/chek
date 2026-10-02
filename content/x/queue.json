@@ -182,6 +182,126 @@
       "publishAfter": "2026-10-02T19:24:14.000Z"
     },
     {
+      "id": "xl-01",
+      "slot": "T+10m",
+      "category": "token",
+      "status": "ready",
+      "text": "$CHEKD is live 🧾\n\nreceipts or it didn't happen. now it happened.\n\nCA: {{CA}}\n\n#Solana #memecoin",
+      "asset": "content/shorts/s06-receipt-for-everything.mp4",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T19:34:14.000Z"
+    },
+    {
+      "id": "xl-02",
+      "slot": "T+18m",
+      "category": "token",
+      "status": "ready",
+      "text": "the launch, itemized 🧾\n\nmint authority ........ {{MINT_AUTH}}\nfreeze authority ........ {{FREEZE_AUTH}}\nfree team allocation ........ 0%\npresale ........ none\n\nthat's the receipt.\n\n#Solana #memecoin",
+      "asset": "content/memes/04-ca-chek.png",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T19:42:14.000Z"
+    },
+    {
+      "id": "xl-03",
+      "slot": "T+26m",
+      "category": "token",
+      "status": "ready",
+      "text": "when the dev says “trust me bro”\n\nwe don't. every number of this launch is on-chain and on {{SITE}}/transparency 🧾\n\n#Solana #memecoin",
+      "asset": "content/shorts/s01-trust-me-bro.mp4",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T19:50:14.000Z"
+    },
+    {
+      "id": "xl-04",
+      "slot": "T+34m",
+      "category": "token",
+      "status": "ready",
+      "text": "how to find the real $CHEKD:\n\n1. CA: {{CA}}\n2. same address on {{SITE}} and in our pins\n3. nobody from chek DMs you first\n\nnames prove nothing. the address does.\n\n#Solana #memecoin",
+      "asset": "content/mascot/01-printing.png",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T19:58:14.000Z"
+    },
+    {
+      "id": "xl-05",
+      "slot": "T+42m",
+      "category": "token",
+      "status": "ready",
+      "text": "the shredder eats evidence.\n\nthis launch left nothing to eat: creation tx, creator wallet, supply, all public. 🧾\n\n#Solana #memecoin",
+      "asset": "content/animations/v03-the-shredder.mp4",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:06:14.000Z"
+    },
+    {
+      "id": "xl-06",
+      "slot": "T+50m",
+      "category": "token",
+      "status": "ready",
+      "text": "pics or it didn't happen ❌\npromises or it didn't happen ❌\nreceipts or it didn't happen ✅\n\n$CHEKD\n\n#Solana #memecoin",
+      "asset": "content/memes/02-pics-vs-receipts.png",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:14:14.000Z"
+    },
+    {
+      "id": "xl-07",
+      "slot": "T+58m",
+      "category": "token",
+      "status": "ready",
+      "text": "launched a coin. kept the printer running.\n\nprint a receipt for any claim, free, no wallet: {{SITE}}/print 🧾\n\n#Solana #memecoin",
+      "asset": "content/animations/v04-print-demo.mp4",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:22:14.000Z"
+    },
+    {
+      "id": "xl-08",
+      "slot": "T+66m",
+      "category": "token",
+      "status": "ready",
+      "text": "launch night rules:\n\nnobody from chek will DM you.\nno “claim” sites. no “wallet sync”.\nthe only CA is in our pin.\n\n#Solana #memecoin",
+      "asset": "content/memes/03-never-dm-first.png",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:30:14.000Z"
+    },
+    {
+      "id": "xl-09",
+      "slot": "T+74m",
+      "category": "token",
+      "status": "ready",
+      "text": "the coupon promises everything and expires at midnight.\n\nchek prints what's real. 🎟️ VOID\n\n#Solana #memecoin",
+      "asset": "content/animations/v06-the-coupon.mp4",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:38:14.000Z"
+    },
+    {
+      "id": "xl-10",
+      "slot": "T+82m",
+      "category": "token",
+      "status": "ready",
+      "text": "first hour of $CHEKD in one line:\n\nlaunched → verified on-chain → CA everywhere in the same minute → receipts printing.\n\n#Solana #memecoin",
+      "asset": "content/mascot/04-you-bought-what.png",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:46:14.000Z"
+    },
+    {
+      "id": "xl-11",
+      "slot": "T+90m",
+      "category": "token",
+      "status": "ready",
+      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌\n\n$CHEKD\n\n#Solana #memecoin",
+      "asset": "content/memes/09-vibe-chek.png",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T20:54:14.000Z"
+    },
+    {
+      "id": "xl-12",
+      "slot": "T+98m",
+      "category": "token",
+      "status": "ready",
+      "text": "what exists, not what's promised:\n\n✓ token, verified on-chain\n✓ site + transparency page\n✓ receipt generator\n✓ telegram receipt bot\n✓ build log\n\n#Solana #memecoin",
+      "asset": "content/animations/v02-whats-live.mp4",
+      "note": "launch night (owner: many X posts)",
+      "publishAfter": "2026-10-02T21:02:14.000Z"
+    },
+    {
       "id": "x-311",
       "slot": "T+12m",
       "category": "transparency",
