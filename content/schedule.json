@@ -1,6 +1,6 @@
 {
   "$comment": "Times are UTC. d1 = the first day of public posting (after the 24 h dry run is signed off). launchAt = the ANNOUNCED launch time — stays null until the owner confirms it; it must be ≥ 26 h away so the announcement (slot T-26h) goes out ≥ 24 h before the mint. launchedAt = the REAL launch minute, set automatically when the mint is verified on-chain; every T+ post counts from it. Recompute with: node scripts/schedule.mjs",
-  "d1": "2026-10-03",
+  "d1": "2026-10-02",
   "launchAt": null,
   "launchedAt": null,
   "proposedLaunchAt": "2026-10-05T15:00:00Z",

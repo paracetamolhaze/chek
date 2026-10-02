@@ -23,42 +23,63 @@
   "posts": [
     {
       "id": "tg-101",
-      "slot": "D1 12:30",
+      "slot": "D1 10:35",
       "category": "transparency",
       "status": "ready",
       "where": "channel",
       "pin": true,
       "text": "🧾 CHEK — official channel\n\nWhat: a meme project launching on Solana with one rule — every claim comes with a receipt.\nToken: $CHEKD — NOT LAUNCHED. No contract address exists yet. Any token using this name or ticker before our launch is not affiliated with this project.\n\nOfficial links (only these):\n• Site: {{SITE_URL}}\n• X: {{X_URL}}\n• Build log: {{SITE_URL}}/history\n• Receipt bot: @chekcoinsol_bot\n\n⚠️ Admins never DM first. We never ask for a seed phrase, private key or “wallet validation”.",
-      "publishAfter": "2026-10-03T12:30:00.000Z"
+      "publishAfter": "2026-10-02T10:35:00.000Z",
+      "asset": "content/animations/v01-meet-chek.mp4"
     },
     {
       "id": "tg-102",
-      "slot": "D1 18:00",
+      "slot": "D1 13:30",
       "category": "community",
       "status": "ready",
       "where": "channel",
-      "text": "the bot prints receipts now 🧾\n\nwrite any claim to @chekcoinsol_bot → get a CHEK receipt → share it.\n\nor on the site: {{SITE_URL}}/print\n\nno wallet, no sign-up, no token needed.",
-      "imageUrl": "/api/image?claim=partnership%20soon&stamp=PROOF%20PENDING&format=square",
-      "publishAfter": "2026-10-03T18:00:00.000Z"
+      "text": "the bot prints receipts 🧾\n\nwrite any claim to @chekcoinsol_bot → get a CHEK receipt → share it.\nor on the site: {{SITE_URL}}/print\n\nno wallet, no sign-up, no token needed.",
+      "asset": "content/animations/v04-print-demo.mp4",
+      "publishAfter": "2026-10-02T13:30:00.000Z"
+    },
+    {
+      "id": "tg-103",
+      "slot": "D1 19:15",
+      "category": "transparency",
+      "status": "ready",
+      "where": "channel",
+      "text": "the plan, itemized 🧾\n\nNOW (live): website · receipt generator · this bot @chekcoinsol_bot · build log · receipt board\nLAUNCH: $CHEKD on Pump.fun — the contract address appears at the same minute on {{SITE_URL}}, in the X pin and pinned here\nAFTER (planned): proof of hold · holder votes · receipt of the week · meme generator\nNEVER: presale · price promises · DMs first",
+      "asset": "content/animations/v05-the-plan.mp4",
+      "publishAfter": "2026-10-02T19:15:00.000Z"
     },
     {
       "id": "tg-201",
-      "slot": "D2 13:00",
+      "slot": "D2 13:30",
       "category": "lore",
       "status": "ready",
       "where": "channel",
       "text": "lore drop: the villains 🧾\n\nTHE SHREDDER — eats evidence. deleted tweets, wiped sites, vanished devs. leaves confetti.\nTHE COUPON — “100X OFF! TODAY ONLY!” always expiring, never real.\n\nchek prints. they hate that.",
-      "asset": "content/memes/05-the-shredder.png",
-      "publishAfter": "2026-10-04T13:00:00.000Z"
+      "asset": "content/animations/v03-the-shredder.mp4",
+      "publishAfter": "2026-10-03T13:30:00.000Z"
     },
     {
       "id": "tg-202",
-      "slot": "D2 17:30",
+      "slot": "D2 16:30",
       "category": "transparency",
       "status": "ready",
       "where": "channel",
       "text": "how $CHEKD launches — the receipt, in advance 🧾\n\n• Pump.fun, SOL pair. Name CHEK, ticker CHEKD.\n• No presale, no whitelist, no free team allocation.\n• The creator makes one public buy at creation (target ≈ $200) from the creator wallet — same curve as everyone. Exact SOL, CHEKD and % of supply are published from the chain.\n• The contract address appears at the same minute on {{SITE_URL}}, in the X pin and pinned here.\n• Creator fee: Pump.fun pays the creator {{CREATOR_FEE}} of bonding-curve trades (as checked {{FEE_CHECKED}}).\n\nA name or ticker proves nothing. Only the address does.",
-      "publishAfter": "2026-10-04T17:30:00.000Z"
+      "publishAfter": "2026-10-03T16:30:00.000Z"
+    },
+    {
+      "id": "tg-204",
+      "slot": "D2 19:15",
+      "category": "lore",
+      "status": "ready",
+      "where": "channel",
+      "text": "lore: THE COUPON 🧾\n\n“100X OFF! TODAY ONLY!” — always expiring, never real.\nchek read the fine print and stamped it VOID.",
+      "asset": "content/animations/v06-the-coupon.mp4",
+      "publishAfter": "2026-10-03T19:15:00.000Z"
     },
     {
       "id": "tg-203",

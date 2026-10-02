@@ -16,7 +16,9 @@ export async function liveGate(s = null) {
   const missing = [];
   const d = s.dry_run;
   if (!d?.startedAt) missing.push("no dry run yet");
-  else if (Date.parse(d.endsAt) > Date.now()) missing.push(`dry run still running (ends ${d.endsAt})`);
+  else if (d.endedEarly) {
+    // the owner ended it early on purpose — recorded in settings and the audit log, not hidden
+  } else if (Date.parse(d.endsAt) > Date.now()) missing.push(`dry run still running (ends ${d.endsAt})`);
   else if (Date.parse(d.endsAt) - Date.parse(d.startedAt) < DRY_MIN_HOURS * 3600e3) missing.push(`dry run shorter than ${DRY_MIN_HOURS} h`);
   const a = s.prod_audit;
   if (!a?.ok) missing.push("production audit not passing");
@@ -95,4 +97,36 @@ export async function dryReport(runId = null) {
     };
   });
   return { run, startedAt: s.dry_run?.startedAt ?? null, endsAt: until, autopilot: s.autopilot, log, jobs, news, alerts, audit: auditRows, preview, gate: await liveGate(s) };
+}
+
+// The owner decided to start before 24 h: the run ends now, with the reason on record.
+export async function dryEnd(reason = "owner asked to start posting") {
+  const d = await getSetting("dry_run");
+  if (!d?.startedAt) throw new Error("no dry run");
+  const at = new Date().toISOString();
+  await setSetting("dry_run", { ...d, endsAt: at, endedEarly: { at, by: "owner", reason, hours: Math.round(((Date.parse(at) - Date.parse(d.startedAt)) / 3600e3) * 10) / 10 } });
+  await audit("owner", "dry_run.ended_early", "ok", { detail: { reason } });
+  return { ok: true, ranHours: Math.round(((Date.parse(at) - Date.parse(d.startedAt)) / 3600e3) * 10) / 10 };
+}
+
+// Go live: clean queue, calendar day 1 = d1, seed synced, fresh production audit, autopilot on.
+// Returns everything due in the next 24 hours so the owner sees exactly what goes out.
+export async function goLive({ d1 = new Date().toISOString().slice(0, 10) } = {}) {
+  const { runProdAudit } = await import("./prodcheck.js");
+  const audited = await runProdAudit();
+  if (!audited.ok) throw new Error(`production audit failing: ${audited.problems.slice(0, 3).join("; ")}`);
+  const gate = await liveGate();
+  if (!gate.ok) throw new Error(`not ready: ${gate.missing.join("; ")}`);
+  const cleaned = await dryReset();
+  const schedule = await getSetting("schedule");
+  await setSetting("schedule", { ...schedule, d1 });
+  await syncSeed();
+  await reschedule();
+  await setSetting("autopilot", "on");
+  await audit("owner", "autopilot.live", "ok", { detail: { d1, cleaned } });
+  const sql = await db();
+  const next = await sql`select id, platform, slot, publish_after, level, payload->>'asset' as asset, payload->>'imageUrl' as image, left(payload->'parts'->>0, 400) as text
+    from chek.queue where status in ('ready','review','approved') and publish_after is not null and publish_after < now() + interval '24 hours'
+    order by publish_after`;
+  return { ok: true, d1, next };
 }

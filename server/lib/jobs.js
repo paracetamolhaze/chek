@@ -105,13 +105,14 @@ const JOBS = [
   { name: "x_handoff_expire", everyMin: 15, run: expireHandoffs },
   { name: "publisher", everyMin: 0, run: runPublisher },
   { name: "onchain", everyMin: 5, run: runWatcher },
-  { name: "news_fetch", everyMin: 120, run: fetchFeeds },
-  { name: "news_eval", everyMin: 240, offsetMin: 10, run: () => evaluateNews(2) },
+  // news desk is off unless settings.news.enabled (owner: no general crypto/Solana news on CHEK channels)
+  { name: "news_fetch", everyMin: 120, run: async () => ((await getSetting("news"))?.enabled ? fetchFeeds() : { skipped: "news off" }) },
+  { name: "news_eval", everyMin: 240, offsetMin: 10, run: async () => ((await getSetting("news"))?.enabled ? evaluateNews(2) : { skipped: "news off" }) },
   { name: "x_mentions", everyMin: 15, run: xMentions },
   { name: "prod_audit", everyMin: 360, run: runProdAudit },
   { name: "dry_watch", everyMin: 10, run: dryWatch },
   { name: "engine", daily: "morning", run: runEngine },
-  { name: "digest", daily: "digest", run: digest },
+  { name: "digest", daily: "15:30", run: digest }, // 20:30 in Almaty
   { name: "tg_members", daily: "23:50", run: telegramMembers },
   { name: "fixed_costs", daily: "00:05", run: fixedCosts },
 ];

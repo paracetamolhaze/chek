@@ -34,7 +34,7 @@ const NEEDS = {
 // Seed posts whose wording a human must re-confirm against reality at posting time.
 const SEED_REVIEW = new Set(["x-321", "x-322", "tg-320"]);
 // Seed wording a human already reviewed (lore quoting a fake promise, chat rules naming scammers).
-const SEED_ACK = { "x-102": ["partnership / listing claim"] };
+const SEED_ACK = { "x-204": ["partnership / listing claim"] };
 // Extra ordering conditions: post only after another item was published.
 const SEED_AFTER = {};
 
@@ -70,7 +70,11 @@ export async function syncSeed() {
       n++;
     }
   }
-  await audit("publisher", "queue.seed_synced", "ok", { detail: { items: n } });
+  // seed posts removed from the files must never go out
+  const ids = [...q.x.posts, ...q.telegram.posts].map((p) => p.id);
+  const retired = await sql`update chek.queue set status = 'skipped', last_error = 'removed from the calendar', updated_at = now()
+    where origin = 'seed' and status in ('ready','review','approved','failed','expired','dry_published') and id not in ${sql(ids)} returning id`;
+  await audit("publisher", "queue.seed_synced", "ok", { detail: { items: n, retired: retired.map((r) => r.id) } });
   return n;
 }
 

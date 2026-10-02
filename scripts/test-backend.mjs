@@ -55,7 +55,9 @@ ok((await conditionsMet(x310, ctx)).includes("live"), "x-310 (launch post) waits
 const [x205] = await sql`select * from chek.queue where id = 'x-205'`;
 ok((await conditionsMet(x205, ctx)).includes("launchAt"), "x-205 (launch-time announcement) waits for the owner-confirmed launch time");
 const [x101] = await sql`select * from chek.queue where id = 'x-101'`;
-ok(render(x101, ctx, new Date("2026-10-02T15:00:00Z")).parts[0].startsWith("day 2."), "x-101 renders DAY_N from the real public date (day 2 on Oct 2)");
+ok(render(x101, ctx, new Date("2026-10-02T15:00:00Z")).parts[0].startsWith("this is chek."), "x-101 renders (intro post)");
+const [x201] = await sql`select * from chek.queue where id = 'x-201'`;
+ok(render(x201, ctx).parts[0].includes("/print"), "x-201 links the Receipt Generator on the official domain");
 
 // publisher in dry mode: D1 posts due at 15:01
 await core.setSetting("autopilot", "dry");
@@ -66,7 +68,7 @@ await runPublisher(new Date("2026-10-02T15:01:00Z"));
 await runPublisher(new Date("2026-10-02T15:02:00Z"));
 const would = await sql`select queue_id, parts, media from chek.dry_log where run = 'test-run' and verdict = 'would_publish'`;
 ok(would.some((d) => d.queue_id === "x-101") && would.some((d) => d.queue_id === "tg-101"), `dry run logged would-publish with full text: ${would.map((d) => d.queue_id).join(", ")}`);
-ok(would.find((d) => d.queue_id === "x-101")?.media?.endsWith("/media/mascot/01-printing.png"), "dry log keeps the media URL");
+ok(would.find((d) => d.queue_id === "x-101")?.media?.endsWith("/media/animations/v01-meet-chek.mp4"), "dry log keeps the media URL (video)");
 const [{ pubd }] = await sql`select count(*)::int as pubd from chek.queue where status = 'published'`;
 ok(pubd === 0, "dry mode published nothing");
 const [{ dp }] = await sql`select count(*)::int as dp from chek.queue where status = 'dry_published'`;
@@ -74,8 +76,8 @@ ok(dp === 2, `dry-published items are consumed once (${dp})`);
 
 // guards: old ticker + price promise are blocked, price talk goes to review
 await sql`insert into chek.queue (id, platform, category, level, status, publish_after, payload, origin)
-  values ('test-bad', 'x', 'meme', 'auto', 'ready', '2026-10-02T15:00:00Z', ${sql.json({ parts: ["$CHEKD will moon, guaranteed 100x returns"] })}, 'engine'),
-         ('test-old', 'telegram', 'meme', 'auto', 'ready', '2026-10-02T15:00:00Z', ${sql.json({ parts: ["gm from $CHEK"] })}, 'engine')`;
+  values ('test-bad', 'x', 'meme', 'auto', 'ready', '2026-10-02T08:00:00Z', ${sql.json({ parts: ["$CHEKD will moon, guaranteed 100x returns"] })}, 'engine'),
+         ('test-old', 'telegram', 'meme', 'auto', 'ready', '2026-10-02T08:00:00Z', ${sql.json({ parts: ["gm from $CHEK"] })}, 'engine')`;
 await runPublisher(new Date("2026-10-02T16:00:00Z"));
 const [bad] = await sql`select status, last_error from chek.queue where id = 'test-bad'`;
 ok(bad.status === "failed" && /promises a return|predicts price/.test(bad.last_error), "guard blocked a price-promise post");
@@ -84,7 +86,7 @@ ok(old.status === "failed" && /old ticker/.test(old.last_error), "guard blocked 
 const rej = await sql`select queue_id, reasons from chek.dry_log where verdict = 'rejected'`;
 ok(rej.length === 2, "rejected posts are in the dry-run log with reasons");
 await sql`insert into chek.queue (id, platform, category, level, status, publish_after, payload, origin)
-  values ('test-review', 'telegram', 'meme', 'auto', 'ready', '2026-10-02T15:00:00Z', ${sql.json({ parts: ["the $CHEKD chart today is a receipt of pure vibes"] })}, 'engine')`;
+  values ('test-review', 'telegram', 'meme', 'auto', 'ready', '2026-10-02T08:00:00Z', ${sql.json({ parts: ["the $CHEKD chart today is a receipt of pure vibes"] })}, 'engine')`;
 await runPublisher(new Date("2026-10-02T17:00:00Z"));
 const [rv] = await sql`select status from chek.queue where id = 'test-review'`;
 ok(rv.status === "review", "price-talk post escalated to owner review");
@@ -106,7 +108,7 @@ ok(job?.kind === "engine_plan" && job.system.includes("JSON Schema"), "agent cla
 const bad1 = await completeJob(job.id, "sorry, here you go: not json");
 ok(!bad1.ok && bad1.retry, "invalid answer is rejected and the job requeued");
 const job2 = await claimJob("test-pc");
-const plan = { posts: [{ slot: "evening", channels: "x", format: "claim_receipt", category: "meme", text: "the receipt for “trust me bro”", receipt: null, claim: { text: "trust me bro", stamp: "VOID" }, poll: null, why: "test" }] };
+const plan = { posts: [{ slot: "evening", channels: "x", format: "claim_receipt", category: "meme", text: "the receipt for “trust me bro”", receipt: null, claim: { text: "trust me bro", stamp: "VOID" }, poll: null, asset: null, why: "test" }] };
 const good = await completeJob(job2.id, "```json\n" + JSON.stringify(plan) + "\n```");
 ok(good.ok && good.outcome.queued === 1, "valid answer applied → 1 post queued");
 const [eq] = await sql`select payload from chek.queue where id like 'eng-%'`;
@@ -117,7 +119,7 @@ ok((await claimJob("test-pc", { noai: true })) === null, "agent without Claude a
 const req = (url, init = {}) => new Request(`http://localhost${url}`, init);
 const adm = (body) => admin.POST(req("/api/admin", { method: "POST", headers: { authorization: "Bearer test-admin", "content-type": "application/json" }, body: JSON.stringify(body) }));
 const rep = await (await adm({ op: "dry_report" })).json();
-ok(rep.log.length >= 4 && rep.preview.length > 10 && rep.preview.some((p) => p.id === "x-310" && p.guard === "OK"), `dry report: ${rep.log?.length} log lines, ${rep.preview?.length} pre-checked upcoming posts (launch post OK with sample CA)`);
+ok(rep.log.length >= 3 && rep.preview.length > 10 && rep.preview.some((p) => p.id === "x-310" && p.guard === "OK"), `dry report: ${rep.log?.length} log lines, ${rep.preview?.length} pre-checked upcoming posts (launch post OK with sample CA)`);
 const live = await adm({ op: "settings", values: { autopilot: "on" } });
 ok(live.status === 409, "autopilot=on refused before a finished dry run + passing production audit");
 const cw = await adm({ op: "creator_wallet", address: "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P" });

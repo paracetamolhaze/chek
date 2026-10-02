@@ -6,7 +6,7 @@ import { audit, getSetting } from "./core.js";
 import { db } from "./db.js";
 import { ask } from "./llm.js";
 import { enqueue } from "./queue.js";
-import { project } from "./project.js";
+import { assetLibrary, project } from "./project.js";
 import { receiptLabel } from "./receipts.js";
 import { VOICE } from "./voice.js";
 import { sign } from "./http.js";
@@ -29,6 +29,7 @@ export const Plan = z.object({
           .nullable()
           .describe("only for format claim_receipt: rendered with the public Receipt Generator look"),
         poll: z.object({ question: z.string(), options: z.array(z.string()).min(2).max(4) }).nullable(),
+        asset: z.string().nullable().describe("for formats other than receipt_image/claim_receipt: one file path from the ASSET LIBRARY (videos preferred), or null"),
         why: z.string().describe("one line: why this is worth posting today"),
       }),
     )
@@ -46,6 +47,7 @@ function slotTimeOn(day, hhmm, jitterMin = 25) {
 
 const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
 const tokenMention = (t) => /\$CHEKD\b/i.test(t);
+const MAX_TOKEN_POSTS_PER_DAY = 2;
 
 export async function runEngine() {
   const sql = await db();
@@ -83,13 +85,14 @@ export async function runEngine() {
   // 2. Authored posts (AI): queued for the PC agent (or run now with an API key).
   const recent = await sql`select payload->'parts'->>0 as text, coalesce(published_at, dry_at) as at from chek.queue
     where status in ('published','dry_published') order by coalesce(published_at, dry_at) desc limit 15`;
+  const recentAssets = (await sql`select distinct payload->>'asset' as a from chek.queue where payload->>'asset' is not null and coalesce(published_at, dry_at, publish_after) > now() - interval '2 days'`).map((r) => r.a);
   const planned = await sql`select platform, slot, left(payload->'parts'->>0, 140) as text from chek.queue
     where status in ('ready','review','approved') and publish_after::date = ${today}::date order by publish_after`;
   const p = project();
   const res = await ask({
     kind: "engine_plan",
     schema: Plan,
-    system: `${VOICE}\n\nYou plan today's extra CHEK posts on top of the prepared calendar. Return 0–3 posts. Mix formats; never repeat a recent joke or a planned post. Receipt images should be recognizable without a logo: itemized lines, a status, a total. At most one post may mention $CHEKD. No links unless the post is about the website itself.\n\nPre-launch story, in this order: CHEK EXISTS (the character and the meme) → CHEK BUILDS (real build receipts) → PEOPLE USE CHEK (the Receipt Generator, community receipts) → THEN $CHEKD LAUNCHES. Before launch, X gets roughly 3–5 quality posts a day IN TOTAL including the planned calendar — only add what's missing to reach that, and never force it. Prefer shareable receipt images, memes and character content; no fake urgency, no fake engagement, no fake community.`,
+    system: `${VOICE}\n\nYou plan today's extra CHEK posts on top of the prepared calendar. Return 0–3 posts. Mix formats; never repeat a recent joke or a planned post. Receipt images should be recognizable without a logo: itemized lines, a status, a total. At most one post may mention $CHEKD. No links unless the post is about the website itself.\n\nSpeak AS CHEK — the coin's own voice, confident and funny, with real momentum: show what exists (site, Receipt Generator, Telegram receipt bot, build log, receipt board, transparency), what is being built, what comes next and the plan for $CHEKD. Hype the project and the build, never the price. Pre-launch story, in this order: CHEK EXISTS → CHEK BUILDS → PEOPLE USE CHEK → THEN $CHEKD LAUNCHES. Before launch, X gets roughly 3–5 quality posts a day IN TOTAL including the planned calendar — only add what's missing to reach that. Every post should carry a strong visual: a video or image from the ASSET LIBRARY, or a receipt image. No fake urgency, no fake engagement, no fake community, no general crypto news.`,
     prompt: [
       `Today (UTC): ${today}`,
       `Project status: ${p.status === "live" ? "token live" : "pre-launch — the token does not exist yet"}`,
@@ -98,6 +101,7 @@ export async function runEngine() {
       `Cadence slots: morning ${cadence.morning}, day ${cadence.day}, evening ${cadence.evening}`,
       `Already planned for today (do not duplicate):\n${planned.map((r) => `- [${r.platform} ${r.slot ?? ""}] ${r.text}`).join("\n") || "(nothing)"}`,
       `Recently posted (newest first):\n${recent.map((r) => `- ${r.text}`).join("\n") || "(nothing yet)"}`,
+      `ASSET LIBRARY (attach one via "asset"; don't reuse a file used in the last two days: ${recentAssets.join(", ") || "none used yet"}):\n${assetLibrary().map((a) => `- ${a.file} — ${a.kind}: ${a.about}`).join("\n")}`,
       `Plan today's extra posts. Return an empty list if nothing is good enough.`,
     ].join("\n\n"),
     meta: { today },
@@ -116,7 +120,7 @@ export async function applyPlan(plan, meta = {}) {
   let queued = 0;
   let tokenPosts = 0;
   for (const [i, post] of (plan?.posts ?? []).entries()) {
-    if (tokenMention(post.text) && ++tokenPosts > 1) continue; // the token is not the subject of every post
+    if (tokenMention(post.text) && ++tokenPosts > MAX_TOKEN_POSTS_PER_DAY) continue; // the token is not the subject of every post
     const at = slotTimeOn(day, cadence[post.slot]).toISOString();
     let imageUrl = null;
     if (post.format === "receipt_image" && post.receipt) {
@@ -125,6 +129,7 @@ export async function applyPlan(plan, meta = {}) {
     } else if (post.format === "claim_receipt" && post.claim) {
       imageUrl = `/api/image?${new URLSearchParams({ claim: post.claim.text, stamp: post.claim.stamp, format: "square" })}`;
     }
+    const asset = !imageUrl && post.asset && assetLibrary().some((a) => a.file === post.asset) ? post.asset : null;
     for (const platform of post.channels === "both" ? ["x", "telegram"] : [post.channels]) {
       await enqueue({
         id: `eng-${day}-${i}-${platform}`,
@@ -133,7 +138,7 @@ export async function applyPlan(plan, meta = {}) {
         level: "auto", // guards escalate to review when needed
         origin: "engine",
         publishAfter: at,
-        payload: { parts: [post.text], imageUrl, poll: post.format === "poll" ? post.poll : null, format: post.format, why: post.why },
+        payload: { parts: [post.text], imageUrl, asset, poll: post.format === "poll" ? post.poll : null, format: post.format, why: post.why },
       });
       queued++;
     }

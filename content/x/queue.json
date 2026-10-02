@@ -16,56 +16,67 @@
   "posts": [
     {
       "id": "x-101",
-      "slot": "D1 13:00",
+      "slot": "D1 10:30",
       "category": "lore",
       "status": "ready",
-      "text": "day {{DAY_N}}.\n\na receipt started printing on oct 1 and refused to stop.\n\nno token yet. no CA. just receipts. 🧾",
-      "asset": "content/mascot/01-printing.png",
-      "note": "origin — first post",
-      "publishAfter": "2026-10-03T13:00:00.000Z"
+      "text": "this is chek. 🧾\n\na receipt that only prints what it can prove.\n\nlaunching on solana as $CHEKD.\nno presale. no promises. just receipts.",
+      "asset": "content/animations/v01-meet-chek.mp4",
+      "note": "CHEK exists — intro video",
+      "publishAfter": "2026-10-02T10:30:00.000Z"
     },
     {
       "id": "x-102",
-      "slot": "D1 16:30",
-      "category": "lore",
+      "slot": "D1 13:00",
+      "category": "build",
       "status": "ready",
-      "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID",
-      "asset": "content/memes/01-itemized-promises.png",
-      "note": "origin — the quotes are the joke, stamped VOID",
-      "publishAfter": "2026-10-03T16:30:00.000Z"
+      "text": "what exists before the token does:\n\n✓ website\n✓ receipt generator\n✓ telegram receipt bot\n✓ build log + receipt board\n✓ transparency page\n\nall live. all free. the token comes last.",
+      "asset": "content/animations/v02-whats-live.mp4",
+      "note": "CHEK builds — what's live",
+      "publishAfter": "2026-10-02T13:00:00.000Z"
     },
     {
       "id": "x-103",
-      "slot": "D1 20:00",
-      "category": "build",
+      "slot": "D1 16:00",
+      "category": "lore",
       "status": "ready",
-      "text": "build log, so far:\n\n✓ mascot + two villains\n✓ website + transparency page\n✓ receipt board\n✓ receipt generator — anyone can print one\n☐ token\n\nevery line has a receipt. even this one.",
-      "asset": "content/memes/08-long-receipt.png",
-      "note": "build — no link on purpose; the site is in the profile",
-      "publishAfter": "2026-10-03T20:00:00.000Z"
+      "text": "lore, chapter 03: THE SHREDDER\n\neats evidence. deleted posts. wiped sites. devs who “went for a walk”.\n\nchek keeps receipts. the shredder hates that.",
+      "asset": "content/animations/v03-the-shredder.mp4",
+      "note": "lore video",
+      "publishAfter": "2026-10-02T16:00:00.000Z"
+    },
+    {
+      "id": "x-104",
+      "slot": "D1 19:00",
+      "category": "transparency",
+      "status": "ready",
+      "text": "the plan, itemized 🧾\n\nnow → site, receipt generator, telegram bot\nlaunch → $CHEKD on pump.fun, CA everywhere at the same minute\nafter → proof of hold, holder votes, receipt of the week\nnever → presale, price promises, DMs first",
+      "asset": "content/animations/v05-the-plan.mp4",
+      "note": "what's next + the plan",
+      "publishAfter": "2026-10-02T19:00:00.000Z"
     },
     {
       "id": "x-201",
-      "slot": "D2 12:00",
+      "slot": "D2 10:30",
       "category": "community",
       "status": "ready",
       "text": "print your own receipt 🧾\n\nwrite any claim. get a receipt. share it.\n\nno wallet. no sign-up. no token needed.\n\n{{SITE}}/print",
-      "imageUrl": "/api/image?claim=trust%20me%20bro&stamp=VOID&format=square",
-      "note": "utility — the distribution loop; one of the few posts with a link",
-      "publishAfter": "2026-10-04T12:00:00.000Z"
+      "asset": "content/animations/v04-print-demo.mp4",
+      "note": "people use CHEK — Receipt Generator demo; one of the few posts with a link",
+      "publishAfter": "2026-10-03T10:30:00.000Z"
     },
     {
       "id": "x-202",
-      "slot": "D2 15:00",
+      "slot": "D2 13:00",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 03: THE SHREDDER\n\neats evidence.\ndeleted tweets. wiped websites. devs who “went for a walk”.\n\nchek has seen what it leaves behind: confetti.\nchek does not want to be confetti.",
-      "asset": "content/memes/05-the-shredder.png",
-      "publishAfter": "2026-10-04T15:00:00.000Z"
+      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”",
+      "asset": "content/animations/v06-the-coupon.mp4",
+      "note": "lore video",
+      "publishAfter": "2026-10-03T13:00:00.000Z"
     },
     {
       "id": "x-203",
-      "slot": "D2 17:00",
+      "slot": "D2 16:00",
       "category": "transparency",
       "status": "ready",
       "pin": "prelaunch",
@@ -78,16 +89,37 @@
         "we never DM first. we never ask for a seed phrase. if it's not linked from {{SITE}}, it didn't happen."
       ],
       "note": "transparency — pinned before launch",
-      "publishAfter": "2026-10-04T17:00:00.000Z"
+      "publishAfter": "2026-10-03T16:00:00.000Z",
+      "asset": "content/animations/v05-the-plan.png"
     },
     {
       "id": "x-204",
-      "slot": "D2 20:30",
+      "slot": "D2 19:00",
+      "category": "lore",
+      "status": "ready",
+      "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID",
+      "asset": "content/memes/01-itemized-promises.png",
+      "note": "origin lore — the quotes are the joke, stamped VOID",
+      "publishAfter": "2026-10-03T19:00:00.000Z"
+    },
+    {
+      "id": "x-151",
+      "slot": "D3 10:30",
       "category": "meme",
       "status": "ready",
       "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅",
       "asset": "content/memes/02-pics-vs-receipts.png",
-      "publishAfter": "2026-10-04T20:30:00.000Z"
+      "note": "only goes out if launch day is later than day 2",
+      "publishAfter": "2026-10-04T10:30:00.000Z"
+    },
+    {
+      "id": "x-152",
+      "slot": "D3 13:00",
+      "category": "meme",
+      "status": "ready",
+      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌",
+      "asset": "content/memes/09-vibe-chek.png",
+      "publishAfter": "2026-10-04T13:00:00.000Z"
     },
     {
       "id": "x-205",

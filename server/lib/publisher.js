@@ -10,7 +10,7 @@ import { checkContent } from "./guards.js";
 import { conditionsMet, context, render } from "./queue.js";
 import { chatFromLink, messageUrl, notifyOwner, publishTelegram } from "./telegram.js";
 import { publishX, xReady } from "./x.js";
-import { handoffX } from "./xhandoff.js";
+import { handoffX, ownerAwake } from "./xhandoff.js";
 
 const MEDIA_DIRS = /^content\/(mascot|memes|animations)\//;
 export const mediaUrl = (asset) => (asset && MEDIA_DIRS.test(asset) ? `${env.siteUrl}/media/${asset.replace(/^content\//, "")}` : null);
@@ -99,6 +99,7 @@ export async function runPublisher(now = new Date(), { ids = null, platforms = [
         continue;
       }
       if (verdict.level === "review" && row.status !== "approved") {
+        if (row.status !== "review" && !ownerAwake(settings, now)) continue; // ask the owner in the morning, not at night
         if (row.status !== "review") {
           await sql`update chek.queue set status = 'review', updated_at = now() where id = ${row.id}`;
           await audit("publisher", "post.needs_review", "info", { ref: row.id, detail: { problems: verdict.problems } });

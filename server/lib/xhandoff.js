@@ -30,8 +30,11 @@ async function sendPart(owner, row, h) {
   const markup = { inline_keyboard: buttons(row.id, text, i > 0 ? h.links[i - 1] : null) };
   if (h.media && i === 0) {
     const caption = `${head}\n\n${text}\n\n${how}`;
-    if (caption.length <= 1024) return tg("sendPhoto", { chat_id: owner, photo: h.media, caption, reply_markup: markup });
-    await tg("sendPhoto", { chat_id: owner, photo: h.media, caption: head });
+    // videos/GIFs arrive as playable files the owner can save and attach in X
+    const [method, field] = /\.mp4($|\?)/i.test(h.media) ? ["sendVideo", "video"] : /\.gif($|\?)/i.test(h.media) ? ["sendAnimation", "animation"] : ["sendPhoto", "photo"];
+    const extra = field === "video" ? { supports_streaming: true } : {};
+    if (caption.length <= 1024) return tg(method, { chat_id: owner, [field]: h.media, caption, reply_markup: markup, ...extra });
+    await tg(method, { chat_id: owner, [field]: h.media, caption: head, ...extra });
   }
   return notifyOwner(owner, `${head}\n\n${text}\n\n${how}`, markup.inline_keyboard);
 }
@@ -41,6 +44,7 @@ export async function handoffX(row, out, media, settings) {
   const sql = await db();
   const owner = settings.owner?.telegramUserId;
   if (!owner) return false;
+  if (!ownerAwake(settings)) return false; // no hand-overs at night; the post waits for the morning
   const [open] = await sql`select id, payload from chek.queue where platform = 'x' and status = 'publishing' and payload ? 'handoff' limit 1`;
   if (open) return false;
   const h = { sentAt: new Date().toISOString(), part: 0, parts: out.parts, links: [], media };
@@ -98,4 +102,15 @@ export async function expireHandoffs() {
     returning id`;
   for (const r of rows) await alert("warn", "x_handoff_expired", `X post ${r.id} was not posted within 3 h and expired.`, r.id);
   return rows.length;
+}
+
+// Owner's waking window (UTC). Default 04:30–20:30 UTC = 09:30–01:30 in Almaty. Night pings wait until the morning.
+export function ownerAwake(settings, now = new Date()) {
+  const w = settings.owner_hours || { from: "04:30", to: "20:30" };
+  const m = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const [fh, fm] = w.from.split(":").map(Number);
+  const [th, tm] = w.to.split(":").map(Number);
+  const from = fh * 60 + fm;
+  const to = th * 60 + tm;
+  return from <= to ? m >= from && m < to : m >= from || m < to;
 }

@@ -12,7 +12,7 @@ import { notifyOwner, tg } from "../server/lib/telegram.js";
 import { xAccount } from "../server/lib/x.js";
 import { agentStatus } from "../server/lib/llm.js";
 import { confirmLaunch } from "../server/lib/launch.js";
-import { dryReport, dryReset, dryStart, liveGate } from "../server/lib/dryrun.js";
+import { dryEnd, dryReport, dryReset, dryStart, goLive, liveGate } from "../server/lib/dryrun.js";
 import { cronSetup, runJob } from "../server/lib/jobs.js";
 import { runProdAudit } from "../server/lib/prodcheck.js";
 import { isPubkey } from "../shared/solana-inspect.mjs";
@@ -73,6 +73,8 @@ const ALLOWED = {
   prices: (v) => Object.values(v).every((n) => typeof n === "number" && n >= 0),
   onchain_threshold_pct: (v) => typeof v === "number" && v > 0 && v < 100,
   x_transport: (v) => ["telegram", "api"].includes(v),
+  news: (v) => typeof v === "object" && typeof v.enabled === "boolean",
+  owner_hours: (v) => /^\d{2}:\d{2}$/.test(v.from) && /^\d{2}:\d{2}$/.test(v.to),
 };
 
 export async function GET(request) {
@@ -156,6 +158,10 @@ export async function POST(request) {
         return json({ ok: true, armed: Boolean(b.on) });
       case "dry_start":
         return json(await dryStart({ hours: Number(b.hours) || 24, d1: b.d1 }));
+      case "dry_end":
+        return json(await dryEnd(String(b.reason || "owner asked to start posting").slice(0, 200)));
+      case "go_live":
+        return json(await goLive({ d1: /^\d{4}-\d{2}-\d{2}$/.test(b.d1 || "") ? b.d1 : undefined }));
       case "dry_report":
         return json(await dryReport(b.run));
       case "dry_reset":

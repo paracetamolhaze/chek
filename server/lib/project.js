@@ -12,6 +12,7 @@ function load(repoPath) {
 export const project = () => load("config/project.json");
 export const history = () => load("content/history.json");
 export const scheduleSeed = () => load("content/schedule.json");
+export const assetLibrary = () => load("content/assets.json").assets;
 export const seedQueue = () => ({ x: load("content/x/queue.json"), telegram: load("content/telegram/queue.json") });
 
 export function officialCa(p = project()) {

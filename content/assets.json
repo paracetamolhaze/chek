@@ -1,0 +1,27 @@
+{
+  "$comment": "Media the content engine may attach to a post (served from the site under /media/…). Descriptions tell the AI what each file shows. Videos are 1080×1080 MP4, 8–10 s, muted.",
+  "assets": [
+    { "file": "content/animations/v01-meet-chek.mp4", "kind": "video", "about": "meet chek: Register #4 prints a receipt of crypto claims (partnership soon, 100x guaranteed, trust me bro), VOID stamp, chek asks “receipt?”, end card CHEK + site + @chekcoinsol" },
+    { "file": "content/animations/v02-whats-live.mp4", "kind": "video", "about": "build receipt: website, receipt generator, telegram receipt bot, build log, receipt board, transparency page — all LIVE ✓; $CHEKD NEXT; SHIPPED stamp" },
+    { "file": "content/animations/v03-the-shredder.mp4", "kind": "video", "about": "lore: The Shredder eats a dev's “we will never rug” screenshot, confetti; chek with magnifier: chek keeps receipts" },
+    { "file": "content/animations/v04-print-demo.mp4", "kind": "video", "about": "demo of the free Receipt Generator (/print): type “trust me bro.”, print, VOID stamp, share on X" },
+    { "file": "content/animations/v05-the-plan.mp4", "kind": "video", "about": "the plan, itemized: NOW live / LAUNCH on pump.fun / AFTER planned (proof of hold, holder votes, receipt of the week, meme generator) / NEVER (presale, price promises, DMs first, fake partners)" },
+    { "file": "content/animations/v06-the-coupon.mp4", "kind": "video", "about": "lore: The Coupon flickers “100X OFF! TODAY ONLY!”, chek stamps it VOID, fine print: none of this is real" },
+    { "file": "content/animations/v01-meet-chek.png", "kind": "image", "about": "still: receipt of crypto claims stamped VOID, chek asks “receipt?”" },
+    { "file": "content/animations/v02-whats-live.png", "kind": "image", "about": "still: build receipt, 6 things live, $CHEKD next" },
+    { "file": "content/animations/v05-the-plan.png", "kind": "image", "about": "still: the plan, itemized (top of the receipt)" },
+    { "file": "content/memes/01-itemized-promises.png", "kind": "image", "about": "meme: itemized crypto promises, all VOID" },
+    { "file": "content/memes/02-pics-vs-receipts.png", "kind": "image", "about": "meme: pics or it didn't happen ❌ / receipts or it didn't happen ✅" },
+    { "file": "content/memes/03-never-dm-first.png", "kind": "image", "about": "meme: admins never DM first — the coupon in a trench coat" },
+    { "file": "content/memes/04-ca-chek.png", "kind": "image", "about": "meme: me checking the CA for the 4th time (site ✓, X pin ✓, TG pin ✓, DM from admin ✗)" },
+    { "file": "content/memes/05-the-shredder.png", "kind": "image", "about": "lore poster: The Shredder" },
+    { "file": "content/memes/06-the-coupon.png", "kind": "image", "about": "lore poster: The Coupon" },
+    { "file": "content/memes/07-receipts-fade.png", "kind": "image", "about": "meme: receipts fade, commits don't" },
+    { "file": "content/memes/08-long-receipt.png", "kind": "image", "about": "the long receipt of the build log" },
+    { "file": "content/memes/09-vibe-chek.png", "kind": "image", "about": "meme: vibe chek ✅ receipt chek ✅ trust me bro ❌" },
+    { "file": "content/memes/10-receipt-of-the-week.png", "kind": "image", "about": "receipt of the week format poster" },
+    { "file": "content/mascot/01-printing.png", "kind": "image", "about": "chek printing" },
+    { "file": "content/mascot/03-void.png", "kind": "image", "about": "chek with a VOID stamp" },
+    { "file": "content/mascot/04-you-bought-what.png", "kind": "image", "about": "meme: you bought WHAT without checking the CA?" }
+  ]
+}
