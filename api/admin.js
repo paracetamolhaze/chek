@@ -75,7 +75,7 @@ const ALLOWED = {
   ai: (v) => ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5"].includes(v.model),
   prices: (v) => Object.values(v).every((n) => typeof n === "number" && n >= 0),
   onchain_threshold_pct: (v) => typeof v === "number" && v > 0 && v < 100,
-  x_transport: (v) => ["telegram", "api"].includes(v),
+  x_transport: (v) => ["telegram", "api", "desk"].includes(v),
   news: (v) => typeof v === "object" && typeof v.enabled === "boolean",
   owner_hours: (v) => /^\d{2}:\d{2}$/.test(v.from) && /^\d{2}:\d{2}$/.test(v.to),
 };
@@ -168,6 +168,9 @@ export async function POST(request) {
         }
       case "tg_round_links":
         return json({ ok: true, edited: await (await import("../server/lib/roundlinks.js")).refreshRoundLinks() });
+      case "x_desk":
+        // the private desk URL for the owner's ChatGPT agent (only through the admin API)
+        return json({ ok: true, url: `${env.siteUrl}/api/desk?k=${(await import("../server/lib/xhandoff.js")).deskKey()}` });
       case "x_skip": {
         // withdraw an X post already handed to the owner (same as the owner's ⏭ Skip button)
         const ok = await skipHandoff(String(b.id));

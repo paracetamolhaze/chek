@@ -67,7 +67,7 @@ export async function runPublisher(now = new Date(), { ids = null, platforms = [
   const xTransport = settings.x_transport || (integrations().x ? "api" : "telegram");
   for (const platform of platforms) {
     const configured =
-      platform === "x" && xTransport === "telegram" ? Boolean(integrations().telegram && settings.owner?.telegramUserId) : integrations()[platform] && (platform !== "x" || (await xReady()));
+      platform === "x" && ["telegram", "desk"].includes(xTransport) ? Boolean(integrations().telegram && settings.owner?.telegramUserId) : integrations()[platform] && (platform !== "x" || (await xReady()));
     const live = !dry && settings.platforms[platform] && configured;
     if (!dry && !live) {
       report[platform] = { live: false, waiting: "platform not connected" };
@@ -136,7 +136,7 @@ export async function runPublisher(now = new Date(), { ids = null, platforms = [
         continue;
       }
 
-      if (platform === "x" && xTransport === "telegram") {
+      if (platform === "x" && ["telegram", "desk"].includes(xTransport)) {
         if (await handoffX(row, out, mediaOf(row, out), settings)) published = row.id;
         break; // one hand-over at a time; the next one goes after the owner posted (or skipped) this one
       }

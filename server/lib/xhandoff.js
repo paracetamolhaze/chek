@@ -2,11 +2,16 @@
 // the bot sends the owner the exact post — picture + text — with “Open X with this text” and “Copy text” buttons.
 // The owner posts it by hand and taps ✅ (or pastes the post link). Threads go part by part: the link of the previous
 // part lets the next “Open X” button reply to it. One X post is handed over at a time; unattended ones expire after 3 h.
+import { createHmac } from "node:crypto";
 import { alert, audit, bump } from "./core.js";
+import { env } from "./env.js";
 import { db } from "./db.js";
 import { notifyOwner, tg } from "./telegram.js";
 
 const STALE_MS = 3 * 3600e3;
+
+// secret part of the private desk URL (/api/desk?k=…), derived from APP_SECRET
+export const deskKey = () => createHmac("sha256", env.appSecret || "").update("xdesk-v1").digest("hex").slice(0, 32);
 const intent = (text, replyTo) => `https://x.com/intent/post?${new URLSearchParams({ text, ...(replyTo ? { in_reply_to: replyTo } : {}) })}`;
 export const tweetIdOf = (link) => /(?:x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/status\/(\d{5,25})/.exec(String(link || ""))?.[1] ?? null;
 
@@ -49,8 +54,12 @@ export async function handoffX(row, out, media, settings) {
   if (!ownerAwake(settings) && !row.payload.launch && row.slot !== "T-26h") return false;
   const [open] = await sql`select id, payload from chek.queue where platform = 'x' and status = 'publishing' and payload ? 'handoff' limit 1`;
   if (open) return false;
-  const h = { sentAt: new Date().toISOString(), part: 0, parts: out.parts, links: [], media };
-  await sendPart(owner, row, h); // a failed send changes nothing: the post stays due and is retried next tick
+  // x_transport "desk": the owner's ChatGPT agent takes it from the private desk page (/api/desk) and posts it;
+  // if it hasn't within DESK_MS the post falls back to the owner's Telegram as before
+  const desk = settings.x_transport === "desk";
+  const h = { sentAt: new Date().toISOString(), part: 0, parts: out.parts, links: [], media, via: desk ? "desk" : "telegram" };
+  if (!desk) await sendPart(owner, row, h); // a failed send changes nothing: the post stays due and is retried next tick
+  else await tg("sendMessage", { chat_id: owner, text: `📤 ${row.id} is on GPT's desk. If it isn't posted within 90 min, it comes to you here.`, disable_notification: true }).catch(() => {});
   await sql`update chek.queue set status = 'publishing', attempts = attempts + 1, payload = payload || ${sql.json({ handoff: h })}, updated_at = now() where id = ${row.id}`;
   await audit("publisher", "x.handed_to_owner", "ok", { ref: row.id, detail: { parts: out.parts.length, media } });
   return true;
@@ -109,8 +118,20 @@ export async function skipHandoff(id) {
 }
 
 /** Hand-overs nobody acted on for 3 h expire, so the queue keeps moving (alert once). */
+const DESK_MS = 90 * 60e3;
+
 export async function expireHandoffs() {
   const sql = await db();
+  // desk posts the agent didn't pick up → the owner gets them in Telegram (the 3 h clock restarts)
+  const stuck = await sql`select * from chek.queue where platform = 'x' and status = 'publishing' and payload->'handoff'->>'via' = 'desk'
+    and (payload->'handoff'->>'sentAt')::timestamptz < ${new Date(Date.now() - DESK_MS)}`;
+  const owner = (await sql`select value from chek.settings where key = 'owner'`)[0]?.value?.telegramUserId;
+  for (const row of stuck) {
+    const h = { ...row.payload.handoff, via: "telegram", sentAt: new Date().toISOString() };
+    if (owner) await sendPart(owner, row, h).catch(() => {});
+    await sql`update chek.queue set payload = payload || ${sql.json({ handoff: h })}, updated_at = now() where id = ${row.id}`;
+    await audit("publisher", "x.desk_fallback", "ok", { ref: row.id });
+  }
   const rows = await sql`update chek.queue set status = 'expired', last_error = 'not posted within 3 h of the hand-over', updated_at = now()
     where platform = 'x' and status = 'publishing' and payload ? 'handoff' and (payload->'handoff'->>'sentAt')::timestamptz < ${new Date(Date.now() - STALE_MS)}
     returning id`;
