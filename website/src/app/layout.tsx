@@ -34,6 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${doto.variable} ${martian.variable}`}>
       <body className="grain min-h-dvh antialiased">
         {children}
+        <Beacon />
         {/* Vercel Web Analytics: cookieless, same-origin script. Enabled via config/project.json → site.analytics */}
         {project.site?.analytics && <script defer src="/_vercel/insights/script.js" />}
       </body>
