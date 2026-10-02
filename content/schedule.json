@@ -3,6 +3,6 @@
   "d1": "2026-10-02",
   "launchAt": null,
   "launchedAt": null,
-  "proposedLaunchAt": "2026-10-05T15:00:00Z",
-  "why": "Proposal only — the owner decides. 15:00 UTC = 11:00 New York, 17:00 Berlin, 23:00 Singapore."
+  "proposedLaunchAt": "2026-10-06T15:00:00Z",
+  "why": "Owner plans the launch on 6 October 2026; the exact time is confirmed about 24 h ahead (it must be ≥ 24.5 h away). 15:00 UTC is only a placeholder."
 }

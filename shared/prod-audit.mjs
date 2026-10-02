@@ -2,7 +2,7 @@
 // Public content automation may not go live unless this passed recently (publisher + admin gate).
 // Pure fetch; used by scripts/prod-audit.mjs (local) and by the server job `prod_audit`.
 
-const PAGES = ["/", "/history", "/transparency", "/receipts", "/kit", "/print", "/sitemap.xml", "/manifest.webmanifest", "/robots.txt"];
+const PAGES = ["/", "/history", "/transparency", "/receipts", "/kit", "/print", "/drop", "/sitemap.xml", "/manifest.webmanifest", "/robots.txt"];
 
 // [regex, why] — never allowed anywhere on the public site
 const BANNED = [

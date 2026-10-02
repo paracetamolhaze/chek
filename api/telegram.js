@@ -14,6 +14,8 @@ import { enqueue } from "../server/lib/queue.js";
 import { renderClaimReceipt } from "../server/lib/render.js";
 import { tg } from "../server/lib/telegram.js";
 import { confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
+import { isPubkey } from "../shared/solana-inspect.mjs";
+import { chatFromLink } from "../server/lib/telegram.js";
 
 export const maxDuration = 60;
 
@@ -22,7 +24,73 @@ const PER_HOUR = 8;
 
 function welcome() {
   const p = project();
-  return `🧾 I print receipts.\n\nSend me any claim — “partnership soon”, “just one more trade”, anything — and I'll print it as a ${p.name} receipt you can share.\n\nOptional: add a stamp on a new line — VOID, PROOF PENDING or NO RECEIPT.\n\nI never ask for wallets, keys or seed phrases. Official links: ${p.links.website}`;
+  const drop = p.drop?.status === "open" ? `\n\n🎁 ${p.drop.name}: send /drop and your public Solana address to enter (subscribe to ${p.links.telegram.replace("https://", "")} first).` : "";
+  return `🧾 I print receipts.\n\nSend me any claim — “partnership soon”, “just one more trade”, anything — and I'll print it as a ${p.name} receipt you can share.\n\nOptional: add a stamp on a new line — VOID, PROOF PENDING or NO RECEIPT.${drop}\n\nI never ask for seed phrases, private keys, signatures or fees. Official links: ${p.links.website}`;
+}
+
+// Receipt Drop entry: a public address only, one per Telegram account, channel subscribers only.
+// Returns { ok, n } or { error } — the caller answers (private chat: a message; comments: a reaction).
+async function registerDrop(userId, wallet) {
+  const p = project();
+  if (p.drop?.status !== "open") return { error: "closed" };
+  if (!isPubkey(wallet)) return { error: "invalid" };
+  const member = await tg("getChatMember", { chat_id: chatFromLink(p.links.telegram), user_id: userId }).catch(() => null);
+  if (!["member", "administrator", "creator"].includes(member?.status)) return { error: "not_subscribed" };
+  const sql = await db();
+  const [mine] = await sql`select wallet from chek.drop_entries where tg_user_id = ${userId}`;
+  if (mine) return { error: "already", wallet: mine.wallet };
+  const [taken] = await sql`select 1 from chek.drop_entries where wallet = ${wallet}`;
+  if (taken) return { error: "taken" };
+  await sql`insert into chek.drop_entries (tg_user_id, wallet) values (${userId}, ${wallet}) on conflict do nothing`;
+  const [{ n }] = await sql`select count(*)::int as n from chek.drop_entries`;
+  await bump("drop_entries");
+  return { ok: true, n };
+}
+
+function dropTerms(p) {
+  const d = p.drop;
+  const t = `$${p.ticker}`;
+  return `Airdrop: the first ${d.airdrop.wallets} valid entries get ${d.airdrop.each.toLocaleString("en-US")} ${t} each. Draw: ${d.draw.winners} random wallets × ${d.draw.each.toLocaleString("en-US")} ${t}. All from the creator's own launch buy, sent within 48 h after the draw (24 h after launch), only if ${t} launches.`;
+}
+
+async function enterDrop(m, wallet) {
+  const p = project();
+  const r = await registerDrop(m.from.id, wallet);
+  if (r.error === "closed") return reply(m.chat.id, "The drop isn't open right now. Official news only in the channel and on the site.");
+  if (r.error === "invalid") return reply(m.chat.id, "That isn't a valid Solana address. Send /drop followed by your public address (never a seed phrase or private key).");
+  if (r.error === "not_subscribed") return reply(m.chat.id, `Subscribe to the channel first: ${p.links.telegram}\nThen send /drop ${wallet} again.`);
+  if (r.error === "already") return reply(m.chat.id, `You're already in with ${r.wallet.slice(0, 4)}…${r.wallet.slice(-4)}. One address per Telegram account.`);
+  if (r.error === "taken") return reply(m.chat.id, "This address is already entered.");
+  return reply(
+    m.chat.id,
+    `✅ You're in — entry #${r.n}.\n\n${dropTerms(p)}\n\nTokens are SENT. We never DM first, never ask you to connect a wallet, sign anything or pay a fee — anything like that is a scam.\n\nRules: ${p.links.website}/drop`,
+  );
+}
+
+// Discussion group of the channel (comments). Two jobs only:
+//  1. a comment with a Solana address enters the drop → the bot reacts 👍 (already in: 👌; not subscribed: a short hint);
+//  2. scam bait from non-admins (links, "claim", "connect wallet", "DM me", seed-phrase talk) is deleted — drop threads attract it.
+const SCAM = /(https?:\/\/|t\.me\/(?!chekcoinsol\b)|www\.|\bclaim\b|connect (?:your )?wallet|validate|sync wallet|seed phrase|private key|\bdm me\b|inbox me|write me)/i;
+async function groupMessage(m, s) {
+  const linked = s.tg_discussion?.chatId;
+  if (!linked || m.chat.id !== linked || !m.from || m.from.is_bot || m.sender_chat) return;
+  const text = m.text || m.caption || "";
+  const admin = await tg("getChatMember", { chat_id: m.chat.id, user_id: m.from.id })
+    .then((x) => ["administrator", "creator"].includes(x.status))
+    .catch(() => false);
+  if (!admin && SCAM.test(text)) {
+    await tg("deleteMessage", { chat_id: m.chat.id, message_id: m.message_id }).catch(() => {});
+    await bump("tg_scam_deleted");
+    return;
+  }
+  const wallet = text.match(/\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/)?.[0];
+  if (!wallet) return;
+  const r = await registerDrop(m.from.id, wallet);
+  const react = (emoji) => tg("setMessageReaction", { chat_id: m.chat.id, message_id: m.message_id, reaction: [{ type: "emoji", emoji }] }).catch(() => {});
+  if (r.ok) return react("👍");
+  if (r.error === "already" || r.error === "taken") return react("👌");
+  if (r.error === "not_subscribed")
+    return tg("sendMessage", { chat_id: m.chat.id, reply_parameters: { message_id: m.message_id }, text: "Subscribe to the channel first, then post your address again 🧾" }).catch(() => {});
 }
 
 async function printReceipt(m) {
@@ -125,6 +193,11 @@ export async function POST(request) {
     }
 
     const m = u.message;
+    // comments under channel posts arrive from the linked discussion group
+    if (m && (m.chat.type === "supergroup" || m.chat.type === "group")) {
+      await groupMessage(m, s);
+      return json({ ok: true });
+    }
     if (!m || m.chat.type !== "private" || !m.text) return json({ ok: true });
     const [cmd, arg] = m.text.trim().split(/\s+/, 2);
 
@@ -170,6 +243,8 @@ export async function POST(request) {
       await reply(m.chat.id, `autopilot → ${mode}`);
     } else if (cmd === "/help") {
       await reply(m.chat.id, welcome());
+    } else if (cmd === "/drop" || (!cmd.startsWith("/") && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(m.text.trim()))) {
+      await enterDrop(m, (cmd === "/drop" ? arg || "" : m.text).trim());
     } else if (!cmd.startsWith("/") || cmd.startsWith("/receipt")) {
       await printReceipt(m);
     }

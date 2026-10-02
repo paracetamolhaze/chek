@@ -42,10 +42,10 @@ Status below as of 2026-10-01, 23:40 UTC. READY TO MINT = every line ✓. Exact 
 
 ## Content
 
-- [x] 24 X posts and 13 Telegram posts for D1–D3, the launch sequence and T+4d (`content/x/queue.json`, `content/telegram/queue.json`)
+- [x] 50 X posts and 18 Telegram posts: D1–D5, the Receipt Drop (five drop posts on X a day), the launch sequence and T+4d (`content/x/queue.json`, `content/telegram/queue.json`)
 - [x] 6 brand videos (`content/animations/v0*.mp4`, `node scripts/render-videos.mjs`) + an asset library for the content engine (`content/assets.json`)
 - [x] 10 memes, 5 mascot images; every shared image carries “CHEK · @chekcoinsol”
-- [ ] Launch date/time confirmed by owner (proposed 2026-10-05 15:00 UTC; must be ≥ 26 h away when confirmed)
+- [ ] Launch time confirmed by owner (date: 6 Oct 2026; time placeholder 2026-10-06 15:00 UTC; must be ≥ 24.5 h away when confirmed)
 
 ## Launch day — owner
 

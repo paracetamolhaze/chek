@@ -20,7 +20,17 @@ import { checkClaim } from "../../shared/claim.mjs";
 async function telegramRights() {
   const s = await allSettings();
   const p = project();
-  if (!integrations().telegram || !p.links.telegram || s.platforms.telegram) return { skipped: true };
+  if (!integrations().telegram || !p.links.telegram) return { skipped: true };
+  // comments: the channel's linked discussion group (created by the owner; the bot must be an admin there)
+  const ch = await tg("getChat", { chat_id: chatFromLink(p.links.telegram) }).catch(() => null);
+  if (ch?.linked_chat_id && s.tg_discussion?.chatId !== ch.linked_chat_id) {
+    const me = await tg("getMe");
+    const role = await tg("getChatMember", { chat_id: ch.linked_chat_id, user_id: me.id }).catch(() => null);
+    await setSetting("tg_discussion", { chatId: ch.linked_chat_id, botAdmin: role?.status === "administrator", canDelete: Boolean(role?.can_delete_messages), since: new Date().toISOString() });
+    await audit("publisher", "telegram.discussion_linked", "ok", { detail: { chatId: ch.linked_chat_id, role: role?.status ?? null } });
+    if (role?.status !== "administrator" || !role.can_delete_messages) await alert("warn", "tg_discussion_rights", "Make the bot an admin of the comments group with 'Delete messages' so it can remove scam replies.");
+  }
+  if (s.platforms.telegram) return { discussion: Boolean(ch?.linked_chat_id) };
   const me = await tg("getMe");
   const m = await tg("getChatMember", { chat_id: chatFromLink(p.links.telegram), user_id: me.id }).catch(() => null);
   if (m?.status !== "administrator" || !m.can_post_messages) return { admin: false };

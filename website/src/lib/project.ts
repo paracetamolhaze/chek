@@ -45,6 +45,14 @@ export type Project = {
     x?: { handle: string; origin?: string; linkedAt: string };
     telegram?: { handle: string; title?: string; bot?: string; linkedAt: string };
   };
+  drop?: {
+    name: string;
+    status: string;
+    airdrop: { wallets: number; each: number };
+    draw: { winners: number; each: number };
+    poolTokens: number;
+    poolPctSupply: string;
+  };
   site?: { analytics?: boolean };
   platform: {
     name: string;

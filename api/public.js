@@ -19,6 +19,13 @@ export async function GET(request) {
     }
     if (op === "receipts") return cached({ receipts: (await listReceipts({ limit: 200 })).map(publicReceipt) }, 60);
     if (op === "creator") return cached(await creatorPosition(), 60);
+    if (op === "drop") {
+      const { project } = await import("../server/lib/project.js");
+      const d = project().drop;
+      const sql = await (await import("../server/lib/db.js")).db();
+      const [{ n }] = await sql`select count(*)::int as n from chek.drop_entries`;
+      return cached({ status: d?.status ?? "none", entries: n, winners: d?.winners ?? 0, perWinner: d?.perWinner ?? 0 }, 30);
+    }
     if (op === "ping") return json({ ok: true });
     throw new AppError(404, "unknown op");
   });

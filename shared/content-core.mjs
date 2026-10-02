@@ -64,6 +64,11 @@ export function placeholders(project, schedule, extra = {}, now = new Date()) {
     CREATOR_SOL: t.creatorBuySol,
     CREATOR_TOKENS: t.creatorTokens,
     CREATOR_PCT: t.creatorPct,
+    DROP_WINNERS: project.drop ? String(project.drop.winners) : null,
+    DROP_EACH: project.drop ? project.drop.perWinner.toLocaleString("en-US") : null,
+    DROP_POOL: project.drop ? project.drop.poolTokens.toLocaleString("en-US") : null,
+    AIRDROP_WALLETS: project.drop?.airdrop ? String(project.drop.airdrop.wallets) : null,
+    AIRDROP_EACH: project.drop?.airdrop ? project.drop.airdrop.each.toLocaleString("en-US") : null,
     ...extra,
   };
 }
@@ -100,6 +105,8 @@ export const SAMPLE = {
   LAUNCH_RECEIPT_N: "12",
   CREATOR_RECEIPT_N: "13",
   RECEIPTS_PRINTED: "1,234",
+  DROP_ENTRIES: "1,234",
+  DROP_ENTER: "comment your SOL address under t.me/chekcoinsol/123",
   ROTW_ENTRIES: "12",
   DAY_N: "9",
   CREATION_TX: "X".repeat(88),

@@ -208,4 +208,19 @@ alter table chek.ai_jobs enable row level security;
 alter table chek.interactions enable row level security;
 `,
   },
+  {
+    version: "003_drop_entries",
+    sql: `
+-- Receipt Drop entries: one public Solana address per Telegram account, from channel subscribers only.
+create table chek.drop_entries (
+  id bigserial primary key,
+  tg_user_id bigint not null unique,
+  wallet text not null unique check (char_length(wallet) between 32 and 44),
+  created_at timestamptz not null default now(),
+  winner boolean not null default false,
+  sent_tx text
+);
+alter table chek.drop_entries enable row level security;
+`,
+  },
 ];
