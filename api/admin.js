@@ -166,6 +166,23 @@ export async function POST(request) {
         } catch (e) {
           return json({ ok: false, error: String(e?.message ?? e).slice(0, 500) }, 500);
         }
+      case "tg_retext": {
+        try {
+          // rewrite a published channel post's template (then it is re-rendered and edited in place by the round-link refresher)
+          const sql = await db();
+          const [row] = await sql`update chek.queue set payload = jsonb_set(payload, '{parts}', jsonb_build_array(${String(b.text)}::text)), updated_at = now()
+            where id = ${String(b.id)} and platform = 'telegram' and status = 'published' returning id`;
+          if (!row) throw new AppError(404, "no published Telegram post with that id");
+          await audit("owner", "telegram.retext", "ok", { ref: row.id });
+          try {
+            return json({ ok: true, edited: await (await import("../server/lib/roundlinks.js")).refreshRoundLinks() });
+          } catch (e) {
+            return json({ ok: false, error: String(e?.message ?? e).slice(0, 400) }, 500);
+          }
+        } catch (e) {
+          return json({ ok: false, error: String(e?.message ?? e).slice(0, 400) }, 500);
+        }
+      }
       case "tg_round_links":
         return json({ ok: true, edited: await (await import("../server/lib/roundlinks.js")).refreshRoundLinks() });
       case "x_desk":

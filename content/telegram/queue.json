@@ -39,8 +39,8 @@
       "category": "community",
       "status": "ready",
       "where": "channel",
-      "text": "🎁 The X drop is live — ROUND 1\n\n{{X_ROUND_WINNERS}} winners × {{X_ROUND_EACH}} $CHEKD from the replies under this post:\n{{X_ROUND_URL}}\n+ {{X_AIRDROP_EACH}} $CHEKD each for the first {{X_AIRDROP}} accounts.\n\n1. Follow @chekcoinsol on X and repost it\n2. Reply there with your public Solana address\n3. Paste the link to your reply at {{SITE_URL}}/drop\n\nEvery X drop post is a new round. This channel gets its own separate drop later today.",
-      "note": "Telegram → X: points channel subscribers to the live X round",
+      "text": "🎁 The X drop is live: every giveaway post on X is a new round\n\n{{X_ROUND_WINNERS}} winners × {{X_ROUND_EACH}} $CHEKD per round, from the replies under that post. Latest round:\n{{X_ROUND_URL}}\n+ {{X_AIRDROP_EACH}} $CHEKD each for the first {{X_AIRDROP}} accounts.\n\n1. Follow @chekcoinsol on X and repost the round\n2. Reply there with your public Solana address\n3. Paste the link to your reply at {{SITE_URL}}/drop\n\nThe Telegram drop is separate: comment your address under the pinned drop post here.",
+      "note": "Telegram → X: points channel subscribers to the latest X round (edited in place when a new round gets its link)",
       "publishAfter": "2026-10-02T12:25:00.000Z"
     },
     {

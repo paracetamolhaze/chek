@@ -12,9 +12,17 @@ export async function refreshRoundLinks() {
   if (!rows.length) return [];
   const ctx = await context();
   const edited = [];
+  const skipped = [];
   for (const row of rows) {
+    if (/\bROUND [0-9]/.test(row.payload.parts[0])) {
+      skipped.push(`${row.id}: one specific round`);
+      continue; // a post about one specific round keeps that round's link
+    }
     const out = render(row, ctx);
-    if (out.missing.length) continue;
+    if (out.missing.length) {
+      skipped.push(`${row.id}: missing ${out.missing.join(",")}`);
+      continue;
+    }
     const chat = row.payload.where === "chat" ? chatFromLink(ctx.project.links.telegramChat) : chatFromLink(ctx.project.links.telegram);
     const text = out.parts.join("\n\n");
     const call = row.payload.asset
@@ -24,7 +32,8 @@ export async function refreshRoundLinks() {
     if (ok) {
       edited.push(row.id);
       await audit("publisher", "telegram.round_link_updated", "ok", { ref: row.id });
-    }
+    } else skipped.push(`${row.id}: not modified`);
   }
+  if (skipped.length) await audit("publisher", "telegram.round_link_skipped", "skip", { ref: skipped.join("; ").slice(0, 200) });
   return edited;
 }
