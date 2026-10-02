@@ -9,7 +9,7 @@ Dates are UTC. Entries are added when the change ships — never backdated.
 - X via the owner's Telegram (one tap per post); bot quiet hours at night.
 - Six brand videos; the content engine can attach videos and memes from an asset library.
 - Pre-launch posting live at 09:50 UTC; dry run ended after 10 h at the owner's request; news desk off.
-- Receipt Drop: the main drop runs on X (entry = a reply with your address, checked from its public link at /drop), with a separate drop in Telegram; 15M $CHEKD in total from the creator's launch buy. The X drop runs in rounds: every drop post is its own draw among the replies under it.
+- Receipt Drop: the main drop runs on X (entry = a reply with your address, checked from its public link at /drop), with a separate drop in Telegram; 15M $CHEKD in total from the creator's launch buy. The X drop runs in rounds: every drop post is its own draw among the replies under it. Each round is drawn 24 h after its post (Solana blockhash seed, re-checkable on /drop); winners are posted on X and Telegram.
 
 ## 2026-10-01 (final decisions, from 23:15 UTC)
 

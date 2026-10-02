@@ -209,6 +209,14 @@
       "proof": {
         "label": "/drop"
       }
+    },
+    {
+      "date": "2026-10-02T13:07:00Z",
+      "title": "X rounds drawn 24 h after each post",
+      "detail": "Before round 1 closed: each X round now closes 24 hours after its post and is drawn right away — seed = the blockhash of the first Solana block at or after the close, the lowest sha256(blockhash:address) scores win. Winners are announced on X, in Telegram and on /drop, where anyone can re-run the draw in the browser. Tokens are sent after $CHEKD launches. The Telegram drop is still drawn 24 hours after launch.",
+      "proof": {
+        "label": "/drop"
+      }
     }
   ]
 }

@@ -44,7 +44,7 @@ Numbers live only in `config/project.json` → `drop` (posts, site, bot and vide
 | | X drop (main) | Telegram drop (separate) |
 |---|---|---|
 | Airdrop | first 300 accounts × 10,000 $CHEKD | first 200 valid entries × 10,000 $CHEKD |
-| Draw | rounds: every X drop post (20) is its own draw — 5 × 70,000 $CHEKD among the replies under that post | 30 × 100,000 $CHEKD |
+| Draw | rounds: every X drop post (20) is its own draw — 5 × 70,000 $CHEKD among the replies under that post, drawn 24 h after the post (winners posted on X, Telegram and /drop) | 30 × 100,000 $CHEKD |
 | Entry | follow + repost, reply to a drop post with a public SOL address, paste the reply link at /drop | comment a public SOL address under the pinned drop post (or @chekcoinsol_bot), channel subscribers only |
 | Check | the site reads the public post: a direct reply to @chekcoinsol, written after the drop opened, with a valid address; one entry per account per round, one address per account | one per Telegram account and per address |
 

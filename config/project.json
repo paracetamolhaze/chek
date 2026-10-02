@@ -114,8 +114,8 @@
     },
     "separate": "two separate drops with separate lists and separate draws — you can enter both",
     "source": "the creator wallet’s own launch buy (bought on the curve like everyone; free allocation stays 0%)",
-    "draw_rules": "entries close 24 hours after launch; each X round draws its winners among the replies under its own post, the Telegram drop draws among its entries; every draw uses a published Solana blockhash as the seed, anyone can re-check",
-    "send": "from the creator wallet within 48 hours after the draw; every transfer published as an on-chain receipt",
+    "draw_rules": "each X round closes 24 hours after its post and is drawn then; the Telegram drop closes 24 hours after launch; seed = the blockhash of the first Solana block with block time at or after the close; score = sha256(blockhash + ':' + address), the lowest scores win; inputs are published so anyone can re-check",
+    "send": "from the creator wallet after launch — within 48 hours of the launch or of the draw, whichever is later; every transfer published as an on-chain receipt",
     "condition": "only if $CHEKD launches; the airdrops go to the first valid accounts in order, the draws are among valid entries",
     "never": "no claim site, no wallet connect, no signing, no fees, no DMs from us"
   }

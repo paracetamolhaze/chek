@@ -150,6 +150,22 @@ export async function POST(request) {
         await audit("owner", "post.now", "ok", { ref: row.id });
         return json({ ok: true, result: await runPublisher(new Date(), { ids: [row.id], platforms: [row.platform] }) });
       }
+      case "drop_list": {
+        // read-only: drop entries for the owner/operator (the public site shows counts only)
+        const sql = await db();
+        const lim = Math.min(Number(b.limit) || 50, 1000);
+        const x = await sql`select id, x_handle, wallet, round, reply_id, parent_id, replied_at, created_at from chek.x_drop_entries order by id desc limit ${lim}`;
+        const [c] = await sql`select (select count(*) from chek.x_drop_entries)::int as x_entries, (select count(distinct x_user_id) from chek.x_drop_entries)::int as x_accounts,
+          (select count(*) from chek.drop_entries)::int as tg_entries`;
+        const rounds = await sql`select round, count(*)::int as n from chek.x_drop_entries group by round order by round nulls last`;
+        return json({ ok: true, ...c, rounds, x });
+      }
+      case "draw_preview":
+        try {
+          return json({ ok: true, ...(await (await import("../server/lib/draw.js")).drawPreview(Number(b.round) || 1, b.at)) });
+        } catch (e) {
+          return json({ ok: false, error: String(e?.message ?? e).slice(0, 500) }, 500);
+        }
       case "tg_round_links":
         return json({ ok: true, edited: await (await import("../server/lib/roundlinks.js")).refreshRoundLinks() });
       case "x_skip": {

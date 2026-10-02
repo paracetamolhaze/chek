@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DropCount } from "@/components/DropCount";
+import { DropResults } from "@/components/DropResults";
 import { Mascot } from "@/components/Mascot";
 import { Row, SectionHead, Stamp } from "@/components/receipt";
 import { Shell } from "@/components/Shell";
@@ -73,8 +74,17 @@ export default function DropPage() {
             </p>
           </section>
 
+          <section className="pt-14" aria-labelledby="results">
+            <SectionHead n="02" id="results" title="X rounds — results" kicker="Live" />
+            <p className="mb-5 max-w-[62ch] text-[13.5px] leading-relaxed text-faded">
+              Each round closes 24 hours after its post and is drawn right after. Winners are announced here and on X; tokens are sent after{" "}
+              {cashtag} launches.
+            </p>
+            <DropResults />
+          </section>
+
           <section className="pt-14" aria-labelledby="telegram">
-            <SectionHead n="02" id="telegram" title="The Telegram drop" kicker="Separate" />
+            <SectionHead n="03" id="telegram" title="The Telegram drop" kicker="Separate" />
             <div className="border-2 border-ink p-4 sm:p-6">
               <Row label={`Airdrop — first ${d.telegram.airdrop.wallets} valid entries`} value={`${fmt(d.telegram.airdrop.each)} ${cashtag} each`} />
               <Row label={`Draw — ${tgd.winners} random entries`} value={`${fmt(tgd.each)} ${cashtag} each`} />
@@ -103,7 +113,7 @@ export default function DropPage() {
           </section>
 
           <section className="pt-14" aria-labelledby="pool">
-            <SectionHead n="03" id="pool" title="Where it comes from" kicker="0% team" />
+            <SectionHead n="04" id="pool" title="Where it comes from" kicker="0% team" />
             <div className="border-2 border-ink p-4 sm:p-6">
               <Row label="X drop" value={`${fmt(d.x.tokens)} ${cashtag}`} />
               <Row label="Telegram drop" value={`${fmt(d.telegram.tokens)} ${cashtag}`} />
@@ -115,18 +125,19 @@ export default function DropPage() {
           </section>
 
           <section className="pt-14" aria-labelledby="draw">
-            <SectionHead n="04" id="draw" title="How winners are picked" kicker="Re-checkable" />
+            <SectionHead n="05" id="draw" title="How winners are picked" kicker="Re-checkable" />
             <p className="max-w-[62ch] text-[14.5px] leading-relaxed">
-              Both drops close 24 hours after launch. The airdrops go to the first valid accounts in the order they entered. Each X round draws its winners among the
-              replies under its own post; the Telegram drop draws among all its entries. The seed is the hash of a Solana block chosen after entries close; the lists of
-              entries (addresses only) and the seed are published, so anyone can re-run the draw and get the same winners.
+              Each X round closes 24 hours after its post. The Telegram drop closes 24 hours after launch. The seed is the blockhash of the first Solana block
+              with a block time at or after the close; every entered address gets the score sha256(blockhash + &quot;:&quot; + address) and the lowest scores win
+              (5 per X round). The addresses and the block are published, so anyone can re-run it and get the same winners. The airdrops go to the first valid
+              accounts in the order they entered.
             </p>
           </section>
 
           <section className="pt-14" aria-labelledby="send">
-            <SectionHead n="05" id="send" title="How tokens arrive" kicker="Receipts" />
+            <SectionHead n="06" id="send" title="How tokens arrive" kicker="Receipts" />
             <p className="max-w-[62ch] text-[14.5px] leading-relaxed">
-              The creator wallet sends the tokens within 48 hours after the draw. Every transfer is published on the{" "}
+              The creator wallet sends the tokens after launch — within 48 hours of the launch or of the draw, whichever is later. Every transfer is published on the{" "}
               <a className={link} href="/receipts">
                 Receipt Board
               </a>{" "}

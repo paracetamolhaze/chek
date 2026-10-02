@@ -259,4 +259,25 @@ alter table chek.x_drop_entries add constraint x_drop_entries_user_parent_key un
 create index if not exists x_drop_entries_wallet_idx on chek.x_drop_entries (wallet);
 `,
   },
+  {
+    version: "006_drop_rounds",
+    sql: `
+-- One row per drawn X round: the inputs anyone needs to re-run the draw, and its winners.
+create table chek.drop_rounds (
+  round int primary key,
+  post_id text,
+  tweet_id text,
+  posted_at timestamptz,
+  closes_at timestamptz not null,
+  slot bigint not null,
+  blockhash text not null,
+  block_time timestamptz,
+  entries int not null,
+  wallets jsonb not null,
+  winners jsonb not null,
+  drawn_at timestamptz not null default now()
+);
+alter table chek.drop_rounds enable row level security;
+`,
+  },
 ];

@@ -14,7 +14,7 @@ import { enterXDrop } from "../server/lib/xdrop.js";
 const EVENTS = { gen: "rg_gen", share: "rg_share", download: "rg_download", copy: "rg_copy", visit_x: "visit_x", visit_tg: "visit_tg", visit_other: "visit_other", visit_direct: "visit_direct" };
 for (const s of ["home", "drop", "print", "receipts", "transparency", "other"]) EVENTS[`pv_${s}`] = `pv_${s}`;
 // X drop form outcomes (counts only — which step people get stuck on)
-const XDROP = new Set(["ok", "closed", "bad_link", "slow_down", "not_found", "ours", "not_reply", "too_early", "no_address", "already", "other_wallet", "taken"]);
+const XDROP = new Set(["ok", "closed", "round_closed", "bad_link", "slow_down", "not_found", "ours", "not_reply", "too_early", "no_address", "already", "other_wallet", "taken"]);
 
 export async function GET(request) {
   return handle(async () => {
@@ -32,6 +32,7 @@ export async function GET(request) {
       const [c] = await sql`select (select count(distinct x_user_id) from chek.x_drop_entries)::int as x, (select count(*) from chek.drop_entries)::int as tg`;
       return cached({ status: d?.status ?? "none", x: { entries: c.x }, telegram: { entries: c.tg }, entries: c.x + c.tg }, 30);
     }
+    if (op === "drop_results") return cached(await (await import("../server/lib/draw.js")).roundResults(), 60);
     if (op === "ping") return json({ ok: true });
     throw new AppError(404, "unknown op");
   });

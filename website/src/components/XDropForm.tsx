@@ -8,6 +8,7 @@ const short = (a?: string) => (a ? `${a.slice(0, 4)}…${a.slice(-4)}` : "");
 
 const ERRORS: Record<string, string> = {
   closed: "The X drop is closed.",
+  round_closed: "That round is closed (rounds close 24 h after their post). Reply under the newest drop post on @chekcoinsol.",
   bad_link: "That isn't a link to a post on X. Open your reply, tap Share → Copy link, and paste it here.",
   slow_down: "Too many tries from here. Wait ten minutes and try again.",
   not_found: "Can't open that post. It has to be public — protected accounts and deleted posts can't be checked.",

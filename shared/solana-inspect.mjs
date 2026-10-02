@@ -33,15 +33,21 @@ export function isPubkey(s) {
   return typeof s === "string" && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(s) && base58Decode(s)?.length === 32;
 }
 
+// The public Solana RPC rate-limits shared cloud IPs (Vercel); a second free public endpoint takes over when it does.
+const FALLBACK = "https://solana-rpc.publicnode.com";
+let preferred = 0;
 export async function rpc(method, params) {
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(RPC, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
-    if (res.status === 429) {
-      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+  const urls = [...new Set([RPC, FALLBACK])];
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const i = (preferred + attempt) % urls.length;
+    const res = await fetch(urls[i], { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) }).catch(() => null);
+    if (!res || res.status === 429 || res.status >= 500) {
+      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
       continue;
     }
     const j = await res.json();
     if (j.error) throw new Error(`${method}: ${j.error.message}`);
+    preferred = i; // stick with the endpoint that answered
     return j.result;
   }
   throw new Error(`${method}: rate-limited by RPC`);
