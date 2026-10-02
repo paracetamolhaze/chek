@@ -26,7 +26,7 @@ export async function GET(request) {
       const { project } = await import("../server/lib/project.js");
       const d = project().drop;
       const sql = await (await import("../server/lib/db.js")).db();
-      const [c] = await sql`select (select count(*) from chek.x_drop_entries)::int as x, (select count(*) from chek.drop_entries)::int as tg`;
+      const [c] = await sql`select (select count(distinct x_user_id) from chek.x_drop_entries)::int as x, (select count(*) from chek.drop_entries)::int as tg`;
       return cached({ status: d?.status ?? "none", x: { entries: c.x }, telegram: { entries: c.tg }, entries: c.x + c.tg }, 30);
     }
     if (op === "ping") return json({ ok: true });

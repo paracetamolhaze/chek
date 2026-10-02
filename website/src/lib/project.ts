@@ -68,7 +68,8 @@ export type Project = {
 export type DropPart = {
   name: string;
   airdrop: { wallets: number; each: number };
-  draw: { winners: number; each: number };
+  draw?: { winners: number; each: number };
+  rounds?: { count: number; winners: number; each: number };
   tokens: number;
 };
 

@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 
-type Result = { ok?: boolean; n?: number; handle?: string; wallet?: string; error?: string };
+type Result = { ok?: boolean; n?: number; handle?: string; wallet?: string; round?: number | null; error?: string };
 
 const short = (a?: string) => (a ? `${a.slice(0, 4)}…${a.slice(-4)}` : "");
 
@@ -15,7 +15,7 @@ const ERRORS: Record<string, string> = {
   not_reply: "That post isn't a direct reply to @chekcoinsol. Reply under one of our drop posts and paste that link.",
   too_early: "That reply was written before the drop opened. Post a new reply under a drop post.",
   no_address: "No Solana address in that reply. Reply again with your public SOL address (never a seed phrase or private key).",
-  taken: "This address or reply is already entered.",
+  taken: "This address is already entered by another X account.",
 };
 
 // X drop entry: the public link of your reply to @chekcoinsol. The server reads the public post and checks it.
@@ -47,9 +47,11 @@ export function XDropForm() {
   const msg = !r
     ? null
     : r.ok
-      ? `✅ You're in — X drop entry #${r.n} for @${r.handle}, address ${short(r.wallet)}.`
+      ? `✅ You're in${r.round ? ` round ${r.round}` : ""} — @${r.handle}, address ${short(r.wallet)}. Account #${r.n} in the X drop.`
       : r.error === "already"
-        ? `👌 @${r.handle} is already in with ${short(r.wallet)}. One entry per X account.`
+        ? `👌 @${r.handle} is already in ${r.round ? `round ${r.round}` : "this round"}. Reply under the next drop post for the next round.`
+        : r.error === "other_wallet"
+          ? `@${r.handle} entered with ${short(r.wallet)} before — reply with that same address in every round.`
         : (ERRORS[r.error ?? ""] ?? "Something went wrong. Try again in a minute.");
 
   return (

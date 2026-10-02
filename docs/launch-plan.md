@@ -43,14 +43,14 @@ Numbers live only in `config/project.json` → `drop` (posts, site, bot and vide
 
 | | X drop (main) | Telegram drop (separate) |
 |---|---|---|
-| Airdrop | first 300 valid entries × 10,000 $CHEKD | first 200 valid entries × 10,000 $CHEKD |
-| Draw | 70 × 100,000 $CHEKD | 30 × 100,000 $CHEKD |
+| Airdrop | first 300 accounts × 10,000 $CHEKD | first 200 valid entries × 10,000 $CHEKD |
+| Draw | rounds: every X drop post (20) is its own draw — 5 × 70,000 $CHEKD among the replies under that post | 30 × 100,000 $CHEKD |
 | Entry | follow + repost, reply to a drop post with a public SOL address, paste the reply link at /drop | comment a public SOL address under the pinned drop post (or @chekcoinsol_bot), channel subscribers only |
-| Check | the site reads the public post: a direct reply to @chekcoinsol, written after the drop opened, with a valid address; one per X account and per address | one per Telegram account and per address |
+| Check | the site reads the public post: a direct reply to @chekcoinsol, written after the drop opened, with a valid address; one entry per account per round, one address per account | one per Telegram account and per address |
 
 Total 15,000,000 $CHEKD (1.5% of supply) from the creator's own launch buy, only if $CHEKD launches. Both close 24 h after launch; draws use a published Solana blockhash as the seed; the owner signs the transfers; every transfer becomes an on-chain receipt.
 
-X calendar: five drop posts a day at 05:00 / 09:00 / 13:00 / 17:00 / 21:00 UTC (D1 from 14:30), roughly three for the X drop (xg-*) to one announcing the Telegram drop (xt-*), plus five after launch. Telegram: tg-gw-1 (pinned, D1 14:00) and four reminders.
+X calendar: five drop posts a day at 05:00 / 09:00 / 13:00 / 17:00 / 21:00 UTC (D1 from 14:30), roughly three X drop rounds (xg-*, ROUND 1–20) to one post announcing the Telegram drop (xt-*), plus five after launch. Telegram: tg-gw-1 (pinned, D1 14:00) and four reminders.
 
 ## Launch minute
 

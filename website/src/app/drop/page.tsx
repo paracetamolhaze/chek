@@ -7,11 +7,13 @@ import { XDropForm } from "@/components/XDropForm";
 import { cashtag, project } from "@/lib/project";
 
 const d = project.drop!;
+const xr = d.x.rounds!;
+const tgd = d.telegram.draw!;
 const fmt = (n: number) => n.toLocaleString("en-US");
 
 export const metadata: Metadata = {
   title: "Receipt Drop",
-  description: `The official ${project.name} Receipt Drop: the main drop on X (first ${d.x.airdrop.wallets} × ${fmt(d.x.airdrop.each)} ${cashtag} + a draw of ${d.x.draw.winners} × ${fmt(d.x.draw.each)}) and a separate Telegram drop. Rules, entry and how winners are picked.`,
+  description: `The official ${project.name} Receipt Drop: the main drop on X in ${xr.count} rounds (${xr.winners} × ${fmt(xr.each)} ${cashtag} per round, plus ${fmt(d.x.airdrop.each)} for the first ${d.x.airdrop.wallets} accounts) and a separate Telegram drop. Rules, entry and how winners are picked.`,
   alternates: { canonical: "/drop" },
 };
 
@@ -44,8 +46,8 @@ export default function DropPage() {
           <section aria-labelledby="x">
             <SectionHead n="01" id="x" title="The X drop" kicker={d.status === "open" ? "Main · open" : "Closed"} />
             <div className="border-2 border-ink p-4 sm:p-6">
-              <Row label={`Airdrop — first ${d.x.airdrop.wallets} valid entries`} value={`${fmt(d.x.airdrop.each)} ${cashtag} each`} />
-              <Row label={`Draw — ${d.x.draw.winners} random entries`} value={`${fmt(d.x.draw.each)} ${cashtag} each`} />
+              <Row label={`Rounds — every X drop post (${xr.count})`} value={`${xr.winners} × ${fmt(xr.each)} ${cashtag} from its replies`} />
+              <Row label={`Airdrop — first ${d.x.airdrop.wallets} accounts`} value={`${fmt(d.x.airdrop.each)} ${cashtag} each`} />
               <Row label="X drop total" value={`${fmt(d.x.tokens)} ${cashtag}`} strong />
             </div>
             <ol className="mt-6 space-y-3 text-[14.5px] leading-relaxed">
@@ -57,7 +59,7 @@ export default function DropPage() {
                 and repost a drop post.
               </li>
               <li>
-                <strong>2.</strong> Reply to that post with your <strong>public</strong> Solana address.
+                <strong>2.</strong> Reply to that post with your <strong>public</strong> Solana address. Every drop post is its own round — a reply under a new round is a new ticket.
               </li>
               <li>
                 <strong>3.</strong> Copy the link to your reply (Share → Copy link) and paste it below.
@@ -67,7 +69,7 @@ export default function DropPage() {
             <DropCount which="x" />
             <p className="mt-3 text-[12px] text-faded">
               Checked automatically from the public post: it is a direct reply to @chekcoinsol, written after the drop opened, with a valid Solana
-              address. One entry per X account and per address. Follow and repost are asked, not checked.
+              address. One entry per account per round; one address per account. Follow and repost are asked, not checked.
             </p>
           </section>
 
@@ -75,7 +77,7 @@ export default function DropPage() {
             <SectionHead n="02" id="telegram" title="The Telegram drop" kicker="Separate" />
             <div className="border-2 border-ink p-4 sm:p-6">
               <Row label={`Airdrop — first ${d.telegram.airdrop.wallets} valid entries`} value={`${fmt(d.telegram.airdrop.each)} ${cashtag} each`} />
-              <Row label={`Draw — ${d.telegram.draw.winners} random entries`} value={`${fmt(d.telegram.draw.each)} ${cashtag} each`} />
+              <Row label={`Draw — ${tgd.winners} random entries`} value={`${fmt(tgd.each)} ${cashtag} each`} />
               <Row label="Telegram drop total" value={`${fmt(d.telegram.tokens)} ${cashtag}`} strong />
             </div>
             <ol className="mt-6 space-y-3 text-[14.5px] leading-relaxed">
@@ -115,8 +117,8 @@ export default function DropPage() {
           <section className="pt-14" aria-labelledby="draw">
             <SectionHead n="04" id="draw" title="How winners are picked" kicker="Re-checkable" />
             <p className="max-w-[62ch] text-[14.5px] leading-relaxed">
-              Both drops close 24 hours after launch. In each drop the airdrop goes to the first valid entries in the order they were made, and the
-              draw picks random winners among all valid entries. The seed is the hash of a Solana block chosen after entries close; the lists of
+              Both drops close 24 hours after launch. The airdrops go to the first valid accounts in the order they entered. Each X round draws its winners among the
+              replies under its own post; the Telegram drop draws among all its entries. The seed is the hash of a Solana block chosen after entries close; the lists of
               entries (addresses only) and the seed are published, so anyone can re-run the draw and get the same winners.
             </p>
           </section>

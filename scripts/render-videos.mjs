@@ -221,6 +221,14 @@ const VIDEOS = {
 
   "v07-receipt-drop": dropScene({
     part: P.drop.x,
+    rows: [
+      ["rounds", `${P.drop.x.rounds.count} · one per post`],
+      ["each round", `${P.drop.x.rounds.winners} × ${P.drop.x.rounds.each.toLocaleString("en-US")}`],
+      ["airdrop", `first ${P.drop.x.airdrop.wallets} × ${P.drop.x.airdrop.each.toLocaleString("en-US")}`],
+      ["source", "creator's launch buy"],
+      ["entry", "reply · 1 per round"],
+      ["proof", "on-chain receipts"],
+    ],
     title: "X DROP",
     sub: `${T} · MAIN DROP · ON X`,
     entry: "reply · 1 per account",
@@ -257,8 +265,8 @@ const VIDEOS = {
 
 
 // A drop receipt printing out of the register (v07 X drop, v08 Telegram drop).
-function dropScene({ part, title, sub, entry, bubble, cta }) {
-  const rows = [
+function dropScene({ part, rows: custom, title, sub, entry, bubble, cta }) {
+  const rows = custom ?? [
     ["airdrop", `first ${part.airdrop.wallets} × ${part.airdrop.each.toLocaleString("en-US")}`],
     ["draw", `${part.draw.winners} × ${part.draw.each.toLocaleString("en-US")}`],
     ["source", "creator's launch buy"],

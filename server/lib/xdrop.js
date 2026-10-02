@@ -43,7 +43,10 @@ export async function dropClosed(p = project()) {
   return Boolean(launchedAt && Date.now() > Date.parse(launchedAt) + 24 * 3600e3);
 }
 
-// → { ok, n, handle, wallet } | { error: closed|bad_link|slow_down|not_found|ours|not_reply|too_early|no_address|already|taken }
+// Round number of our drop post, read from its own text ("ROUND 7") — works even if its link was never pasted to the bot.
+const roundOf = (text) => Number(/\bROUND\s+(\d{1,3})\b/i.exec(text ?? "")?.[1]) || null;
+
+// → { ok, n, handle, wallet, round } | { error: closed|bad_link|slow_down|not_found|ours|not_reply|too_early|no_address|already|other_wallet|taken }
 export async function enterXDrop(link, ip) {
   const p = project();
   const d = p.drop;
@@ -60,14 +63,23 @@ export async function enterXDrop(link, ip) {
   if (d.openedAt && Date.parse(t.created_at) < Date.parse(d.openedAt)) return { error: "too_early" };
   const wallet = (t.text?.match(ADDR) ?? []).find(isPubkey);
   if (!wallet) return { error: "no_address" };
+  const parent = t.in_reply_to_status_id_str ?? null;
+  const round = roundOf(t.parent?.text);
   const sql = await db();
-  const [mine] = await sql`select wallet from chek.x_drop_entries where x_user_id = ${t.user.id_str}`;
-  if (mine) return { error: "already", handle, wallet: mine.wallet };
-  const [row] = await sql`insert into chek.x_drop_entries (x_user_id, x_handle, wallet, reply_id, parent_id, replied_at)
-    values (${t.user.id_str}, ${handle}, ${wallet}, ${id}, ${t.in_reply_to_status_id_str ?? null}, ${t.created_at})
+  // one address per account (the one it entered with first), one account per address, one entry per account per post
+  const [mine] = await sql`select wallet from chek.x_drop_entries where x_user_id = ${t.user.id_str} order by id limit 1`;
+  if (mine && mine.wallet !== wallet) return { error: "other_wallet", handle, wallet: mine.wallet };
+  const [other] = await sql`select 1 from chek.x_drop_entries where wallet = ${wallet} and x_user_id <> ${t.user.id_str} limit 1`;
+  if (other) return { error: "taken" };
+  const [same] = await sql`select round from chek.x_drop_entries where x_user_id = ${t.user.id_str} and parent_id is not distinct from ${parent}`;
+  if (same) return { error: "already", handle, wallet, round: same.round };
+  const [row] = await sql`insert into chek.x_drop_entries (x_user_id, x_handle, wallet, reply_id, parent_id, replied_at, round)
+    values (${t.user.id_str}, ${handle}, ${wallet}, ${id}, ${parent}, ${t.created_at}, ${round})
     on conflict do nothing returning id`;
   if (!row) return { error: "taken" };
-  const [{ n }] = await sql`select count(*)::int as n from chek.x_drop_entries where id <= ${row.id}`;
+  // n = this account's place among accounts (the airdrop goes to the first accounts in order)
+  const [{ n }] = await sql`select count(distinct x_user_id)::int as n from chek.x_drop_entries
+    where id <= (select min(id) from chek.x_drop_entries where x_user_id = ${t.user.id_str})`;
   await bump("x_drop_entries");
-  return { ok: true, n, handle, wallet };
+  return { ok: true, n, handle, wallet, round };
 }

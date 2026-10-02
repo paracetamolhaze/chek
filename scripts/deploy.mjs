@@ -71,7 +71,7 @@ let created = await deploy();
 if (created.body?.error?.code === "missing_files") {
   const missing = new Set(created.body.error.missing ?? []);
   const need = files.filter((f) => missing.has(f.sha));
-  const small = need.filter((f) => f.size <= 256 * 1024);
+  const small = need.filter((f) => f.size <= 1024 * 1024);
   const inlineBytes = small.reduce((s, f) => s + f.size, 0);
   const inline = new Set(inlineBytes <= 3 * 1024 * 1024 ? small.map((f) => f.sha) : []);
   const upload = need.filter((f) => !inline.has(f.sha));

@@ -90,13 +90,14 @@
         "wallets": 300,
         "each": 10000
       },
-      "draw": {
-        "winners": 70,
-        "each": 100000
+      "rounds": {
+        "count": 20,
+        "winners": 5,
+        "each": 70000
       },
       "tokens": 10000000,
       "entry": "follow @chekcoinsol, repost a drop post, reply to it with your public Solana address, then paste the link to your reply at chekcoinsol.xyz/drop",
-      "check": "the site checks that the link is a public reply to @chekcoinsol, written after the drop opened, that contains a valid Solana address; one entry per X account and per address; follow and repost are asked, not checked"
+      "check": "the site checks that the link is a public reply to @chekcoinsol, written after the drop opened, that contains a valid Solana address; every drop post is its own round (one entry per account per round); one address per account and one account per address; follow and repost are asked, not checked"
     },
     "telegram": {
       "name": "Telegram drop",
@@ -113,9 +114,9 @@
     },
     "separate": "two separate drops with separate lists and separate draws — you can enter both",
     "source": "the creator wallet’s own launch buy (bought on the curve like everyone; free allocation stays 0%)",
-    "draw_rules": "entries close 24 hours after launch; each drop’s winners are picked at random with a published Solana blockhash as the seed, anyone can re-check",
+    "draw_rules": "entries close 24 hours after launch; each X round draws its winners among the replies under its own post, the Telegram drop draws among its entries; every draw uses a published Solana blockhash as the seed, anyone can re-check",
     "send": "from the creator wallet within 48 hours after the draw; every transfer published as an on-chain receipt",
-    "condition": "only if $CHEKD launches; in each drop the airdrop goes to the first valid entries in order, the draw is among all valid entries",
+    "condition": "only if $CHEKD launches; the airdrops go to the first valid accounts in order, the draws are among valid entries",
     "never": "no claim site, no wallet connect, no signing, no fees, no DMs from us"
   }
 }

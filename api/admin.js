@@ -12,6 +12,7 @@ import { notifyOwner, setChannelDescription, tg } from "../server/lib/telegram.j
 import { placeholders } from "../shared/content-core.mjs";
 import { project as loadProject, withLiveToken } from "../server/lib/project.js";
 import { xAccount } from "../server/lib/x.js";
+import { skipHandoff } from "../server/lib/xhandoff.js";
 import { agentStatus } from "../server/lib/llm.js";
 import { confirmLaunch } from "../server/lib/launch.js";
 import { dryEnd, dryReport, dryReset, dryStart, goLive, liveGate } from "../server/lib/dryrun.js";
@@ -148,6 +149,12 @@ export async function POST(request) {
         if (!row) throw new AppError(404, "no queued post with that id");
         await audit("owner", "post.now", "ok", { ref: row.id });
         return json({ ok: true, result: await runPublisher(new Date(), { ids: [row.id], platforms: [row.platform] }) });
+      }
+      case "x_skip": {
+        // withdraw an X post already handed to the owner (same as the owner's ⏭ Skip button)
+        const ok = await skipHandoff(String(b.id));
+        if (ok) await notifyOwner((await getSetting("owner"))?.telegramUserId, `⏭ ${b.id} withdrawn — don't post it. ${b.reason ?? ""}`.trim());
+        return json({ ok });
       }
       case "telegram_setup": {
         if (!integrations().telegram) throw new AppError(400, "TELEGRAM_BOT_TOKEN / TELEGRAM_WEBHOOK_SECRET not set");

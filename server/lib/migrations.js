@@ -247,4 +247,16 @@ alter table chek.x_drop_entries enable row level security;
 alter table chek.rate_hits enable row level security;
 `,
   },
+  {
+    version: "005_x_drop_rounds",
+    sql: `
+-- X drop in rounds: every drop post is its own draw among the replies under it. One entry per account per post;
+-- an account keeps one address (checked in code), an address belongs to one account.
+alter table chek.x_drop_entries drop constraint if exists x_drop_entries_x_user_id_key;
+alter table chek.x_drop_entries drop constraint if exists x_drop_entries_wallet_key;
+alter table chek.x_drop_entries add column if not exists round int;
+alter table chek.x_drop_entries add constraint x_drop_entries_user_parent_key unique (x_user_id, parent_id);
+create index if not exists x_drop_entries_wallet_idx on chek.x_drop_entries (wallet);
+`,
+  },
 ];
