@@ -179,7 +179,7 @@
       "text": "🧾 $CHEKD is live on pump.fun.\n\nCA: {{CA}}\n\nsame address on {{SITE}} and pinned in t.me/chekcoinsol. names prove nothing, the address does.\n\nno presale. creator buy receipt within the hour.\n\n#Solana",
       "asset": "content/mascot/05-live.png",
       "note": "fires the moment the mint is verified on-chain (launch op), right after the website switches",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T19:24:14.000Z"
     },
     {
       "id": "x-311",
@@ -190,7 +190,7 @@
       "text": "RECEIPT #{{LAUNCH_RECEIPT_N}}: token created 🧾\n\nCA: {{CA_SHORT}}\ncreated: {{CREATED_AT}}\nmint authority: {{MINT_AUTH}} · freeze: {{FREEZE_AUTH}}\n\nON-CHAIN VERIFIED. the tx: solscan.io/tx/{{CREATION_TX}}\n\n#Solana #memecoin",
       "imageUrl": "/api/image?receipt={{LAUNCH_RECEIPT_N}}&format=square",
       "note": "first on-chain verified launch receipt",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T19:36:14.000Z"
     },
     {
       "id": "x-312",
@@ -206,7 +206,7 @@
       ],
       "imageUrl": "/api/image?receipt={{CREATOR_RECEIPT_N}}&format=square",
       "note": "creator receipt with chain-confirmed values",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T20:04:14.000Z"
     },
     {
       "id": "x-320",
@@ -215,7 +215,7 @@
       "status": "ready",
       "text": "what's live right now:\n\n✓ $CHEKD on pump.fun ({{CA_SHORT}})\n✓ site + transparency page with real data\n✓ receipt generator, print one, any claim\n✓ telegram: t.me/chekcoinsol\n\nnext: receipt of the week.\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "note": "after launch",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T21:24:14.000Z"
     },
     {
       "id": "x-321",
@@ -225,7 +225,7 @@
       "text": "RECEIPT OF THE WEEK is open 🧾\n\nprint a receipt for the most absurd claim you saw this week ({{SITE}}/print) and tag us.\n\nbest one gets printed into the lore. no money prizes, just glory and a line in the long receipt.\n\n#Solana #memecoin",
       "asset": "content/memes/10-receipt-of-the-week.png",
       "note": "recurring format: people tag CHEK with a receipt; replies/quotes go to REVIEW",
-      "publishAfter": null
+      "publishAfter": "2026-10-03T01:24:14.000Z"
     },
     {
       "id": "x-322",
@@ -235,7 +235,7 @@
       "text": "24h receipt 🧾\n\n· live on pump.fun, same CA everywhere: {{CA_SHORT}}\n· launch + creator receipts, on-chain verified\n· receipts printed by people: {{RECEIPTS_PRINTED}}\n· build log: {{SITE}}/history\n\nno price talk. that's the recap.\n\n#Solana #memecoin",
       "asset": "content/memes/08-long-receipt.png",
       "note": "real numbers only; owner re-checks wording",
-      "publishAfter": null
+      "publishAfter": "2026-10-03T19:24:14.000Z"
     },
     {
       "id": "x-323",
@@ -244,7 +244,7 @@
       "status": "ready",
       "text": "lore, chapter 06: THE LONG RECEIPT\n\nchek decided to keep one receipt for everything the community does.\n\nit's already longer than chek.\n\n#Solana #memecoin",
       "asset": "content/memes/08-long-receipt.png",
-      "publishAfter": null
+      "publishAfter": "2026-10-04T19:24:14.000Z"
     },
     {
       "id": "x-324",
@@ -253,7 +253,7 @@
       "status": "ready",
       "text": "receipts fade.\ncommits don't.\n\n#Solana #memecoin",
       "asset": "content/memes/07-receipts-fade.png",
-      "publishAfter": null
+      "publishAfter": "2026-10-05T19:24:14.000Z"
     },
     {
       "id": "x-325",
@@ -262,7 +262,7 @@
       "status": "ready",
       "text": "reminder, because the coupon never sleeps:\n\nwe never DM first.\nwe never ask for a seed phrase.\nno “v2 migration”, no “airdrop claim” site, no “wallet validation”, our drop is SENT.\n\nsame name ≠ same token. the only CA is on {{SITE}}.\n\n#Solana #memecoin",
       "asset": "content/memes/03-never-dm-first.png",
-      "publishAfter": null
+      "publishAfter": "2026-10-06T19:24:14.000Z"
     },
     {
       "id": "xg-100",
@@ -536,7 +536,7 @@
       "text": "$CHEKD is live. ROUND 17 of the giveaway is open 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. this round closes 24h after this post.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 17",
-      "publishAfter": null,
+      "publishAfter": "2026-10-02T22:24:14.000Z",
       "thread": [
         "🔒 ROUND 17: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
@@ -549,7 +549,7 @@
       "text": "GIVEAWAY ROUND 18 🧾 {{X_ENTRIES}} accounts in the X drop.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.png",
       "note": "X drop round 18",
-      "publishAfter": null,
+      "publishAfter": "2026-10-03T02:24:14.000Z",
       "thread": [
         "🔒 ROUND 18: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
@@ -562,7 +562,7 @@
       "text": "the telegram drop is open too until 24h after launch 🎁\n\n{{TG_ENTRIES}} entries. {{TG_ENTER}}\n\nseparate from the X drop.\n\n#Solana #airdrop",
       "asset": "content/animations/v08-telegram-drop.png",
       "note": "X → Telegram: announces the separate Telegram drop",
-      "publishAfter": null
+      "publishAfter": "2026-10-03T06:24:14.000Z"
     },
     {
       "id": "xg-615",
@@ -572,7 +572,7 @@
       "text": "GIVEAWAY ROUND 19 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 19",
-      "publishAfter": null,
+      "publishAfter": "2026-10-03T10:24:14.000Z",
       "thread": [
         "🔒 ROUND 19: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
@@ -585,7 +585,7 @@
       "text": "GIVEAWAY ROUND 20, the last one 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. it closes 24h after this post. then: the seed from a solana block, and transfer receipts.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/mascot/01-printing.png",
       "note": "X drop round 20",
-      "publishAfter": null,
+      "publishAfter": "2026-10-03T15:24:14.000Z",
       "thread": [
         "🔒 ROUND 20: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]

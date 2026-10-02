@@ -130,7 +130,7 @@
       "launch": true,
       "pin": true,
       "text": "OFFICIAL CONTRACT ADDRESS ($CHEKD):\n{{CA}}\n\nOfficial links:\n• Website: {{SITE_URL}}\n• X: {{X_URL}}\n• Pump.fun: https://pump.fun/coin/{{CA}}\n• Explorer: https://solscan.io/token/{{CA}}\n\nWARNING:\nAdmins will never DM first.\nA name or ticker is not proof, other tokens may use them.\nAlways verify the Contract Address from official sources.",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T19:24:14.000Z"
     },
     {
       "id": "tg-311",
@@ -141,7 +141,7 @@
       "launch": true,
       "text": "RECEIPT #{{LAUNCH_RECEIPT_N}}: token created 🧾 ON-CHAIN VERIFIED\n\nCA: {{CA}}\nCreated: {{CREATED_AT}}\nSupply: {{SUPPLY}}\nMint authority: {{MINT_AUTH}} · Freeze authority: {{FREEZE_AUTH}}\nCreation tx: https://solscan.io/tx/{{CREATION_TX}}",
       "imageUrl": "/api/image?receipt={{LAUNCH_RECEIPT_N}}&format=square",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T19:36:14.000Z"
     },
     {
       "id": "tg-312",
@@ -152,7 +152,7 @@
       "launch": true,
       "text": "the creator receipt 🧾\n\nCreator wallet: {{CREATOR}}\nSpent: {{CREATOR_SOL}} SOL\nReceived: {{CREATOR_TOKENS}} CHEKD ({{CREATOR_PCT}} of supply)\nIt was a buy in the creation transaction, same bonding curve as everyone. Free allocation: 0%.\nTx: https://solscan.io/tx/{{CREATION_TX}}\n\nLive creator position: {{SITE_URL}}/transparency",
       "imageUrl": "/api/image?receipt={{CREATOR_RECEIPT_N}}&format=square",
-      "publishAfter": null
+      "publishAfter": "2026-10-02T20:04:14.000Z"
     },
     {
       "id": "tg-320",
@@ -161,7 +161,7 @@
       "status": "ready",
       "where": "channel",
       "text": "24h receipt 🧾\n\n• launched on Pump.fun, CA {{CA_SHORT}}, same on site, X and here\n• launch + creator receipts, on-chain verified\n• receipts printed by people: {{RECEIPTS_PRINTED}}\n• build log: {{SITE_URL}}/history\n\nNo price talk. That's the recap.",
-      "publishAfter": null
+      "publishAfter": "2026-10-03T19:24:14.000Z"
     },
     {
       "id": "tg-gw-1",
@@ -210,7 +210,7 @@
       "status": "ready",
       "where": "channel",
       "text": "4 hours left to enter the Telegram drop 🧾 Comment your address under the pinned drop post.\n\nAfter that: the draw, then the transfers, each one published as an on-chain receipt.",
-      "publishAfter": null
+      "publishAfter": "2026-10-03T15:24:14.000Z"
     }
   ]
 }

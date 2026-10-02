@@ -217,6 +217,15 @@
       "proof": {
         "label": "/drop"
       }
+    },
+    {
+      "date": "2026-10-02T19:24:14.000Z",
+      "title": "Token created on Pump.fun",
+      "detail": "Official contract address: 2Qq5wSs8WU5RiyUtyFFkpNhJVE3PuDPw3QRbTSWMpump. Same address on this site, the pinned X post and the pinned Telegram message. Creator buy in the same transaction: 10,388,949 CHEKD (1.04% of supply) for 0.2933 SOL in the creation tx.",
+      "proof": {
+        "label": "creation tx 5tDd8CKf…",
+        "href": "https://solscan.io/tx/5tDd8CKfuUs2xE6atxTAGVBuhfbrWaRux7HFUT1YpsKSKoUSaSZKPhh1vxnnvXoyTn19wH6BHKkLAWmUHjGe3CP7"
+      }
     }
   ]
 }

@@ -5,18 +5,16 @@
 <!-- status:start (generated from config/project.json — do not edit by hand) -->
 | | |
 |---|---|
-| **What is CHEK** | A meme coin project launching on Solana with one rule: every claim comes with a receipt. The mascot, Chek, is a slip of thermal paper that only prints what it can prove. |
+| **What is CHEK** | A meme coin project on Solana with one rule: every claim comes with a receipt. The mascot, Chek, is a slip of thermal paper that only prints what it can prove. |
 | **Token symbol** | $CHEKD (the brand is CHEK) |
-| **Current status** | **PRE-LAUNCH** |
+| **Current status** | **LIVE** |
 | **Official website** | https://www.chekcoinsol.xyz |
 | **X** | https://x.com/chekcoinsol |
 | **Telegram** | https://t.me/chekcoinsol |
 | **Source** | https://github.com/paracetamolhaze/chek (history sanitized once for privacy — see docs/repository-sanitization.md) |
-| **Token** | **NOT LAUNCHED** |
-| **Contract address (CA)** | **DOES NOT EXIST YET** |
+| **Token** | **LAUNCHED on Pump.fun** |
+| **Contract address (CA)** | `2Qq5wSs8WU5RiyUtyFFkpNhJVE3PuDPw3QRbTSWMpump` |
 | **Public since** | 01 Oct 2026 (UTC) |
-
-> The official CHEK token has not launched yet. Any token using this name or ticker before our launch is not affiliated with this project.
 <!-- status:end -->
 
 > A name or ticker is never proof. The only exact identifier is the official Solana contract address, published at the same minute on the website, in the pinned X post and in the pinned Telegram message.
