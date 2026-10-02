@@ -160,6 +160,14 @@
       "proof": {
         "label": "commit 623c06c"
       }
+    },
+    {
+      "date": "2026-10-02T00:20:10Z",
+      "title": "Canonical domain: www.chekcoinsol.xyz",
+      "detail": "The official website moved to https://www.chekcoinsol.xyz. chekcoin.vercel.app keeps working; every other domain only redirects here.",
+      "proof": {
+        "label": "config/project.json"
+      }
     }
   ]
 }

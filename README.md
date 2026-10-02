@@ -8,7 +8,7 @@
 | **What is CHEK** | A meme coin project launching on Solana with one rule: every claim comes with a receipt. The mascot, Chek, is a slip of thermal paper that only prints what it can prove. |
 | **Token symbol** | $CHEKD (the brand is CHEK) |
 | **Current status** | **PRE-LAUNCH** |
-| **Official website** | https://chekcoin.vercel.app |
+| **Official website** | https://www.chekcoinsol.xyz |
 | **X** | https://x.com/chekcoinsol |
 | **Telegram** | https://t.me/chekcoinsol |
 | **Token** | **NOT LAUNCHED** |

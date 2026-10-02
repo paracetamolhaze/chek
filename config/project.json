@@ -38,7 +38,7 @@
     "launchedAt": null
   },
   "links": {
-    "website": "https://chekcoin.vercel.app",
+    "website": "https://www.chekcoinsol.xyz",
     "x": "https://x.com/chekcoinsol",
     "telegram": "https://t.me/chekcoinsol",
     "telegramChat": null,
@@ -58,12 +58,13 @@
     }
   },
   "domain": {
-    "canonical": "https://chekcoin.vercel.app",
-    "pending": "chekcoinsol.xyz",
+    "canonical": "https://www.chekcoinsol.xyz",
+    "previous": "https://chekcoin.vercel.app",
     "never": [
       "checkcoinsol.xyz"
     ],
-    "note": "Canonical stays chekcoin.vercel.app until the owner confirms the CHEK-spelled domain. The CHECK-spelled typo domain may only redirect."
+    "confirmedAt": "2026-10-02T00:20:10.885Z",
+    "note": "Canonical domain confirmed by the owner. Every other domain (incl. chekcoin.vercel.app and the CHECK-spelled typo) only redirects here."
   },
   "site": {
     "analytics": false
