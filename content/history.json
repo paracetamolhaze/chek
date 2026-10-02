@@ -177,6 +177,14 @@
         "label": "docs/repository-sanitization.md",
         "href": "https://github.com/paracetamolhaze/chek/blob/main/docs/repository-sanitization.md"
       }
+    },
+    {
+      "date": "2026-10-02T09:50:00Z",
+      "title": "Pre-launch posting starts",
+      "detail": "The autopilot is live before the token: X posts are handed to the owner in Telegram and posted by hand, the Telegram channel posts on its own. The dry run ran 10 hours without errors and was ended early at the owner’s request (planned: 24 hours). Six short CHEK videos made for the first posts. General crypto news is switched off — CHEK talks about CHEK.",
+      "proof": {
+        "label": "commit 1306193"
+      }
     }
   ]
 }

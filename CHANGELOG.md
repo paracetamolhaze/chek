@@ -2,6 +2,14 @@
 
 Dates are UTC. Entries are added when the change ships — never backdated.
 
+## 2026-10-02
+
+- Canonical domain www.chekcoinsol.xyz; every other domain redirects there.
+- Public repository on GitHub (history sanitized once for privacy, see docs/repository-sanitization.md).
+- X via the owner's Telegram (one tap per post); bot quiet hours at night.
+- Six brand videos; the content engine can attach videos and memes from an asset library.
+- Pre-launch posting live at 09:50 UTC; dry run ended after 10 h at the owner's request; news desk off.
+
 ## 2026-10-01 (final decisions, from 23:15 UTC)
 
 - Ticker decided: the token symbol is $CHEKD; the brand stays CHEK. Old build-log entries keep their original wording with a visible correction.
