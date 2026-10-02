@@ -50,6 +50,7 @@ async function status() {
     tokenLive: s.token_live ?? null,
     creatorWallet: s.creator_wallet ?? null,
     gate: await liveGate(s),
+    telegramWebhook: integrations().telegram ? await tg("getWebhookInfo").then((w) => ({ url: w.url, pending: w.pending_update_count, lastError: w.last_error_message ?? null, lastErrorAt: w.last_error_date ? new Date(w.last_error_date * 1000).toISOString() : null })).catch((e) => ({ error: e.message })) : null,
     settings: { ...s, owner: { linked: Boolean(s.owner?.telegramUserId) }, owner_claim: undefined },
     xAccount: x ? { username: x.username } : null,
     counts,
