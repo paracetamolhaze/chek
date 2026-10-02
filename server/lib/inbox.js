@@ -20,21 +20,25 @@ const RULES = [
 ];
 export const classify = (text) => RULES.find(([, re]) => re.test(text ?? ""))?.[0] ?? "other";
 
-export function answer(kind, p = project()) {
+// Owner's style rules for replies: no links unless the person asks for one, no long dashes.
+export const wantsLink = (text) => /(link|site|website|url|where (can|do|is|to))/i.test(text ?? "");
+
+export function answer(kind, { links = false } = {}, p = project()) {
   const t = `$${p.ticker}`;
-  const site = p.links.website.replace(/^https?:\/\//, "");
+  const site = p.links.website.replace(/^https?:\/\/(www\.)?/, "");
   const x = p.drop?.x?.rounds;
   const n = (v) => v.toLocaleString("en-US");
+  const onSite = (path, words) => (links ? `${site}${path}` : words);
   return {
     gm: `gm 🙌 glad you found us. ask me anything about CHEK`,
-    project: `honestly? this is my thing right now. I'm building CHEK every single day — the site, the receipt bot and the giveaways are already live and the token isn't even out yet. after launch I keep shipping, all in public, every step with a receipt 🧾 stick around, we're just getting started`,
-    launch: `not live yet 🙌 I'll announce the exact launch time at least 24h ahead, on X and here. the contract address goes up at the same minute on ${site}, the pinned X post and the pinned post here — anything before that isn't us. turn on notifications for the channel 🧾`,
+    project: `honestly? this is my thing right now. I'm building CHEK every single day. the site, the receipt bot and the giveaways are already live and the token isn't even out yet. after launch I keep shipping, all in public, every step with a receipt 🧾 stick around, we're just getting started`,
+    launch: `not live yet 🙌 I'll announce the exact launch time at least 24h ahead, on X and here. the contract address goes up at the same minute on ${onSite("", "our site")}, the pinned X post and the pinned post here. anything before that isn't us. turn on notifications for the channel 🧾`,
     drop: x
-      ? `yes! two giveaways running 🎁 on X every drop post is its own round — ${x.winners} winners × ${n(x.each)} ${t}, drawn 24h after the post: reply with your SOL address, then paste your reply link at ${site}/drop. here in telegram: drop your address in the comments under the pinned giveaway post. tokens get sent after launch — no wallet connect, nothing to pay`
-      : `the giveaway rules are on ${site}/drop 🎁`,
-    growth: `great question 🙌 right now: giveaway rounds on X every few hours — ${x ? `${x.winners} winners each` : "winners every round"}, drawn 24h after the post and announced publicly, anyone can re-check them on ${site}/drop. the receipt generator — anyone can print a receipt for any claim and share it, that's our meme engine. and daily posts: lore, short videos, the plan, all built in public. no bought followers, no bots — real people only. want to help? repost the latest round on X and print a receipt at ${site}/print 🧾`,
-    chat: `the chat's already open 🙌 jump into the comments under any post here — that's where we hang out`,
-    offer: `appreciate you reaching out, but we're not using any outside growth services and we don't hand out roles — building this ourselves 🙏 all the best`,
+      ? `yes! two giveaways running 🎁 on X every giveaway post is its own round: ${x.winners} winners × ${n(x.each)} ${t}, drawn 24h after the post. reply with your SOL address and lock it in on ${onSite("/drop", "the drop page of our site")}. here in telegram just drop your address in the comments under the pinned giveaway post. tokens get sent after launch, no wallet connect, nothing to pay`
+      : `yes, there's a giveaway 🎁 all the rules are on ${onSite("/drop", "the drop page of our site")}`,
+    growth: `great question 🙌 right now we run giveaway rounds on X every few hours, ${x ? `${x.winners} winners each` : "winners every round"}, drawn 24h after the post and announced publicly so anyone can re-check them. there's the receipt generator: anyone can print a receipt for any claim and share it, that's our meme engine. and daily posts: lore, short videos, the plan, all built in public. no bought followers, no bots, real people only. want to help? repost the latest round on X and print a receipt on ${onSite("/print", "the site")} 🧾`,
+    chat: `the chat's already open 🙌 jump into the comments under any post here, that's where we hang out`,
+    offer: `appreciate you reaching out, but we're not using any outside growth services and we don't hand out roles. building this ourselves 🙏 all the best`,
   }[kind];
 }
 
@@ -57,7 +61,7 @@ export async function dmMessage(m, owner) {
   const id = `dm-${m.chat.id}-${m.message_id}`;
   let sent = null;
   if (kind !== "other" && !(await answeredRecently(sql, m.from.id, kind, 12))) {
-    sent = answer(kind);
+    sent = answer(kind, { links: wantsLink(text) });
     await tg("sendMessage", { chat_id: m.chat.id, direct_messages_topic_id: topic, text: sent, link_preview_options: { is_disabled: true } });
     await bump(`dm_auto_${kind}`);
   }
@@ -93,7 +97,7 @@ export async function commentQuestion(m) {
   if (!/\?|when|how|where|what|is this|legit/i.test(text)) return false; // statements and hype aren't questions
   const sql = await db();
   if (await answeredRecently(sql, m.from.id, kind, 6)) return false;
-  await tg("sendMessage", { chat_id: m.chat.id, text: answer(kind), reply_parameters: { message_id: m.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
+  await tg("sendMessage", { chat_id: m.chat.id, text: answer(kind, { links: wantsLink(text) }), reply_parameters: { message_id: m.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
   await sql`insert into chek.interactions (id, platform, kind, author, author_id, text, at, status, data)
     values (${`cm-${m.chat.id}-${m.message_id}`}, 'telegram', 'comment', ${m.from.username ?? null}, ${String(m.from.id)}, ${text.slice(0, 2000)}, now(), 'handled',
       ${sql.json({ chat: m.chat.id, msg: m.message_id, kind, answered: kind })}) on conflict (id) do nothing`;
@@ -106,7 +110,7 @@ export async function ownerPick(kind, chat, msg) {
   const sql = await db();
   const [it] = await sql`select * from chek.interactions where id = ${`dm-${chat}-${msg}`}`;
   if (!it || !answer(kind)) return false;
-  await tg("sendMessage", { chat_id: Number(chat), direct_messages_topic_id: it.data.topic ?? undefined, text: answer(kind), link_preview_options: { is_disabled: true } });
+  await tg("sendMessage", { chat_id: Number(chat), direct_messages_topic_id: it.data.topic ?? undefined, text: answer(kind, { links: wantsLink(it.text) }), link_preview_options: { is_disabled: true } });
   await sql`update chek.interactions set status = 'handled', data = data || ${sql.json({ answered: kind })} where id = ${it.id}`;
   await audit("owner", "telegram.dm_answered", "ok", { ref: it.id, detail: { kind } });
   return true;

@@ -39,7 +39,7 @@
       "slot": "D1 16:00",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 03: THE SHREDDER\n\neats evidence. deleted posts. wiped sites. devs who “went for a walk”.\n\nchek keeps receipts. the shredder hates that.",
+      "text": "lore, chapter 03: THE SHREDDER\n\neats evidence. deleted posts. wiped sites. devs who “went for a walk”.\n\nchek keeps receipts. the shredder hates that.\n\n#Solana #memecoin",
       "asset": "content/animations/v03-the-shredder.mp4",
       "note": "lore video",
       "publishAfter": "2026-10-02T16:00:00.000Z"
@@ -49,7 +49,7 @@
       "slot": "D1 19:00",
       "category": "transparency",
       "status": "ready",
-      "text": "the plan, itemized 🧾\n\nnow → site, receipt generator, telegram bot\nlaunch → $CHEKD on pump.fun, CA everywhere at the same minute\nafter → proof of hold, holder votes, receipt of the week\nnever → presale, price promises, DMs first",
+      "text": "the plan, itemized 🧾\n\nnow → site, receipt generator, telegram bot\nlaunch → $CHEKD on pump.fun, CA everywhere at the same minute\nafter → proof of hold, holder votes, receipt of the week\nnever → presale, price promises, DMs first\n\n#Solana #memecoin",
       "asset": "content/animations/v05-the-plan.mp4",
       "note": "what's next + the plan",
       "publishAfter": "2026-10-02T19:00:00.000Z"
@@ -59,7 +59,7 @@
       "slot": "D2 07:00",
       "category": "community",
       "status": "ready",
-      "text": "print your own receipt 🧾\n\nwrite any claim. get a receipt. share it.\n\nno wallet. no sign-up. no token needed.\n\n{{SITE}}/print",
+      "text": "print your own receipt 🧾\n\nwrite any claim. get a receipt. share it.\n\nno wallet. no sign-up. no token needed.\n\n{{SITE}}/print\n\n#Solana #memecoin",
       "asset": "content/animations/v04-print-demo.mp4",
       "note": "people use CHEK — Receipt Generator demo; one of the few posts with a link",
       "publishAfter": "2026-10-03T07:00:00.000Z"
@@ -69,7 +69,7 @@
       "slot": "D2 11:00",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”",
+      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”\n\n#Solana #memecoin",
       "asset": "content/animations/v06-the-coupon.mp4",
       "note": "lore video",
       "publishAfter": "2026-10-03T11:00:00.000Z"
@@ -80,10 +80,10 @@
       "category": "transparency",
       "status": "ready",
       "pin": "prelaunch",
-      "text": "how $CHEKD launches. the receipt, in advance 🧾",
+      "text": "how $CHEKD launches. the receipt, in advance 🧾\n\n#Solana #memecoin",
       "thread": [
         "platform: pump.fun, SOL pair. name CHEK, ticker CHEKD.\nno presale. no whitelist. no free team allocation.",
-        "the creator makes one public buy at creation (target ≈ $200) from the creator wallet. same curve, same price as everyone.\n\nexact SOL spent, CHEKD received and % of supply get published from the chain — not estimated.",
+        "the creator makes one public buy at creation (target ≈ $200) from the creator wallet. same curve, same price as everyone.\n\nexact SOL spent, CHEKD received and % of supply get published from the chain, not estimated.",
         "the CA appears in 3 places in the same minute:\n· {{SITE}}\n· the pinned post here\n· the pinned message in t.me/chekcoinsol\n\nname and ticker prove nothing. only the address does.",
         "creator fees: pump.fun pays a coin's creator {{CREATOR_FEE}} of bonding-curve trades (as checked {{FEE_CHECKED}}). telling you because it's real money and you should know where it goes.",
         "we never DM first. we never ask for a seed phrase. if it's not linked from {{SITE}}, it didn't happen."
@@ -97,7 +97,7 @@
       "slot": "D2 19:00",
       "category": "lore",
       "status": "ready",
-      "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID",
+      "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID\n\n#Solana #memecoin",
       "asset": "content/memes/01-itemized-promises.png",
       "note": "origin lore — the quotes are the joke, stamped VOID",
       "publishAfter": "2026-10-03T19:00:00.000Z"
@@ -107,7 +107,7 @@
       "slot": "D3 07:00",
       "category": "meme",
       "status": "ready",
-      "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅",
+      "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅\n\n#Solana #memecoin",
       "asset": "content/memes/02-pics-vs-receipts.png",
       "note": "only goes out if launch day is later than day 2",
       "publishAfter": "2026-10-04T07:00:00.000Z"
@@ -117,7 +117,7 @@
       "slot": "D3 11:00",
       "category": "meme",
       "status": "ready",
-      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌",
+      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌\n\n#Solana #memecoin",
       "asset": "content/memes/09-vibe-chek.png",
       "publishAfter": "2026-10-04T11:00:00.000Z"
     },
@@ -126,7 +126,7 @@
       "slot": "T-26h",
       "category": "announcement",
       "status": "ready",
-      "text": "🧾 $CHEKD launches {{LAUNCH_UTC}} on pump.fun.\n\nthe CA doesn't exist before that minute. any token using the name or ticker before then isn't ours.\n\nwhere the CA appears: {{SITE}}, the pin here, t.me/chekcoinsol.",
+      "text": "🧾 $CHEKD launches {{LAUNCH_UTC}} on pump.fun.\n\nthe CA doesn't exist before that minute. any token using the name or ticker before then isn't ours.\n\nwhere the CA appears: {{SITE}}, the pin here, t.me/chekcoinsol.\n\n#Solana #memecoin",
       "asset": "content/mascot/02-receipt.png",
       "note": "launch-time announcement — goes out ≥24 h before mint, only after the owner confirmed launchAt",
       "publishAfter": null
@@ -136,7 +136,7 @@
       "slot": "T-20h",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”",
+      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”\n\n#Solana #memecoin",
       "asset": "content/memes/06-the-coupon.png",
       "publishAfter": null
     },
@@ -145,7 +145,7 @@
       "slot": "T-5h",
       "category": "transparency",
       "status": "ready",
-      "text": "name and ticker prove nothing.\n\nother tokens already use the name. they're not ours. to find the real one:\n\n1. CA matches {{SITE}}, our X pin and telegram pin\n2. nobody DMed you first\n3. no “presale”, “whitelist”, “early access”",
+      "text": "name and ticker prove nothing.\n\nother tokens already use the name. they're not ours. to find the real one:\n\n1. CA matches {{SITE}}, our X pin and telegram pin\n2. nobody DMed you first\n3. no “presale”, “whitelist”, “early access”\n\n#Solana #memecoin",
       "asset": "content/memes/04-ca-chek.png",
       "publishAfter": null
     },
@@ -155,7 +155,7 @@
       "category": "announcement",
       "status": "ready",
       "launch": true,
-      "text": "30 minutes. 🧾\n\nthe CA appears at the same minute on {{SITE}}, in our pinned post and in t.me/chekcoinsol.\n\nnot in replies. not in DMs. not from accounts that look like us.",
+      "text": "30 minutes. 🧾\n\nthe CA appears at the same minute on {{SITE}}, in our pinned post and in t.me/chekcoinsol.\n\nnot in replies. not in DMs. not from accounts that look like us.\n\n#Solana #memecoin",
       "note": "optional reminder",
       "publishAfter": null
     },
@@ -165,7 +165,7 @@
       "category": "announcement",
       "status": "ready",
       "launch": true,
-      "text": "5 minutes.\n\nanything posted before our pin isn't ours.",
+      "text": "5 minutes.\n\nanything posted before our pin isn't ours.\n\n#Solana #memecoin",
       "asset": "content/mascot/01-printing.png",
       "publishAfter": null
     },
@@ -176,7 +176,7 @@
       "status": "ready",
       "launch": true,
       "pin": "live",
-      "text": "🧾 $CHEKD is live on pump.fun.\n\nCA: {{CA}}\n\nsame address on {{SITE}} and pinned in t.me/chekcoinsol. names prove nothing — the address does.\n\nno presale. creator buy receipt within the hour.",
+      "text": "🧾 $CHEKD is live on pump.fun.\n\nCA: {{CA}}\n\nsame address on {{SITE}} and pinned in t.me/chekcoinsol. names prove nothing, the address does.\n\nno presale. creator buy receipt within the hour.\n\n#Solana",
       "asset": "content/mascot/05-live.png",
       "note": "fires the moment the mint is verified on-chain (launch op), right after the website switches",
       "publishAfter": null
@@ -187,7 +187,7 @@
       "category": "transparency",
       "status": "ready",
       "launch": true,
-      "text": "RECEIPT #{{LAUNCH_RECEIPT_N}} — token created 🧾\n\nCA: {{CA_SHORT}}\ncreated: {{CREATED_AT}}\nmint authority: {{MINT_AUTH}} · freeze: {{FREEZE_AUTH}}\n\nON-CHAIN VERIFIED. the tx: solscan.io/tx/{{CREATION_TX}}",
+      "text": "RECEIPT #{{LAUNCH_RECEIPT_N}}: token created 🧾\n\nCA: {{CA_SHORT}}\ncreated: {{CREATED_AT}}\nmint authority: {{MINT_AUTH}} · freeze: {{FREEZE_AUTH}}\n\nON-CHAIN VERIFIED. the tx: solscan.io/tx/{{CREATION_TX}}\n\n#Solana #memecoin",
       "imageUrl": "/api/image?receipt={{LAUNCH_RECEIPT_N}}&format=square",
       "note": "first on-chain verified launch receipt",
       "publishAfter": null
@@ -198,11 +198,11 @@
       "category": "transparency",
       "status": "ready",
       "launch": true,
-      "text": "the creator receipt 🧾",
+      "text": "the creator receipt 🧾\n\n#Solana #memecoin",
       "thread": [
         "creator wallet: {{CREATOR}}\n\nspent: {{CREATOR_SOL}} SOL\nreceived: {{CREATOR_TOKENS}} CHEKD\nshare of supply: {{CREATOR_PCT}}",
-        "it was a buy in the creation transaction — same bonding curve as everyone. free allocation: 0%.\n\ntx: solscan.io/tx/{{CREATION_TX}}",
-        "the creator position stays live on {{SITE}}/transparency — read from the chain, not typed by us."
+        "it was a buy in the creation transaction: same bonding curve as everyone. free allocation: 0%.\n\ntx: solscan.io/tx/{{CREATION_TX}}",
+        "the creator position stays live on {{SITE}}/transparency, read from the chain, not typed by us."
       ],
       "imageUrl": "/api/image?receipt={{CREATOR_RECEIPT_N}}&format=square",
       "note": "creator receipt with chain-confirmed values",
@@ -213,7 +213,7 @@
       "slot": "T+2h",
       "category": "build",
       "status": "ready",
-      "text": "what's live right now:\n\n✓ $CHEKD on pump.fun ({{CA_SHORT}})\n✓ site + transparency page with real data\n✓ receipt generator — print one, any claim\n✓ telegram: t.me/chekcoinsol\n\nnext: receipt of the week.",
+      "text": "what's live right now:\n\n✓ $CHEKD on pump.fun ({{CA_SHORT}})\n✓ site + transparency page with real data\n✓ receipt generator, print one, any claim\n✓ telegram: t.me/chekcoinsol\n\nnext: receipt of the week.\n\n#Solana #memecoin",
       "note": "after launch",
       "publishAfter": null
     },
@@ -222,7 +222,7 @@
       "slot": "T+6h",
       "category": "community",
       "status": "ready",
-      "text": "RECEIPT OF THE WEEK is open 🧾\n\nprint a receipt for the most absurd claim you saw this week ({{SITE}}/print) and tag us.\n\nbest one gets printed into the lore. no money prizes — just glory and a line in the long receipt.",
+      "text": "RECEIPT OF THE WEEK is open 🧾\n\nprint a receipt for the most absurd claim you saw this week ({{SITE}}/print) and tag us.\n\nbest one gets printed into the lore. no money prizes, just glory and a line in the long receipt.\n\n#Solana #memecoin",
       "asset": "content/memes/10-receipt-of-the-week.png",
       "note": "recurring format: people tag CHEK with a receipt; replies/quotes go to REVIEW",
       "publishAfter": null
@@ -232,7 +232,7 @@
       "slot": "T+24h",
       "category": "build",
       "status": "ready",
-      "text": "24h receipt 🧾\n\n· live on pump.fun, same CA everywhere: {{CA_SHORT}}\n· launch + creator receipts, on-chain verified\n· receipts printed by people: {{RECEIPTS_PRINTED}}\n· build log: {{SITE}}/history\n\nno price talk. that's the recap.",
+      "text": "24h receipt 🧾\n\n· live on pump.fun, same CA everywhere: {{CA_SHORT}}\n· launch + creator receipts, on-chain verified\n· receipts printed by people: {{RECEIPTS_PRINTED}}\n· build log: {{SITE}}/history\n\nno price talk. that's the recap.\n\n#Solana #memecoin",
       "asset": "content/memes/08-long-receipt.png",
       "note": "real numbers only; owner re-checks wording",
       "publishAfter": null
@@ -242,7 +242,7 @@
       "slot": "T+2d",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 06: THE LONG RECEIPT\n\nchek decided to keep one receipt for everything the community does.\n\nit's already longer than chek.",
+      "text": "lore, chapter 06: THE LONG RECEIPT\n\nchek decided to keep one receipt for everything the community does.\n\nit's already longer than chek.\n\n#Solana #memecoin",
       "asset": "content/memes/08-long-receipt.png",
       "publishAfter": null
     },
@@ -251,7 +251,7 @@
       "slot": "T+3d",
       "category": "meme",
       "status": "ready",
-      "text": "receipts fade.\ncommits don't.",
+      "text": "receipts fade.\ncommits don't.\n\n#Solana #memecoin",
       "asset": "content/memes/07-receipts-fade.png",
       "publishAfter": null
     },
@@ -260,7 +260,7 @@
       "slot": "T+4d",
       "category": "transparency",
       "status": "ready",
-      "text": "reminder, because the coupon never sleeps:\n\nwe never DM first.\nwe never ask for a seed phrase.\nno “v2 migration”, no “airdrop claim” site, no “wallet validation” — our drop is SENT.\n\nsame name ≠ same token. the only CA is on {{SITE}}.",
+      "text": "reminder, because the coupon never sleeps:\n\nwe never DM first.\nwe never ask for a seed phrase.\nno “v2 migration”, no “airdrop claim” site, no “wallet validation”, our drop is SENT.\n\nsame name ≠ same token. the only CA is on {{SITE}}.\n\n#Solana #memecoin",
       "asset": "content/memes/03-never-dm-first.png",
       "publishAfter": null
     },
@@ -294,7 +294,7 @@
       "note": "X drop round 2",
       "publishAfter": "2026-10-02T14:30:00.000Z",
       "thread": [
-        "🔒 ROUND 2 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 2: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -302,12 +302,12 @@
       "slot": "D1 17:30",
       "category": "community",
       "status": "ready",
-      "text": "GIVEAWAY ROUND 3 🎁 {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here\n\nfollow + repost, reply with your SOL address, paste the reply link at {{SITE}}/drop — the site checks the public reply itself.\n\ntokens are SENT. no claim site, no wallet connect, no fees.\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 3 🎁 {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here\n\nfollow + repost, reply with your SOL address, paste the reply link at {{SITE}}/drop, the site checks the public reply itself.\n\ntokens are SENT. no claim site, no wallet connect, no fees.\n\n#Solana #airdrop",
       "asset": "content/memes/03-never-dm-first.png",
       "note": "X drop round 3",
       "publishAfter": "2026-10-02T17:30:00.000Z",
       "thread": [
-        "🔒 ROUND 3 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 3: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -325,12 +325,12 @@
       "slot": "D2 05:00",
       "category": "community",
       "status": "ready",
-      "text": "gm. ROUND 4 of the CHEK giveaway 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every round is a new draw — in round 1 already? reply here too.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "gm. ROUND 4 of the CHEK giveaway 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every round is a new draw, in round 1 already? reply here too.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 4",
       "publishAfter": "2026-10-03T05:00:00.000Z",
       "thread": [
-        "🔒 ROUND 4 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 4: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -343,7 +343,7 @@
       "note": "X drop round 5",
       "publishAfter": "2026-10-03T09:00:00.000Z",
       "thread": [
-        "🔒 ROUND 5 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 5: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -355,7 +355,7 @@
       "note": "X drop round 6",
       "publishAfter": "2026-10-03T13:00:00.000Z",
       "thread": [
-        "🔒 ROUND 6 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 6: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -378,7 +378,7 @@
       "note": "X drop round 7",
       "publishAfter": "2026-10-03T21:00:00.000Z",
       "thread": [
-        "🔒 ROUND 7 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 7: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -391,7 +391,7 @@
       "note": "X drop round 8",
       "publishAfter": "2026-10-04T05:00:00.000Z",
       "thread": [
-        "🔒 ROUND 8 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 8: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -404,7 +404,7 @@
       "note": "X drop round 9",
       "publishAfter": "2026-10-04T09:00:00.000Z",
       "thread": [
-        "🔒 ROUND 9 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 9: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -412,7 +412,7 @@
       "slot": "D3 13:00",
       "category": "community",
       "status": "ready",
-      "text": "the telegram drop runs on its own list 🎁\n\n{{TG_AIRDROP}} × {{TG_AIRDROP_EACH}} + {{TG_WINNERS}} × {{TG_EACH}} $CHEKD for channel subscribers.\n\n{{TG_ENTER}}\n\nthe X drop is separate — you can enter both.\n\n#Solana #airdrop",
+      "text": "the telegram drop runs on its own list 🎁\n\n{{TG_AIRDROP}} × {{TG_AIRDROP_EACH}} + {{TG_WINNERS}} × {{TG_EACH}} $CHEKD for channel subscribers.\n\n{{TG_ENTER}}\n\nthe X drop is separate, you can enter both.\n\n#Solana #airdrop",
       "asset": "content/animations/v08-telegram-drop.mp4",
       "note": "X → Telegram: announces the separate Telegram drop",
       "publishAfter": "2026-10-04T13:00:00.000Z"
@@ -427,7 +427,7 @@
       "note": "X drop round 10",
       "publishAfter": "2026-10-04T17:00:00.000Z",
       "thread": [
-        "🔒 ROUND 10 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 10: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -440,7 +440,7 @@
       "note": "X drop round 11",
       "publishAfter": "2026-10-04T21:00:00.000Z",
       "thread": [
-        "🔒 ROUND 11 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 11: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -453,7 +453,7 @@
       "note": "X drop round 12",
       "publishAfter": "2026-10-05T05:00:00.000Z",
       "thread": [
-        "🔒 ROUND 12 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 12: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -476,7 +476,7 @@
       "note": "X drop round 13",
       "publishAfter": "2026-10-05T13:00:00.000Z",
       "thread": [
-        "🔒 ROUND 13 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 13: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -484,12 +484,12 @@
       "slot": "D4 17:00",
       "category": "community",
       "status": "ready",
-      "text": "GIVEAWAY ROUND 14 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. drawn 24h after this post, seed = a solana blockhash — anyone can re-run it.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 14 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. drawn 24h after this post, seed = a solana blockhash, anyone can re-run it.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.png",
       "note": "X drop round 14",
       "publishAfter": "2026-10-05T17:00:00.000Z",
       "thread": [
-        "🔒 ROUND 14 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 14: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -502,7 +502,7 @@
       "note": "X drop round 15",
       "publishAfter": "2026-10-05T21:00:00.000Z",
       "thread": [
-        "🔒 ROUND 15 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 15: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -525,7 +525,7 @@
       "note": "X drop round 16",
       "publishAfter": "2026-10-06T09:00:00.000Z",
       "thread": [
-        "🔒 ROUND 16 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 16: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -538,7 +538,7 @@
       "note": "X drop round 17",
       "publishAfter": null,
       "thread": [
-        "🔒 ROUND 17 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 17: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -551,7 +551,7 @@
       "note": "X drop round 18",
       "publishAfter": null,
       "thread": [
-        "🔒 ROUND 18 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 18: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -574,7 +574,7 @@
       "note": "X drop round 19",
       "publishAfter": null,
       "thread": [
-        "🔒 ROUND 19 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 19: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     },
     {
@@ -587,7 +587,7 @@
       "note": "X drop round 20",
       "publishAfter": null,
       "thread": [
-        "🔒 ROUND 20 — lock your entry: open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted — we don't scrape X."
+        "🔒 ROUND 20: to lock your entry, open your reply → Share → Copy link → paste it at {{SITE}}/drop\n\nwinners are drawn 24h after the post above and announced here + on the site. a reply alone can't be counted, we don't scrape X."
       ]
     }
   ]

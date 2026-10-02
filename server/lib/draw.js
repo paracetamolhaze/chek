@@ -107,10 +107,10 @@ async function queueWinnersPosts(r, seed, winners, n) {
   const each = p.drop.x.rounds.each.toLocaleString("en-US");
   const tag = `$${p.ticker}`;
   const xText = winners.length
-    ? `🧾 GIVEAWAY ROUND ${r.round} — WINNERS\n\n${winners.map((w) => `@${w.handle}`).join("\n")}\n\n${each} ${tag} each, sent after launch. ${n} entries · seed: solana block ${seed.slot}\nre-check it: {{SITE}}/drop`
+    ? `🧾 GIVEAWAY ROUND ${r.round}: WINNERS\n\n${winners.map((w) => `@${w.handle}`).join("\n")}\n\n${each} ${tag} each, sent after launch. ${n} entries · seed: solana block ${seed.slot}\nre-check it: {{SITE}}/drop`
     : `🧾 GIVEAWAY ROUND ${r.round} closed with no entries locked in at {{SITE}}/drop. new rounds keep coming.`;
   const tgText = winners.length
-    ? `🧾 X giveaway round ${r.round} — winners\n\n${winners.map((w) => `x.com/${w.handle} · ${w.wallet.slice(0, 4)}…${w.wallet.slice(-4)}`).join("\n")}\n\n${each} ${tag} each, sent after launch. ${n} entries. Seed: Solana block ${seed.slot}. Anyone can re-check: {{SITE_URL}}/drop`
+    ? `🧾 X giveaway round ${r.round}: winners\n\n${winners.map((w) => `x.com/${w.handle} · ${w.wallet.slice(0, 4)}…${w.wallet.slice(-4)}`).join("\n")}\n\n${each} ${tag} each, sent after launch. ${n} entries. Seed: Solana block ${seed.slot}. Anyone can re-check: {{SITE_URL}}/drop`
     : null;
   const why = `round ${r.round} draw (${n} entries, slot ${seed.slot})`;
   await enqueue({ id: `xw-${r.round}`, platform: "x", category: "community", level: "auto", origin: "draw", payload: { parts: [xText], asset: null, imageUrl: null, allowMentions: winners.map((w) => w.handle), why } });
