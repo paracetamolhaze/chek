@@ -14,7 +14,8 @@ const RULES = [
   ["launch", /(when.*(launch|live|token|coin|ca\b)|launch (date|time)|contract|\bca\b|\bmint\b|pump\.?fun|presale|pre-sale|whitelist|\bwl\b|where (can|to) buy|how (can i|to) buy|ticker)/i],
   ["drop", /(airdrop|giveaway|give away|\bdrop\b|winner|\bwin\b|enter|wallet address|my address|sol address)/i],
   ["growth", /(more (active )?(members|holders|people|users|followers)|visibility|marketing|grow (the|this|your)|plans? (to|for) (get|grow|market|reach)|get the word out|reach more)/i],
-  ["chat", /(group ?chat|telegram (group|chat)|\bchat\b)/i],
+  // "wsg chat?" is a greeting to the room, not a question about our chat: only explicit asks count
+  ["chat", /(group ?chat|telegram (group|chat)|(is there|do you have|any|where('s| is)?( the)?|join the|link to the) (a )?(group|chat|community))/i],
   ["project", /(long.?term|legit|\bscam|\brug|serious|future|roadmap|\bplan\b|what is (this|chek)|about (the )?project|who (is|are) (behind|the dev)|team|\bdev\b)/i],
   ["gm", /^\s*(gm|gn|hi|hey|hello|yo|sup|hii+|gm+ (fam|buddy|bro|sir|all))[\s!.🙌☀️🔥]*$/i],
 ];
@@ -90,11 +91,17 @@ export async function dmMessage(m, owner) {
 }
 
 // A question in the comments (discussion group): known topics get a short reply in the thread.
+// The group is a live chat: the bot stays out of small talk and only answers clear questions to the project
+// (launch / contract address / giveaway / "is this a rug?"), never messages that answer someone else.
+const CHAT_KINDS = new Set(["launch", "drop", "project"]);
+const RISK = /(legit|\bscam|\brug)/i;
 export async function commentQuestion(m) {
   const text = m.text || "";
   const kind = classify(text);
-  if (!["launch", "drop", "growth", "chat", "project"].includes(kind)) return false;
-  if (!/\?|when|how|where|what|is this|legit/i.test(text)) return false; // statements and hype aren't questions
+  if (!CHAT_KINDS.has(kind) || (kind === "project" && !RISK.test(text))) return false;
+  if (!text.includes("?")) return false; // only real questions
+  const to = m.reply_to_message;
+  if (to && !to.is_automatic_forward && !to.sender_chat && to.from && !to.from.is_bot) return false; // talking to another person
   const sql = await db();
   if (await answeredRecently(sql, m.from.id, kind, 6)) return false;
   await tg("sendMessage", { chat_id: m.chat.id, text: answer(kind, { links: wantsLink(text) }), reply_parameters: { message_id: m.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
