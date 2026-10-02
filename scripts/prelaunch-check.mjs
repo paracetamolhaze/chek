@@ -48,16 +48,24 @@ add("backend", ping.status === 200 ? "ok" : "fail", "API functions deployed", `$
 const priv = join(ROOT, "private/.env.local");
 const adminToken = existsSync(priv) ? (readFileSync(priv, "utf8").match(/^ADMIN_TOKEN=(.+)$/m)?.[1] ?? "").trim() : "";
 let integ = null;
+let st = null;
 if (adminToken) {
   try {
-    const r = await fetch(`${site}/api/admin`, { headers: { authorization: `Bearer ${adminToken}` }, signal: AbortSignal.timeout(20000) });
-    if (r.ok) integ = (await r.json()).integrations;
+    const r = await fetch(`${site}/api/admin`, { headers: { authorization: `Bearer ${adminToken}` }, signal: AbortSignal.timeout(30000) });
+    if (r.ok) {
+      st = await r.json();
+      integ = st.integrations;
+    }
   } catch {}
 }
 add("backend", integ?.database ? "ok" : "owner", "Database connected", integ ? "" : "owner: dedicated Supabase project (or approve the shared one) → DATABASE_URL");
 add("backend", integ?.telegram ? "ok" : "owner", "Telegram bot token", integ?.telegram ? "" : "owner: @BotFather → TELEGRAM_BOT_TOKEN");
-add("backend", integ?.x ? "ok" : "owner", "X API app keys", integ?.x ? "" : "owner: X developer app (pay-per-use) → X_CLIENT_ID/SECRET");
-add("backend", integ?.ai ? "ok" : "owner", "AI key (authored posts, news verdicts)", integ?.ai ? "" : "owner: ANTHROPIC_API_KEY with a spend limit");
+add("backend", Boolean(st?.settings?.job_runs?.tick) && Date.now() - Date.parse(st.settings.job_runs.tick) < 15 * 60e3 ? "ok" : "fail", "Scheduler ticking (pg_cron every 5 min)", st?.settings?.job_runs?.tick ?? "no tick");
+add("backend", st?.telegramWebhook?.url && !st.telegramWebhook.lastError ? "ok" : "fail", "Telegram webhook healthy", st?.telegramWebhook?.lastError ?? "");
+add("backend", st?.settings?.owner?.linked ? "ok" : "owner", "Owner linked in Telegram (approvals)", st?.settings?.owner?.linked ? "" : "owner: open the pairing link once");
+add("backend", st?.agent?.online ? (st.agent.ai ? "ok" : "owner") : "fail", "PC agent online with Claude access", st?.agent?.online ? (st.agent.ai ? "" : "online; Claude access needs the owner's OK") : "offline");
+add("backend", st?.gate?.ok ? "ok" : "owner", "Live gate (24 h dry run + fresh production audit + owner linked)", st?.gate?.ok ? "" : (st?.gate?.missing ?? []).join("; "));
+add("backend", integ?.x ? "ok" : "owner", "X connection", integ?.x ? "" : "owner: decision pending (official API keys or another method)");
 
 // ── Consistency (built site + docs + drafts vs sources) ──
 const { results } = audit();
@@ -82,7 +90,7 @@ if (project.links.telegram) {
   const tg = await get(project.links.telegram);
   add("socials", /tgme_page_title/.test(tg.text) ? "ok" : "fail", "Telegram channel exists", project.links.telegram);
 } else add("socials", "owner", "Telegram channel linked", "owner creates it");
-add("socials", project.links.telegramChat ? "ok" : "owner", "Telegram chat linked", project.links.telegramChat ?? "owner creates it");
+if (project.links.telegramChat) add("socials", "ok", "Telegram chat linked", project.links.telegramChat);
 
 // ── Content ──
 const x = readJson(paths.x).posts;
@@ -91,7 +99,7 @@ const values = placeholders(project, schedule);
 const sample = Object.fromEntries(Object.entries({ ...SAMPLE, ...values }).map(([k, v]) => [k, v ?? SAMPLE[k]]));
 const long = x.filter((p) => [p.text, ...(p.thread || [])].some((t) => xLength(fill(t, sample).text) > 280));
 add("content", long.length ? "fail" : "ok", "X drafts ≤ 280 chars", long.map((p) => p.id).join(", ") || `${x.length} drafts`);
-add("content", x.some((p) => p.id === "x-018") && tg.some((p) => p.id === "tg-007") ? "ok" : "fail", "Launch post + Telegram CA pin drafted");
+add("content", x.some((p) => p.id === "x-310" && p.launch) && tg.some((p) => p.id === "tg-310" && p.launch && p.pin) ? "ok" : "fail", "Launch post + Telegram CA pin drafted (launch sequence)");
 add("content", schedule.launchAt ? "ok" : "owner", "Launch time confirmed", schedule.launchAt ?? `proposed ${schedule.proposedLaunchAt}`);
 
 // ── Repository (public readiness) ──
@@ -101,7 +109,7 @@ const findings = scanRepo(ROOT);
 const nowF = findings.filter((f) => f.where === "tracked");
 const histF = findings.filter((f) => f.where !== "tracked");
 add("repository", nowF.length ? "fail" : "ok", "Current files: no secrets / personal data", [...new Set(nowF.map((f) => `${f.file}: ${f.why}`))].join(" | "));
-add("repository", histF.length ? "owner" : "ok", "Git history: no secrets / personal data", histF.length ? `${new Set(histF.map((f) => f.commit)).size} old commits need the scrub (scripts/prepare-public-repo.mjs) — owner approves` : "");
+add("repository", histF.length ? "owner" : "ok", "Git history: no secrets / personal data", histF.length ? `${new Set(histF.map((f) => f.commit)).size} old commits get scrubbed at publication (approved, --utc; scripts/prepare-public-repo.mjs)` : "");
 add("repository", project.links.github ? "ok" : "owner", "Public GitHub repo", project.links.github ?? "owner picks the account");
 const dirty = execFileSync("git", ["status", "--porcelain"], { cwd: ROOT, encoding: "utf8" }).trim();
 add("repository", dirty ? "owner" : "ok", "Everything committed", dirty ? `${dirty.split("\n").length} uncommitted` : "");
