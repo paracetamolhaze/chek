@@ -5,7 +5,7 @@ import { db } from "../server/lib/db.js";
 import { env, integrations } from "../server/lib/env.js";
 import { AppError, handle, json, readJson, requireAdmin, sign } from "../server/lib/http.js";
 import { tick } from "../server/lib/jobs.js";
-import { decide } from "../server/lib/publisher.js";
+import { decide, runPublisher } from "../server/lib/publisher.js";
 import { reschedule, syncSeed } from "../server/lib/queue.js";
 import { syncBuildLog } from "../server/lib/receipts.js";
 import { notifyOwner, setChannelDescription, tg } from "../server/lib/telegram.js";
@@ -140,6 +140,15 @@ export async function POST(request) {
       }
       case "run":
         return json({ ok: true, result: await tick() });
+      case "post_now": {
+        // the owner asked for one queued post to go out now instead of at its slot
+        const sql = await db();
+        const [row] = await sql`update chek.queue set publish_after = now(), updated_at = now()
+          where id = ${String(b.id)} and status in ('ready','approved','review') returning id, platform`;
+        if (!row) throw new AppError(404, "no queued post with that id");
+        await audit("owner", "post.now", "ok", { ref: row.id });
+        return json({ ok: true, result: await runPublisher(new Date(), { ids: [row.id], platforms: [row.platform] }) });
+      }
       case "telegram_setup": {
         if (!integrations().telegram) throw new AppError(400, "TELEGRAM_BOT_TOKEN / TELEGRAM_WEBHOOK_SECRET not set");
         const me = await tg("getMe");

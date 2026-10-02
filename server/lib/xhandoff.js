@@ -13,7 +13,8 @@ export const tweetIdOf = (link) => /(?:x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/stat
 function buttons(id, text, replyTo) {
   return [
     [{ text: replyTo ? "Open X (reply to the previous part)" : "Open X with this text", url: intent(text, replyTo) }],
-    [{ text: "📋 Copy text", copy_text: { text } }],
+    // Telegram's copy button takes ≤ 256 characters; longer posts are copied from the message itself
+    ...(text.length <= 256 ? [[{ text: "📋 Copy text", copy_text: { text } }]] : []),
     [
       { text: "✅ Posted", callback_data: `xp:${id}` },
       { text: "⏭ Skip", callback_data: `xs:${id}` },

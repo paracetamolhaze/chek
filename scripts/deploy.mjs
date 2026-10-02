@@ -53,26 +53,39 @@ for (const f of files) {
   if (/\.(html|m?js|json|txt|css)$/.test(f.file) && SECRET.test(f.data.toString("utf8"))) throw new Error(`refusing to deploy, secret-looking content in ${f.file}`);
 }
 
-console.log(`uploading ${files.length} files (${Math.round(files.reduce((s, f) => s + f.size, 0) / 1024)} KB)…`);
-for (const f of files) {
-  const r = await vercel("/v2/files", {
+// Files Vercel already has are referenced by hash; only the missing ones travel (inline in the request when small —
+// the Hobby plan allows 5,000 file uploads a day and uploading everything on every deploy used that up).
+const deploy = (inline = new Set()) =>
+  vercel("/v13/deployments?forceNew=1&skipAutoDetectionConfirmation=1", {
     method: "POST",
-    headers: { "Content-Type": "application/octet-stream", "x-vercel-digest": f.sha, "Content-Length": String(f.size) },
-    body: f.data,
+    body: JSON.stringify({
+      name: link.projectName,
+      project: link.projectId,
+      target: PREVIEW ? undefined : "production",
+      files: files.map(({ file, sha, size, data }) => (inline.has(sha) ? { file, data: data.toString("base64"), encoding: "base64" } : { file, sha, size })),
+      projectSettings: { framework: null, buildCommand: "", installCommand: "npm ci --omit=dev --no-audit --no-fund", outputDirectory: "public", devCommand: null, nodeVersion: "24.x" },
+    }),
   });
-  if (r.status >= 300) throw new Error(`upload ${f.file}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
-}
 
-const created = await vercel("/v13/deployments?forceNew=1&skipAutoDetectionConfirmation=1", {
-  method: "POST",
-  body: JSON.stringify({
-    name: link.projectName,
-    project: link.projectId,
-    target: PREVIEW ? undefined : "production",
-    files: files.map(({ file, sha, size }) => ({ file, sha, size })),
-    projectSettings: { framework: null, buildCommand: "", installCommand: "npm ci --omit=dev --no-audit --no-fund", outputDirectory: "public", devCommand: null, nodeVersion: "24.x" },
-  }),
-});
+let created = await deploy();
+if (created.body?.error?.code === "missing_files") {
+  const missing = new Set(created.body.error.missing ?? []);
+  const need = files.filter((f) => missing.has(f.sha));
+  const small = need.filter((f) => f.size <= 256 * 1024);
+  const inlineBytes = small.reduce((s, f) => s + f.size, 0);
+  const inline = new Set(inlineBytes <= 3 * 1024 * 1024 ? small.map((f) => f.sha) : []);
+  const upload = need.filter((f) => !inline.has(f.sha));
+  console.log(`${files.length} files, ${need.length} new: ${inline.size} inline, ${upload.length} uploaded`);
+  for (const f of upload) {
+    const r = await vercel("/v2/files", {
+      method: "POST",
+      headers: { "Content-Type": "application/octet-stream", "x-vercel-digest": f.sha, "Content-Length": String(f.size) },
+      body: f.data,
+    });
+    if (r.status >= 300) throw new Error(`upload ${f.file}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+  }
+  created = await deploy(inline);
+} else console.log(`${files.length} files, all already on Vercel`);
 if (created.body?.error) {
   console.error("error:", created.body.error.code, "|", created.body.error.message);
   process.exit(1);
