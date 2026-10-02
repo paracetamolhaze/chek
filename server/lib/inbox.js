@@ -16,8 +16,11 @@ const RULES = [
   ["growth", /(more (active )?(members|holders|people|users|followers)|visibility|marketing|grow (the|this|your)|plans? (to|for) (get|grow|market|reach)|get the word out|reach more)/i],
   // "wsg chat?" is a greeting to the room, not a question about our chat: only explicit asks count
   ["chat", /(group ?chat|telegram (group|chat)|(is there|do you have|any|where('s| is)?( the)?|join the|link to the) (a )?(group|chat|community))/i],
-  ["project", /(long.?term|legit|\bscam|\brug|serious|future|roadmap|\bplan\b|what is (this|chek)|about (the )?project|who (is|are) (behind|the dev)|team|\bdev\b)/i],
-  ["gm", /^\s*(gm|gn|hi|hey|hello|yo|sup|hii+|gm+ (fam|buddy|bro|sir|all))[\s!.🙌☀️🔥]*$/i],
+  ["project", /(long.?term|legit|\bscam|\brug|serious|future|roadmap|\bplan\b|what is (this|chek)|about (the )?project|who (is|are) (behind|the dev)|team behind|dev doxx)/i],
+  // small talk gets a short human line, not a project pitch
+  ["howareyou", /(how (are|r) (you|u)|how('?s| is) it going|how (you|u) doing|\bwyd\b|what'?s up|\bwsg\b)/i],
+  ["hype", /(big deal|gonna (be )?(big|huge|moon|run)|love (this|the) (project|vibe|idea)|bullish|\blfg\b|this is (fire|huge|sick)|\bgem\b|early on this)/i],
+  ["gm", /^\s*((gm+|gn|hi+|hey|hello|yo|sup)[\s!.,]*)+(fam|buddy|bro|sir|all|guys|dev|chat|ser)?[\s!.,🙌☀️🔥]*$/i],
 ];
 export const classify = (text) => RULES.find(([, re]) => re.test(text ?? ""))?.[0] ?? "other";
 
@@ -32,6 +35,8 @@ export function answer(kind, { links = false } = {}, p = project()) {
   const onSite = (path, words) => (links ? `${site}${path}` : words);
   return {
     gm: `gm 🙌 glad you found us. ask me anything about CHEK`,
+    howareyou: `doing great, thanks for asking 🙌 building all day over here. glad you're here`,
+    hype: `appreciate that a lot 🙏 I'm building it every day, so this kind of message means a lot. glad you're here early`,
     project: `honestly? this is my thing right now. I'm building CHEK every single day. the site, the receipt bot and the giveaways are already live and the token isn't even out yet. after launch I keep shipping, all in public, every step with a receipt 🧾 stick around, we're just getting started`,
     launch: `not live yet 🙌 I'll announce the exact launch time at least 24h ahead, on X and here. the contract address goes up at the same minute on ${onSite("", "our site")}, the pinned X post and the pinned post here. anything before that isn't us. turn on notifications for the channel 🧾`,
     drop: x

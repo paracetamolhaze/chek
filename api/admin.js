@@ -183,6 +183,23 @@ export async function POST(request) {
           return json({ ok: false, error: String(e?.message ?? e).slice(0, 400) }, 500);
         }
       }
+      case "inbox": {
+        // read-only: recent messages to the channel and answered comment questions
+        const sql = await db();
+        const rows = await sql`select id, kind, author, text, status, data, created_at from chek.interactions
+          where platform = 'telegram' and kind in ('dm','comment') order by created_at desc limit ${Math.min(Number(b.limit) || 20, 100)}`;
+        return json({ ok: true, rows });
+      }
+      case "dm_send": {
+        // the owner asked for a reply to a channel message: sent as the channel into that person's topic
+        const sql = await db();
+        const [it] = await sql`select * from chek.interactions where id = ${String(b.id)} and kind = 'dm'`;
+        if (!it || !b.text) throw new AppError(404, "no such message or empty text");
+        await tg("sendMessage", { chat_id: Number(it.data.chat), direct_messages_topic_id: it.data.topic ?? undefined, text: String(b.text).slice(0, 4000), link_preview_options: { is_disabled: true } });
+        await sql`update chek.interactions set status = 'handled', data = data || ${sql.json({ answered: "owner_via_admin" })} where id = ${it.id}`;
+        await audit("owner", "telegram.dm_answered", "ok", { ref: it.id, detail: { via: "admin" } });
+        return json({ ok: true });
+      }
       case "tg_round_links":
         return json({ ok: true, edited: await (await import("../server/lib/roundlinks.js")).refreshRoundLinks() });
       case "x_desk":
