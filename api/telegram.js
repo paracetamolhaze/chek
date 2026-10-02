@@ -16,11 +16,12 @@ import { tg } from "../server/lib/telegram.js";
 import { attachLink, confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
 import { dropClosed } from "../server/lib/xdrop.js";
 import { refreshRoundLinks } from "../server/lib/roundlinks.js";
-import { commentQuestion, dmMessage, ownerPick, ownerReply } from "../server/lib/inbox.js";
+import { waitUntil } from "@vercel/functions";
+import { commentQuestion, deliver, dmMessage, ownerPick, ownerReply } from "../server/lib/inbox.js";
 import { isPubkey } from "../shared/solana-inspect.mjs";
 import { chatFromLink } from "../server/lib/telegram.js";
 
-export const maxDuration = 60;
+export const maxDuration = 120; // replies to channel messages wait 20–60 s in the background
 
 const reply = (chat, text, extra = {}) => tg("sendMessage", { chat_id: chat, text, link_preview_options: { is_disabled: true }, ...extra });
 const PER_HOUR = 8;
@@ -90,7 +91,9 @@ async function groupMessage(m, s) {
   }
   const wallet = text.match(/\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/)?.[0];
   if (!wallet) {
-    if (!admin) await commentQuestion(m).catch(() => {}); // launch / giveaway / chat / project questions get a short answer
+    // launch / giveaway / rug questions get a short answer, sent 20–60 s later in the background
+    const queued = admin ? null : await commentQuestion(m).catch(() => null);
+    if (queued) waitUntil(deliver(queued).catch(() => {}));
     return;
   }
   const r = await registerDrop(m.from.id, wallet);
@@ -178,6 +181,13 @@ export async function POST(request) {
       }
       if (!owner || q.from.id !== owner) return json({ ok: true });
       const [act, id, ...rest] = String(q.data || "").split(":");
+      if (act === "dd") {
+        // owner: delete a reply the bot sent as the channel
+        const ok = await tg("deleteMessage", { chat_id: Number(id), message_id: Number(rest[0]) }).then(() => true).catch(() => false);
+        await tg("answerCallbackQuery", { callback_query_id: q.id, text: ok ? "Deleted 🗑" : "Couldn't delete (too old or already gone)" });
+        if (ok && q.message) await tg("editMessageText", { chat_id: q.message.chat.id, message_id: q.message.message_id, text: "🗑 deleted: " + (q.message.text || "").split(String.fromCharCode(10)).slice(1).join(String.fromCharCode(10)) }).catch(() => {});
+        return json({ ok: true });
+      }
       if (act === "dm") {
         const ok = await ownerPick(id, rest[0], rest[1]).catch(() => false);
         await tg("answerCallbackQuery", { callback_query_id: q.id, text: ok ? "Sent ✅" : "Couldn't send" });
@@ -211,7 +221,8 @@ export async function POST(request) {
     const m = u.message;
     // messages to the channel (its direct messages chat)
     if (m?.chat?.is_direct_messages) {
-      await dmMessage(m, owner);
+      const queued = await dmMessage(m, owner);
+      if (queued) waitUntil(deliver(queued).catch(() => {})); // the reply goes out 20–60 s later; Telegram gets its OK now
       return json({ ok: true });
     }
     // comments under channel posts arrive from the linked discussion group

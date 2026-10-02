@@ -7,6 +7,7 @@ import { audit, bump } from "./core.js";
 import { db } from "./db.js";
 import { project } from "./project.js";
 import { tg } from "./telegram.js";
+import { queueDmReply, recordOurs, recordSent } from "./dmreply.js";
 
 const RULES = [
   // a pitch, not a question: "I can / I have something / let's connect / our services"
@@ -19,13 +20,14 @@ const RULES = [
   ["project", /(long.?term|legit|\bscam|\brug|serious|future|roadmap|\bplan\b|what is (this|chek)|about (the )?project|who (is|are) (behind|the dev)|team behind|dev doxx)/i],
   // small talk gets a short human line, not a project pitch
   ["howareyou", /(how (are|r) (you|u)|how('?s| is) it going|how (you|u) doing|\bwyd\b|what'?s up|\bwsg\b)/i],
-  ["hype", /(big deal|gonna (be )?(big|huge|moon|run)|love (this|the) (project|vibe|idea)|bullish|\blfg\b|this is (fire|huge|sick)|\bgem\b|early on this)/i],
+  ["hype", /(big deal|gonna (be )?(big|huge|moon|run)|love (this|the|it)|bullish|\blfg\b|this is (fire|huge|sick|cool)|\bgem\b|early on this|\bsolid\b|awesome|well done|respect|great (project|work|idea|job)|nice (project|work|one))/i],
   ["gm", /^\s*((gm+|gn|hi+|hey|hello|yo|sup)[\s!.,]*)+(fam|buddy|bro|sir|all|guys|dev|chat|ser)?[\s!.,🙌☀️🔥]*$/i],
 ];
 export const classify = (text) => RULES.find(([, re]) => re.test(text ?? ""))?.[0] ?? "other";
 
 // Owner's style rules for replies: no links unless the person asks for one, no long dashes.
-export const wantsLink = (text) => /(link|site|website|url|where (can|do|is|to))/i.test(text ?? "");
+export const wantsLink = (text) =>
+  /((send|share|drop|give|post|got|have|what'?s|whats|where'?s|where is)( me| us)?( the| your| a)? (link|site|website|url)|(link|website|site|url)\s*\?)/i.test(text ?? "");
 
 export function answer(kind, { links = false } = {}, p = project()) {
   const t = `$${p.ticker}`;
@@ -57,23 +59,63 @@ async function answeredRecently(sql, authorId, kind, hours) {
 
 const nameOf = (u) => (u?.username ? `@${u.username}` : [u?.first_name, u?.last_name].filter(Boolean).join(" ") || "someone");
 
+// Info answers (launch, giveaway, …) only go to real questions; praise gets a thank-you instead of instructions.
+const QUESTION = /\?|^\s*(how|when|wen|where|what|whats|is|are|can|could|do|does|will|who|why|any)\b|\b(how (do|can|to)|when|where)\b/i;
+const INFO = new Set(["launch", "drop", "growth", "chat", "project"]);
+export function topicOf(text) {
+  const kind = classify(text);
+  if (INFO.has(kind) && !QUESTION.test(text)) return RULES.find(([k]) => k === "hype")[1].test(text) ? "hype" : "other";
+  return kind;
+}
+
+// A person doesn't answer in one second: replies wait 20–60 s, show "typing…", then go out. The webhook answers
+// Telegram at once and sends the reply in the background (deliver); the scheduler re-tries anything left queued.
+const delayMs = () => (20 + Math.floor(Math.random() * 41)) * 1000;
+const sleep = (ms) => new Promise((r) => setTimeout(r, Math.max(0, ms)));
+
 // A message in the channel's direct messages chat.
 export async function dmMessage(m, owner) {
-  if (!m.from || m.from.is_bot || m.sender_chat || (owner && m.from.id === owner)) return; // our own side of the chat
+  if (!m.from || m.from.is_bot) return null;
+  if (m.sender_chat || (owner && m.from.id === owner)) {
+    await recordOurs(m); // our own side of the chat: kept so the AI sees the whole conversation
+    return null;
+  }
   const text = m.text || m.caption || "";
   const topic = m.direct_messages_topic?.topic_id;
   const sql = await db();
-  const kind = classify(text);
+  const kind = topicOf(text);
   const id = `dm-${m.chat.id}-${m.message_id}`;
+  const [seen] = await sql`select 1 from chek.interactions where id = ${id}`;
+  if (seen) return null; // Telegram re-delivered the same update
+  // settings.inbox_auto: "ai" = live AI replies that read the conversation; true = old canned answers; off otherwise
+  const mode = (await sql`select value from chek.settings where key = 'inbox_auto'`)[0]?.value;
+  if (mode === "ai") {
+    const fwdAi = owner
+      ? await tg("sendMessage", {
+          chat_id: owner,
+          text: `💬 Message to the channel from ${nameOf(m.from)}:\n\n${text.slice(0, 1500) || "(media)"}\n\n🤖 the AI answers in ~20–60 s. To answer yourself instead, reply to this message now.`,
+          link_preview_options: { is_disabled: true },
+          disable_notification: true,
+        }).catch(() => null)
+      : null;
+    await sql`insert into chek.interactions (id, platform, kind, author, author_id, text, at, status, data)
+      values (${id}, 'telegram', 'dm', ${m.from.username ?? null}, ${String(m.from.id)}, ${text.slice(0, 2000)}, now(), 'new',
+        ${sql.json({ chat: m.chat.id, topic: topic ?? null, msg: m.message_id, kind, ownerMsg: fwdAi?.message_id ?? null })}) on conflict (id) do nothing`;
+    if (topic) await queueDmReply(m.chat.id, topic, m.message_id);
+    return null;
+  }
   let sent = null;
-  if (kind !== "other" && !(await answeredRecently(sql, m.from.id, kind, 12))) {
+  let at = null;
+  if (mode === true && kind !== "other" && !(await answeredRecently(sql, m.from.id, kind, 12))) {
     sent = answer(kind, { links: wantsLink(text) });
-    await tg("sendMessage", { chat_id: m.chat.id, direct_messages_topic_id: topic, text: sent, link_preview_options: { is_disabled: true } });
+    at = new Date(Date.now() + delayMs());
     await bump(`dm_auto_${kind}`);
   }
   // the owner always sees it; unknown ones come with ready answers on buttons
   const head = `💬 Message to the channel from ${nameOf(m.from)}:\n\n${text.slice(0, 1500) || "(media)"}`;
-  const note = sent ? `\n\n↩️ answered (${kind}):\n${sent}` : "\n\nReply to this message to answer as the channel, or pick a ready answer:";
+  const note = sent
+    ? `\n\n↩️ answering in ~${Math.round((at.getTime() - Date.now()) / 1000)} s (${kind}):\n${sent}`
+    : "\n\nReply to this message to answer as the channel, or pick a ready answer:";
   const buttons = sent
     ? null
     : [
@@ -90,9 +132,45 @@ export async function dmMessage(m, owner) {
     ? await tg("sendMessage", { chat_id: owner, text: (head + note).slice(0, 4000), link_preview_options: { is_disabled: true }, reply_markup: buttons ? { inline_keyboard: buttons } : undefined }).catch(() => null)
     : null;
   await sql`insert into chek.interactions (id, platform, kind, author, author_id, text, at, status, data)
-    values (${id}, 'telegram', 'dm', ${m.from.username ?? null}, ${String(m.from.id)}, ${text.slice(0, 2000)}, now(), ${sent ? "handled" : "new"},
-      ${sql.json({ chat: m.chat.id, topic: topic ?? null, msg: m.message_id, kind, answered: sent ? kind : null, ownerMsg: fwd?.message_id ?? null })})
+    values (${id}, 'telegram', 'dm', ${m.from.username ?? null}, ${String(m.from.id)}, ${text.slice(0, 2000)}, now(), ${sent ? "queued" : "new"},
+      ${sql.json({ chat: m.chat.id, topic: topic ?? null, msg: m.message_id, kind, answered: sent ? kind : null, ownerMsg: fwd?.message_id ?? null, ...(sent ? { pending: { text: sent, at: at.toISOString() } } : {}) })})
     on conflict (id) do nothing`;
+  return sent ? id : null;
+}
+
+// Send one queued reply when its wait is over: claim it (so the scheduler can't send it twice), "typing…", send.
+export async function deliver(id) {
+  const sql = await db();
+  const [it0] = await sql`select data from chek.interactions where id = ${id} and status = 'queued' and data ? 'pending'`;
+  if (!it0) return false;
+  const wait = Date.parse(it0.data.pending.at) - Date.now();
+  await sleep(wait - 5000);
+  const [it] = await sql`update chek.interactions set status = 'handled' where id = ${id} and status = 'queued' returning *`;
+  if (!it) return false; // the owner answered by hand in the meantime, or it was already sent
+  const d = it.data;
+  const where = { chat_id: Number(d.chat), ...(d.topic ? { direct_messages_topic_id: d.topic } : {}) };
+  await tg("sendChatAction", { ...where, action: "typing" }).catch(() => {});
+  await sleep(Math.min(5000, Math.max(2500, wait)));
+  const ok = await tg("sendMessage", {
+    ...where,
+    text: d.pending.text,
+    link_preview_options: { is_disabled: true },
+    ...(it.kind === "comment" ? { reply_parameters: { message_id: d.msg, allow_sending_without_reply: true } } : {}),
+  })
+    .then(() => true)
+    .catch(() => false);
+  await sql`update chek.interactions set status = ${ok ? "handled" : "ignored"}, data = data - 'pending' || ${sql.json({ sentAt: new Date().toISOString(), sent: ok })} where id = ${id}`;
+  return ok;
+}
+
+// Scheduler fallback: anything still queued past its time (e.g. the function was stopped) goes out now.
+export async function sendPendingReplies() {
+  const sql = await db();
+  const due = await sql`select id from chek.interactions where platform = 'telegram' and status = 'queued' and data ? 'pending'
+    and (data->'pending'->>'at')::timestamptz <= now() - interval '1 minute' order by created_at limit 10`;
+  let n = 0;
+  for (const it of due) if (await deliver(it.id).catch(() => false)) n++;
+  return { sent: n };
 }
 
 // A question in the comments (discussion group): known topics get a short reply in the thread.
@@ -108,13 +186,14 @@ export async function commentQuestion(m) {
   const to = m.reply_to_message;
   if (to && !to.is_automatic_forward && !to.sender_chat && to.from && !to.from.is_bot) return false; // talking to another person
   const sql = await db();
+  if ((await sql`select value from chek.settings where key = 'inbox_auto'`)[0]?.value !== true) return false; // off unless switched on
   if (await answeredRecently(sql, m.from.id, kind, 6)) return false;
-  await tg("sendMessage", { chat_id: m.chat.id, text: answer(kind, { links: wantsLink(text) }), reply_parameters: { message_id: m.message_id, allow_sending_without_reply: true }, link_preview_options: { is_disabled: true } });
+  const pending = { text: answer(kind, { links: wantsLink(text) }), at: new Date(Date.now() + delayMs()).toISOString() };
   await sql`insert into chek.interactions (id, platform, kind, author, author_id, text, at, status, data)
-    values (${`cm-${m.chat.id}-${m.message_id}`}, 'telegram', 'comment', ${m.from.username ?? null}, ${String(m.from.id)}, ${text.slice(0, 2000)}, now(), 'handled',
-      ${sql.json({ chat: m.chat.id, msg: m.message_id, kind, answered: kind })}) on conflict (id) do nothing`;
+    values (${`cm-${m.chat.id}-${m.message_id}`}, 'telegram', 'comment', ${m.from.username ?? null}, ${String(m.from.id)}, ${text.slice(0, 2000)}, now(), 'queued',
+      ${sql.json({ chat: m.chat.id, msg: m.message_id, kind, answered: kind, pending })}) on conflict (id) do nothing`;
   await bump(`comment_auto_${kind}`);
-  return true;
+  return `cm-${m.chat.id}-${m.message_id}`;
 }
 
 // Owner tapped a ready answer under a forwarded message.
@@ -135,8 +214,11 @@ export async function ownerReply(m) {
   const sql = await db();
   const [it] = await sql`select * from chek.interactions where kind = 'dm' and (data->>'ownerMsg')::bigint = ${to} limit 1`;
   if (!it) return false;
-  await tg("sendMessage", { chat_id: Number(it.data.chat), direct_messages_topic_id: it.data.topic ?? undefined, text: m.text, link_preview_options: { is_disabled: true } });
+  const sent = await tg("sendMessage", { chat_id: Number(it.data.chat), direct_messages_topic_id: it.data.topic ?? undefined, text: m.text, link_preview_options: { is_disabled: true } });
   await sql`update chek.interactions set status = 'handled', data = data || ${sql.json({ answered: "owner" })} where id = ${it.id}`;
+  // the owner answered: the AI stays quiet on this one
+  await recordSent(it.data.chat, it.data.topic, sent.message_id, m.text, "owner");
+  await sql`update chek.ai_jobs set status = 'expired', error = 'owner answered' where kind = 'dm_reply' and status = 'queued' and meta->>'topic' = ${String(it.data.topic)}`;
   await audit("owner", "telegram.dm_answered", "ok", { ref: it.id, detail: { kind: "owner" } });
   return true;
 }

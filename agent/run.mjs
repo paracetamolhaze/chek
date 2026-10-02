@@ -199,5 +199,6 @@ for (;;) {
   } catch (e) {
     log(`poll failed: ${e.message}`);
   }
-  await new Promise((r) => setTimeout(r, busy ? 5000 : launch.armed ? 20_000 : 60_000));
+  // 10 s idle: live replies to channel messages should go out within about a minute
+  await new Promise((r) => setTimeout(r, busy ? 5000 : 10_000));
 }

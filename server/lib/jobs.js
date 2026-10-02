@@ -1,6 +1,7 @@
 // SCHEDULER: one entry point called every few minutes (Supabase pg_cron → /api/cron; Vercel Cron once a day as backup).
 // Each job has its own frequency, tracked in settings, so the tick interval can change without changing behaviour.
 import { runRoundDraws } from "./draw.js";
+import { sendPendingReplies } from "./inbox.js";
 import { alert, allSettings, audit, gauge, getSetting, recordCost, setSetting, spend } from "./core.js";
 import { db } from "./db.js";
 import { runEngine } from "./engine.js";
@@ -115,6 +116,7 @@ const JOBS = [
   { name: "ai_expire", everyMin: 15, run: expireJobs },
   { name: "x_handoff_expire", everyMin: 15, run: expireHandoffs },
   { name: "drop_draws", everyMin: 5, run: runRoundDraws },
+  { name: "inbox_send", everyMin: 0, run: sendPendingReplies },
   { name: "publisher", everyMin: 0, run: runPublisher },
   { name: "onchain", everyMin: 5, run: runWatcher },
   // news desk is off unless settings.news.enabled (owner: no general crypto/Solana news on CHEK channels)

@@ -76,6 +76,7 @@ const ALLOWED = {
   prices: (v) => Object.values(v).every((n) => typeof n === "number" && n >= 0),
   onchain_threshold_pct: (v) => typeof v === "number" && v > 0 && v < 100,
   x_transport: (v) => ["telegram", "api", "desk"].includes(v),
+  inbox_auto: (v) => v === false || v === "ai",
   news: (v) => typeof v === "object" && typeof v.enabled === "boolean",
   owner_hours: (v) => /^\d{2}:\d{2}$/.test(v.from) && /^\d{2}:\d{2}$/.test(v.to),
 };
@@ -190,12 +191,21 @@ export async function POST(request) {
           where platform = 'telegram' and kind in ('dm','comment') order by created_at desc limit ${Math.min(Number(b.limit) || 20, 100)}`;
         return json({ ok: true, rows });
       }
+      case "dm_ai_test":
+        return json({ ok: true, job: await (await import("../server/lib/dmreply.js")).queueDmTest(String(b.text || "gm")) });
+      case "inbox_cancel": {
+        // drop every reply still waiting to be sent
+        const sql = await db();
+        const rows = await sql`update chek.interactions set status = 'ignored', data = data - 'pending' where status = 'queued' returning id`;
+        return json({ ok: true, cancelled: rows.map((r) => r.id) });
+      }
       case "dm_send": {
         // the owner asked for a reply to a channel message: sent as the channel into that person's topic
         const sql = await db();
         const [it] = await sql`select * from chek.interactions where id = ${String(b.id)} and kind = 'dm'`;
         if (!it || !b.text) throw new AppError(404, "no such message or empty text");
-        await tg("sendMessage", { chat_id: Number(it.data.chat), direct_messages_topic_id: it.data.topic ?? undefined, text: String(b.text).slice(0, 4000), link_preview_options: { is_disabled: true } });
+        const sent = await tg("sendMessage", { chat_id: Number(it.data.chat), direct_messages_topic_id: it.data.topic ?? undefined, text: String(b.text).slice(0, 4000), link_preview_options: { is_disabled: true } });
+        await (await import("../server/lib/dmreply.js")).recordSent(it.data.chat, it.data.topic, sent.message_id, String(b.text), "owner");
         await sql`update chek.interactions set status = 'handled', data = data || ${sql.json({ answered: "owner_via_admin" })} where id = ${it.id}`;
         await audit("owner", "telegram.dm_answered", "ok", { ref: it.id, detail: { via: "admin" } });
         return json({ ok: true });

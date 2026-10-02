@@ -6,10 +6,12 @@ import { db } from "./db.js";
 import { Plan, applyPlan } from "./engine.js";
 import { parseJsonLoose } from "./llm.js";
 import { Verdict, applyVerdict } from "./news.js";
+import { DmReply, applyDmReply } from "./dmreply.js";
 
 const KINDS = {
   engine_plan: { schema: Plan, apply: applyPlan },
   news_verdict: { schema: Verdict, apply: applyVerdict },
+  dm_reply: { schema: DmReply, apply: applyDmReply },
 };
 
 const STUCK_MIN = 12; // a claimed job with no answer after this goes back to the queue (PC slept, CLI crashed)

@@ -4,12 +4,13 @@
 //   POST /api/agent { op: "result", id, text, usage, model } | { op: "fail", id, error }
 //   POST /api/agent { op: "launch_detected", ca }  → the server re-verifies everything on-chain itself (creator wallet,
 //        symbol, authorities) before anything is published, so this token can never make it announce a wrong coin.
+import { waitUntil } from "@vercel/functions";
 import { claimJob, completeJob, failJob } from "../server/lib/ai-jobs.js";
 import { AppError, handle, json, readJson, safeEqual } from "../server/lib/http.js";
 import { confirmLaunch, launchWatch } from "../server/lib/launch.js";
 import { runProdAudit } from "../server/lib/prodcheck.js";
 
-export const maxDuration = 60;
+export const maxDuration = 120; // live channel replies wait 20–60 s in the background
 
 function requireAgent(request) {
   const token = process.env.AGENT_TOKEN;
@@ -39,7 +40,13 @@ export async function POST(request) {
     if (!Number.isInteger(id) || id < 1) throw new AppError(400, "bad id");
     if (b.op === "result") {
       if (typeof b.text !== "string" || b.text.length > 200_000) throw new AppError(400, "bad text");
-      return json(await completeJob(id, b.text, { ...(b.usage || {}), model: b.model }));
+      const r = await completeJob(id, b.text, { ...(b.usage || {}), model: b.model });
+      // live channel replies go out 20–60 s after the person wrote, in the background (typing first)
+      if (typeof r.outcome?.send === "function") {
+        waitUntil(r.outcome.send().catch(() => {}));
+        return json({ ...r, outcome: { sending: true } });
+      }
+      return json(r);
     }
     if (b.op === "fail") return json(await failJob(id, String(b.error || "unknown")));
     throw new AppError(400, "unknown op");
