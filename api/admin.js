@@ -8,7 +8,7 @@ import { tick } from "../server/lib/jobs.js";
 import { decide } from "../server/lib/publisher.js";
 import { reschedule, syncSeed } from "../server/lib/queue.js";
 import { syncBuildLog } from "../server/lib/receipts.js";
-import { tg } from "../server/lib/telegram.js";
+import { notifyOwner, tg } from "../server/lib/telegram.js";
 import { xAccount } from "../server/lib/x.js";
 import { agentStatus } from "../server/lib/llm.js";
 import { confirmLaunch } from "../server/lib/launch.js";
@@ -141,6 +141,12 @@ export async function POST(request) {
         if (!isPubkey(b.address)) throw new AppError(400, "bad address");
         await setSetting("creator_wallet", { address: b.address, setAt: new Date().toISOString() });
         await audit("owner", "launch.creator_wallet", "ok", { detail: { address: b.address } });
+        return json({ ok: true });
+      }
+      case "ping_owner": {
+        const owner = (await getSetting("owner"))?.telegramUserId;
+        if (!owner) throw new AppError(409, "owner not linked");
+        await notifyOwner(owner, String(b.text || "🧾 Linked. Approvals, alerts and the daily digest come here.").slice(0, 3500));
         return json({ ok: true });
       }
       case "arm_launch":

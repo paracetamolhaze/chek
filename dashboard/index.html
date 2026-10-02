@@ -372,7 +372,7 @@ async function loadCC() {
   const i = CC.integrations, s = CC.settings, runs = s.job_runs || {};
   const st = (ok, v, d) => [ok ? "ok" : "wait", v, d];
   const tiles = [
-    ["SITE", ...st(true, "LIVE", "chekcoin.vercel.app")],
+    ["SITE", ...st(true, "LIVE", String(S?.project?.links?.website || "").replace("https://", ""))],
     ["X", ...(i.x ? (CC.xAccount ? st(s.platforms.x, s.platforms.x ? "ON" : "CONNECTED", "@" + CC.xAccount.username) : ["wait", "KEYS SET", "click Connect X"]) : ["bad", "NOT SET", "owner: X API keys"])],
     ["TELEGRAM", ...(i.telegram ? st(s.platforms.telegram, s.platforms.telegram ? "ON" : "BOT SET", s.owner.linked ? "owner linked" : "owner not linked") : ["bad", "NOT SET", "owner: bot token"])],
     ["PC AGENT", ...(CC.agent?.online ? (CC.agent.ai ? ["ok", "ONLINE", "Claude ready · jobs " + CC.agent.jobs.queued + " queued"] : ["wait", "ONLINE", "no Claude access yet — AI jobs wait"]) : ["bad", "OFFLINE", "last seen " + ago(CC.agent?.lastSeen)])],

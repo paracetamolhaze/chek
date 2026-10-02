@@ -40,7 +40,7 @@ if (DRY) process.exit(0);
 
 // 2. files
 project.links.website = url;
-project.domain = { ...(project.domain || {}), canonical: url, pending: null, confirmedAt: new Date().toISOString() };
+project.domain = { canonical: url, previous: old, never: project.domain?.never ?? [], confirmedAt: new Date().toISOString(), note: `Canonical domain confirmed by the owner. Every other domain (incl. ${oldHost} and the CHECK-spelled typo) only redirects here.` };
 writeJson(paths.project, project);
 syncReadme(project);
 const xq = readJson(paths.x);
@@ -66,7 +66,8 @@ if (site) await vercel(`/v9/projects/${link.projectId}/env/${site.id}`, { method
 await vercel(`/v10/projects/${link.projectId}/env`, { method: "POST", body: JSON.stringify({ key: "SITE_URL", value: url, type: "plain", target: ["production", "preview"] }) });
 await vercel(`/v9/projects/${link.projectId}/domains/${host}`, { method: "PATCH", body: JSON.stringify({ redirect: null }) });
 for (const d of domains) {
-  if (d.name === host || d.name.endsWith(".vercel.app")) continue;
+  // every other custom domain and the project's own vercel.app name redirect to the one official domain
+  if (d.name === host || (d.name.endsWith(".vercel.app") && d.name !== oldHost)) continue;
   const r = await vercel(`/v9/projects/${link.projectId}/domains/${d.name}`, { method: "PATCH", body: JSON.stringify({ redirect: host, redirectStatusCode: 308 }) });
   console.log(`redirect ${d.name} → ${host}: ${r.status}`);
 }

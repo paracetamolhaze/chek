@@ -21,7 +21,7 @@ const env = Object.fromEntries(
     .filter((l) => /^[A-Z_]+=/.test(l))
     .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).trim()]),
 );
-const SITE = (env.CHEK_SITE || "https://chekcoin.vercel.app").replace(/\/$/, "");
+const SITE = (env.CHEK_SITE || JSON.parse(readFileSync(join(ROOT, "config/project.json"), "utf8")).links.website).replace(/\/$/, "");
 const TOKEN = env.AGENT_TOKEN;
 const CLI = env.CHEK_CLAUDE_CLI || "C:/nvm4w/nodejs/node_modules/@anthropic-ai/claude-code/cli.js";
 const GIT_BASH = env.CHEK_GIT_BASH || "D:\\Git\\bin\\bash.exe";
@@ -82,16 +82,26 @@ function childEnv() {
   return e;
 }
 
+// The bridge is shared with the owner's other project: one CHEK job at a time, and when it says "busy" we wait
+// our turn instead of retrying hard. Its own queue rules are never bypassed.
 async function viaBridge(job) {
-  const r = await fetch(`${BRIDGE_URL}/complete`, {
-    method: "POST",
-    headers: { authorization: `Bearer ${env.CLAUDE_BRIDGE_TOKEN}`, "content-type": "application/json" },
-    body: JSON.stringify({ system: job.system, messages: [{ role: "user", content: job.prompt }], task: "chek", model: job.model || "claude-opus-5-5", jsonSchema: {} }),
-    signal: AbortSignal.timeout(12 * 60e3),
-  });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(`bridge ${r.status}: ${j.error || "no answer"}`);
-  return { text: String(j.text || ""), usage: j.usage || {}, model: j.model || job.model };
+  const until = Date.now() + 20 * 60e3;
+  for (;;) {
+    const r = await fetch(`${BRIDGE_URL}/complete`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${env.CLAUDE_BRIDGE_TOKEN}`, "content-type": "application/json" },
+      body: JSON.stringify({ system: job.system, messages: [{ role: "user", content: job.prompt }], task: "chek", model: job.model || "claude-opus-5-5", jsonSchema: {} }),
+      signal: AbortSignal.timeout(12 * 60e3),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) return { text: String(j.text || ""), usage: j.usage || {}, model: j.model || job.model };
+    if (r.status === 503 && Date.now() + 60e3 < until) {
+      log(`bridge busy — waiting (job ${job.id})`);
+      await new Promise((res) => setTimeout(res, 60e3));
+      continue;
+    }
+    throw new Error(r.status === 429 ? "Claude subscription limit reached" : `bridge ${r.status}: ${j.error || "no answer"}`);
+  }
 }
 
 function runClaude(job) {

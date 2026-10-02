@@ -40,7 +40,7 @@ if (cmd === "env") {
     await setEnv(key, local[key]);
     console.log(key, "set");
   }
-  await setEnv("SITE_URL", "https://chekcoin.vercel.app", "plain");
+  await setEnv("SITE_URL", JSON.parse(readFileSync(join(ROOT, "config/project.json"), "utf8")).links.website, "plain");
   writeFileSync(LOCAL, Object.entries(local).map(([k, v]) => `${k}=${v}`).join("\n") + "\n");
   console.log("local copy → private/.env.local (git-ignored)");
 } else if (cmd === "region") {

@@ -1,7 +1,8 @@
+import { readFileSync } from "node:fs";
 // Load metrics for the live site on a throttled "mid-range phone on 4G".
 //   node scripts/perf.mjs [url]
 import { open, close } from "./lib/render.mjs";
-const url = process.argv[2] || "https://chekcoin.vercel.app/";
+const url = process.argv[2] || JSON.parse(readFileSync(new URL("../config/project.json", import.meta.url), "utf8")).links.website + "/";
 const b = await open();
 for (const [label, throttle] of [["desktop", false], ["mobile 4G + 4x CPU", true]]) {
   const page = await b.newPage();

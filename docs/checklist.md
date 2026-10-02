@@ -5,13 +5,13 @@ Status below as of 2026-10-01, 23:40 UTC. READY TO MINT = every line ✓. Exact 
 
 ## Website
 
-- [x] Production on HTTPS: https://chekcoin.vercel.app (canonical until the CHEK-spelled domain is confirmed)
+- [x] Production on HTTPS: https://www.chekcoinsol.xyz (canonical, confirmed by the owner 2026-10-02); every other domain redirects there
 - [x] All pages 200: /, /history, /transparency, /receipts, /kit, /print; 404 page works
 - [x] Metadata, OG/Twitter card, favicon, manifest, sitemap, robots, security headers
 - [x] Contract shown as NOT LAUNCHED YET; no address-like placeholder anywhere
 - [x] “Launching on Solana” before launch (never “Built on Solana”)
 - [x] Receipt Generator `/print` + share cards `/r` + Telegram receipt bot
-- [ ] Canonical domain confirmed by the owner (`chekcoinsol.xyz` pending) → `node scripts/set-domain.mjs https://…` switches everything in one commit
+- [x] Canonical domain confirmed: switched everywhere in one commit (`scripts/set-domain.mjs`)
 - [x] Typo domain `checkcoinsol.xyz` only redirects (never canonical)
 - [ ] Analytics — optional (Vercel Web Analytics, then `site.analytics: true`)
 

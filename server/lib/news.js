@@ -5,6 +5,7 @@ import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
 import { audit, bump } from "./core.js";
 import { db } from "./db.js";
+import { env } from "./env.js";
 import { ask } from "./llm.js";
 import { enqueue } from "./queue.js";
 import { VOICE } from "./voice.js";
@@ -44,7 +45,7 @@ export async function fetchFeeds() {
   let added = 0;
   for (const s of SOURCES) {
     try {
-      const res = await fetch(s.url, { headers: { "user-agent": "CHEK-news-agent/1.0 (+https://chekcoin.vercel.app)" }, signal: AbortSignal.timeout(12_000) });
+      const res = await fetch(s.url, { headers: { "user-agent": `CHEK-news-agent/1.0 (+${env.siteUrl})` }, signal: AbortSignal.timeout(12_000) });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const doc = parser.parse(await res.text());
       const items = doc.rss?.channel?.item ?? doc.feed?.entry ?? [];
@@ -110,7 +111,7 @@ export async function evaluateNews(limit = 3) {
       body = `${n.title}. ${n.data?.summary ?? ""}`.trim();
     } else {
       try {
-        const res = await fetch(n.url, { headers: { "user-agent": "CHEK-news-agent/1.0 (+https://chekcoin.vercel.app)" }, signal: AbortSignal.timeout(15_000) });
+        const res = await fetch(n.url, { headers: { "user-agent": `CHEK-news-agent/1.0 (+${env.siteUrl})` }, signal: AbortSignal.timeout(15_000) });
         body = articleText(await res.text()).slice(0, 18_000);
       } catch (e) {
         await sql`update chek.news_items set status = 'rejected', reason = ${`fetch failed: ${e.message}`}, checked_at = now() where id = ${n.id}`;

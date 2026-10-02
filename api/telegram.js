@@ -115,7 +115,7 @@ export async function POST(request) {
       const claim = await getSetting("owner_claim");
       if (arg && !owner && claim && claim.code === arg && Date.now() < claim.expiresAt) {
         await setSetting("owner", { telegramUserId: m.from.id });
-        await setSetting("owner_claim", null);
+        await setSetting("owner_claim", { used: new Date().toISOString() }); // one-time code is spent
         await audit("owner", "telegram.owner_linked", "ok", { detail: { id: m.from.id } });
         await reply(m.chat.id, "🧾 Linked. You'll get approvals, alerts and a daily digest here.\nCommands: /status /queue /pause /dry /live\nAnything else you send is printed as a receipt.");
       } else await reply(m.chat.id, welcome());
