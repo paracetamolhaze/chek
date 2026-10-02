@@ -131,9 +131,9 @@ export function ReceiptMaker({ site, host, handle }: { site: string; host: strin
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [r.ok, ready, query]);
 
-  // X can't take an image through a link, so the image travels another way:
+  // X takes only text + a link from a website, never an attached file:
   //  · phones: the system share sheet with the PNG attached (the visitor picks X there);
-  //  · computers: the PNG goes to the clipboard, X opens with the text, Ctrl+V pastes the receipt into the post.
+  //  · computers: X opens with the text + link, and the link unfurls into the receipt image (summary_large_image card).
   // The link in the text still unfurls into the receipt card for everyone who sees the post.
   async function shareX(e: React.MouseEvent) {
     if (!r.ok) return;
@@ -154,20 +154,10 @@ export function ReceiptMaker({ site, host, handle }: { site: string; host: strin
       window.open(xHref, "_blank", "noopener");
       return;
     }
-    let copiedImage = false;
-    try {
-      if (typeof ClipboardItem !== "undefined") {
-        await Promise.race([
-          navigator.clipboard.write([new ClipboardItem({ "image/png": receiptPng() })]),
-          new Promise((_, no) => setTimeout(() => no(new Error("slow")), 3500)),
-        ]);
-        copiedImage = true;
-      }
-    } catch {}
-    setNote(copiedImage ? "Receipt image copied — press Ctrl+V (⌘V) in the X post to attach it." : "Tip: download the PNG and attach it to your post.");
+    // computers: X opens with the text; the link in it unfurls into the full receipt image in the post
     const w = window.open(xHref, "_blank");
     if (w) w.opener = null;
-    else setNote((n) => `${n} If X didn't open, allow pop-ups for this site.`);
+    else window.location.href = xHref;
   }
 
   async function download() {
