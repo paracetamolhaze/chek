@@ -7,7 +7,7 @@ import { audit, bump } from "./core.js";
 import { db } from "./db.js";
 import { project } from "./project.js";
 import { tg } from "./telegram.js";
-import { queueDmReply, recordOurs, recordSent } from "./dmreply.js";
+import { noteQuotedOwnerMessage, ownerActive, queueDmReply, recordOurs, recordSent } from "./dmreply.js";
 
 const RULES = [
   // a pitch, not a question: "I can / I have something / let's connect / our services"
@@ -90,12 +90,21 @@ export async function dmMessage(m, owner) {
   // settings.inbox_auto: "ai" = live AI replies that read the conversation; true = old canned answers; off otherwise
   const mode = (await sql`select value from chek.settings where key = 'inbox_auto'`)[0]?.value;
   if (mode === "ai") {
+    await noteQuotedOwnerMessage(m).catch(() => {});
+    const yours = topic ? await ownerActive(sql, topic) : false;
     const fwdAi = owner
       ? await tg("sendMessage", {
           chat_id: owner,
-          text: `💬 Message to the channel from ${nameOf(m.from)}:\n\n${text.slice(0, 1500) || "(media)"}\n\n🤖 the AI answers in ~20–60 s. To answer yourself instead, reply to this message now.`,
+          text: `💬 Message to the channel from ${nameOf(m.from)}:\n\n${text.slice(0, 1500) || "(media)"}\n\n${
+            yours
+              ? "👤 you're talking with this person yourself, so the AI stays quiet here. Reply to this message to answer."
+              : "🤖 the AI answers in ~20–60 s. To answer yourself instead, reply to this message now."
+          }`,
           link_preview_options: { is_disabled: true },
-          disable_notification: true,
+          disable_notification: !yours,
+          reply_markup: topic
+            ? { inline_keyboard: [[yours ? { text: "🔊 AI on for this chat", callback_data: `dmu:on:${topic}` } : { text: "🔇 AI off for this chat", callback_data: `dmu:off:${topic}` }]] }
+            : undefined,
         }).catch(() => null)
       : null;
     await sql`insert into chek.interactions (id, platform, kind, author, author_id, text, at, status, data)

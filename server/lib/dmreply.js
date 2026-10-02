@@ -50,8 +50,28 @@ async function conversation(sql, topic) {
 }
 
 // Queue (or refresh) the AI reply for a conversation. Several messages in a row are answered once.
+// The owner talking personally in a conversation (in the last 6 h) = the AI stays out of it.
+export async function ownerActive(sql, topic) {
+  const muted = (await getSetting("inbox_muted")) || [];
+  if (muted.map(String).includes(String(topic))) return true; // the owner switched the AI off for this chat
+  const [r] = await sql`select 1 from chek.interactions where kind = 'dm' and data->>'topic' = ${String(topic)}
+    and data->>'by' = 'owner' and created_at > now() - interval '6 hours' limit 1`;
+  return Boolean(r);
+}
+
+// Telegram doesn't send the bot what the owner types in the channel's DMs from the app. When someone quotes a
+// channel message the bot never sent, the owner wrote it: record it, so the AI knows the owner is in this chat.
+export async function noteQuotedOwnerMessage(m) {
+  const q = m.reply_to_message;
+  if (!q || !(q.sender_chat || q.from?.is_bot === false)) return;
+  const sql = await db();
+  const [known] = await sql`select 1 from chek.interactions where id = ${`dmo-${m.chat.id}-${q.message_id}`}`;
+  if (!known) await recordSent(m.chat.id, m.direct_messages_topic?.topic_id ?? null, q.message_id, q.text || q.caption || "", "owner");
+}
+
 export async function queueDmReply(chat, topic, upTo) {
   const sql = await db();
+  if (await ownerActive(sql, topic)) return null;
   const history = await conversation(sql, topic);
   const prompt = `Conversation in the CHEK channel's direct messages (oldest first). Reply to THEM's latest message(s) as YOU.\n\n${history.map(fmtLine).join("\n")}`;
   const meta = { chat, topic, upTo };
@@ -99,6 +119,7 @@ export async function applyDmReply(out, meta) {
   const [handled] = await sql`select 1 from chek.interactions where kind = 'dm' and data->>'topic' = ${String(meta.topic)}
     and coalesce((data->>'ours')::boolean, false) = true and (data->>'msg')::bigint > ${meta.upTo} limit 1`;
   if (handled) return { answeredByHand: true };
+  if (await ownerActive(sql, meta.topic)) return { ownerTalking: true };
   const last = (await conversation(sql, meta.topic)).filter((r) => !r.data?.ours).pop();
   const askedLink = /(link|website|site|url)/i.test(last?.text || "");
   let reply = String(out.reply || "").replace(/\s*—\s*/g, ", ").trim();

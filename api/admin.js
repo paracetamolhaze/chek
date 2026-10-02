@@ -77,6 +77,7 @@ const ALLOWED = {
   onchain_threshold_pct: (v) => typeof v === "number" && v > 0 && v < 100,
   x_transport: (v) => ["telegram", "api", "desk"].includes(v),
   inbox_auto: (v) => v === false || v === "ai",
+  inbox_muted: (v) => Array.isArray(v) && v.length < 500,
   news: (v) => typeof v === "object" && typeof v.enabled === "boolean",
   owner_hours: (v) => /^\d{2}:\d{2}$/.test(v.from) && /^\d{2}:\d{2}$/.test(v.to),
 };

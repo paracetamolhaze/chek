@@ -49,7 +49,7 @@
       "slot": "D1 19:00",
       "category": "transparency",
       "status": "ready",
-      "text": "the plan, itemized 🧾\n\nnow → site, receipt generator, telegram bot\nlaunch → $CHEKD on pump.fun, CA everywhere at the same minute\nafter → proof of hold, holder votes, receipt of the week\nnever → presale, price promises, DMs first\n\n#Solana #memecoin",
+      "text": "the plan, itemized 🧾\n\nnow → site, receipt printer, bot, airdrop + giveaway (profile)\nlaunch → $CHEKD on pump.fun, CA everywhere in the same minute\nafter → proof of hold, holder votes, receipt of the week\nnever → presale, price promises, DMing first\n\n#Solana #memecoin",
       "asset": "content/animations/v05-the-plan.mp4",
       "note": "what's next + the plan",
       "publishAfter": "2026-10-02T19:00:00.000Z"
@@ -59,7 +59,7 @@
       "slot": "D2 07:00",
       "category": "community",
       "status": "ready",
-      "text": "print your own receipt 🧾\n\nwrite any claim. get a receipt. share it.\n\nno wallet. no sign-up. no token needed.\n\n{{SITE}}/print\n\n#Solana #memecoin",
+      "text": "print your own receipt 🧾\n\nwrite any claim. get a receipt. share it.\n\nno wallet. no sign-up. no token needed.\n\n{{SITE}}/print\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/animations/v04-print-demo.mp4",
       "note": "people use CHEK — Receipt Generator demo; one of the few posts with a link",
       "publishAfter": "2026-10-03T07:00:00.000Z"
@@ -69,7 +69,7 @@
       "slot": "D2 11:00",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”\n\n#Solana #memecoin",
+      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/animations/v06-the-coupon.mp4",
       "note": "lore video",
       "publishAfter": "2026-10-03T11:00:00.000Z"
@@ -80,7 +80,7 @@
       "category": "transparency",
       "status": "ready",
       "pin": "prelaunch",
-      "text": "how $CHEKD launches. the receipt, in advance 🧾\n\n#Solana #memecoin",
+      "text": "how $CHEKD launches. the receipt, in advance 🧾\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "thread": [
         "platform: pump.fun, SOL pair. name CHEK, ticker CHEKD.\nno presale. no whitelist. no free team allocation.",
         "the creator makes one public buy at creation (target ≈ $200) from the creator wallet. same curve, same price as everyone.\n\nexact SOL spent, CHEKD received and % of supply get published from the chain, not estimated.",
@@ -97,7 +97,7 @@
       "slot": "D2 19:00",
       "category": "lore",
       "status": "ready",
-      "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID\n\n#Solana #memecoin",
+      "text": "the slip tore itself off and read the internet for five minutes.\n\n“partnership soon”\n“audit coming”\n“100x guaranteed”\n\nthen it printed its first line:\n\nCLAIM ........ VOID\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/memes/01-itemized-promises.png",
       "note": "origin lore — the quotes are the joke, stamped VOID",
       "publishAfter": "2026-10-03T19:00:00.000Z"
@@ -107,7 +107,7 @@
       "slot": "D3 07:00",
       "category": "meme",
       "status": "ready",
-      "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅\n\n#Solana #memecoin",
+      "text": "pics or it didn't happen ❌\nreceipts or it didn't happen ✅\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/memes/02-pics-vs-receipts.png",
       "note": "only goes out if launch day is later than day 2",
       "publishAfter": "2026-10-04T07:00:00.000Z"
@@ -117,7 +117,7 @@
       "slot": "D3 11:00",
       "category": "meme",
       "status": "ready",
-      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌\n\n#Solana #memecoin",
+      "text": "vibe chek ✅\nreceipt chek ✅\n“trust me bro” ❌\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/memes/09-vibe-chek.png",
       "publishAfter": "2026-10-04T11:00:00.000Z"
     },
@@ -136,7 +136,7 @@
       "slot": "T-20h",
       "category": "lore",
       "status": "ready",
-      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”\n\n#Solana #memecoin",
+      "text": "lore, chapter 04: THE COUPON\n\n“100X OFF! TODAY ONLY!”\n\nchek read the fine print.\nfine print: “*none of this is real”\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/memes/06-the-coupon.png",
       "publishAfter": null
     },
@@ -145,7 +145,7 @@
       "slot": "T-5h",
       "category": "transparency",
       "status": "ready",
-      "text": "name and ticker prove nothing.\n\nother tokens already use the name. they're not ours. to find the real one:\n\n1. CA matches {{SITE}}, our X pin and telegram pin\n2. nobody DMed you first\n3. no “presale”, “whitelist”, “early access”\n\n#Solana #memecoin",
+      "text": "name and ticker prove nothing.\n\nother tokens use the name. not ours. the real one:\n\n1. CA matches {{SITE}}, our X pin and telegram pin\n2. nobody DMed you first\n3. no “presale”, “whitelist”, “early access”\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "asset": "content/memes/04-ca-chek.png",
       "publishAfter": null
     },
@@ -213,7 +213,7 @@
       "slot": "T+2h",
       "category": "build",
       "status": "ready",
-      "text": "what's live right now:\n\n✓ $CHEKD on pump.fun ({{CA_SHORT}})\n✓ site + transparency page with real data\n✓ receipt generator, print one, any claim\n✓ telegram: t.me/chekcoinsol\n\nnext: receipt of the week.\n\n#Solana #memecoin",
+      "text": "what's live right now:\n\n✓ $CHEKD on pump.fun ({{CA_SHORT}})\n✓ site + transparency page with real data\n✓ receipt generator, print one, any claim\n✓ telegram: t.me/chekcoinsol\n\nnext: receipt of the week.\n\n🎁 airdrop + giveaway live → see profile\n#Solana #memecoin",
       "note": "after launch",
       "publishAfter": null
     },

@@ -181,6 +181,17 @@ export async function POST(request) {
       }
       if (!owner || q.from.id !== owner) return json({ ok: true });
       const [act, id, ...rest] = String(q.data || "").split(":");
+      if (act === "dmu") {
+        // owner: switch the AI on/off for one conversation (id = on|off, rest[0] = topic)
+        const muted = new Set(((await getSetting("inbox_muted")) || []).map(String));
+        if (id === "off") muted.add(String(rest[0]));
+        else muted.delete(String(rest[0]));
+        await setSetting("inbox_muted", [...muted]);
+        if (id === "off") await (await db())`update chek.ai_jobs set status = 'expired', error = 'muted by owner' where kind = 'dm_reply' and status = 'queued' and meta->>'topic' = ${String(rest[0])}`;
+        await tg("answerCallbackQuery", { callback_query_id: q.id, text: id === "off" ? "AI is off for this chat 🔇" : "AI is on for this chat 🔊" });
+        if (q.message) await tg("editMessageReplyMarkup", { chat_id: q.message.chat.id, message_id: q.message.message_id, reply_markup: { inline_keyboard: [[id === "off" ? { text: "🔊 AI on for this chat", callback_data: `dmu:on:${rest[0]}` } : { text: "🔇 AI off for this chat", callback_data: `dmu:off:${rest[0]}` }]] } }).catch(() => {});
+        return json({ ok: true });
+      }
       if (act === "dd") {
         // owner: delete a reply the bot sent as the channel
         const ok = await tg("deleteMessage", { chat_id: Number(id), message_id: Number(rest[0]) }).then(() => true).catch(() => false);
