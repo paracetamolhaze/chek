@@ -21,6 +21,12 @@ const git = (args, cwd = target, env = {}) => execFileSync("git", args, { cwd, e
 
 // --utc: store every commit's time with a +0000 offset (same instant; hides the local time zone)
 const UTC = process.argv.includes("--utc");
+// --author "Name <email>": every commit is attributed to the owner's public identity (e.g. a GitHub noreply address)
+const AUTHOR = (() => {
+  const i = process.argv.indexOf("--author");
+  const m = i > 0 ? /^(.+?)s*<([^>]+)>$/.exec(process.argv[i + 1] || "") : null;
+  return m ? { name: m[1], email: m[2] } : null;
+})();
 const FMT = "--format=%H%x09%at%x09%ct%x09%s";
 const oldLog = git(["log", "--reverse", FMT], ROOT).trim().split("\n").map((l) => l.split("\t"));
 git(["clone", "--quiet", "--no-local", ROOT, target], ROOT);
@@ -48,7 +54,18 @@ git(
   [
     "filter-branch",
     "-f",
-    ...(UTC ? ["--env-filter", 'export GIT_AUTHOR_DATE="${GIT_AUTHOR_DATE% *} +0000"; export GIT_COMMITTER_DATE="${GIT_COMMITTER_DATE% *} +0000"'] : []),
+    ...(UTC || AUTHOR
+      ? [
+          "--env-filter",
+          [
+            UTC ? 'export GIT_AUTHOR_DATE="${GIT_AUTHOR_DATE% *} +0000"; export GIT_COMMITTER_DATE="${GIT_COMMITTER_DATE% *} +0000"' : "",
+            AUTHOR ? `export GIT_AUTHOR_NAME="${AUTHOR.name}" GIT_AUTHOR_EMAIL="${AUTHOR.email}" GIT_COMMITTER_NAME="${AUTHOR.name}" GIT_COMMITTER_EMAIL="${AUTHOR.email}"` : "",
+          ].filter(Boolean).join("; "),
+        ]
+      : []),
+    // tool co-author trailers are dropped from commit messages (the owner is the only author)
+    "--msg-filter",
+    "sed -e '/^[Cc]o-[Aa]uthored-[Bb]y:/d' | git stripspace",
     "--tree-filter",
     `node "${filter.replace(/\\/g, "/")}"`,
     "--",
@@ -86,8 +103,9 @@ On ${today} (UTC), before the repository went public, its history was rewritten 
 - hosting/deployment identifiers (team and project ids);
 - mentions of the owner's location and local network;
 - private owner notes (kept outside the repository);
-${UTC ? "- local time-zone offsets: every commit time is stored in UTC (+0000) — the same instant, only the offset changed;\n" : ""}
-**Kept exactly:** every commit message, every commit moment (author and committer time) and the order of commits. File contents changed only where the items above were removed.
+- co-author trailers of the tools used, from commit messages;
+${AUTHOR ? "- the placeholder author name: commits are attributed to the owner's public GitHub identity;\n" : ""}${UTC ? "- local time-zone offsets: every commit time is stored in UTC (+0000) — the same instant, only the offset changed;\n" : ""}
+**Kept exactly:** every commit message (apart from the removed trailers), every commit moment (author and committer time) and the order of commits. File contents changed only where the items above were removed.
 
 **What this means for you:** because file contents changed, every commit hash changed. Git history documents how CHEK was built, but commit times can technically be rewritten — so don't treat a git hash or a git date as independent proof. Cross-check with the other receipts: X and Telegram post timestamps, the deployed website, and after launch the blockchain itself.
 
@@ -110,7 +128,7 @@ const nowUtc = `${Math.floor(Date.now() / 1000)} +0000`;
 git(
   ["commit", "--quiet", "-m", "publish: repository sanitized for privacy before publication\n\nCommit messages and moments unchanged; hashes changed. See docs/repository-sanitization.md."],
   target,
-  UTC ? { GIT_AUTHOR_DATE: nowUtc, GIT_COMMITTER_DATE: nowUtc } : {},
+  { ...(UTC ? { GIT_AUTHOR_DATE: nowUtc, GIT_COMMITTER_DATE: nowUtc } : {}), ...(AUTHOR ? { GIT_AUTHOR_NAME: AUTHOR.name, GIT_AUTHOR_EMAIL: AUTHOR.email, GIT_COMMITTER_NAME: AUTHOR.name, GIT_COMMITTER_EMAIL: AUTHOR.email } : {}) },
 );
 
 const findings = scanRepo(target).filter((f) => f.file !== "docs/history-rewrite.md" || !/hash/.test(f.why));

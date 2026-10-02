@@ -114,6 +114,16 @@ export async function POST(request) {
       return json({ ok: true });
     }
 
+    // channel joins/leaves: counted per day only (Telegram does not tell bots who subscribes to a channel or why; no names stored)
+    if (u.chat_member && u.chat_member.chat?.type === "channel") {
+      const was = u.chat_member.old_chat_member?.status;
+      const now = u.chat_member.new_chat_member?.status;
+      const inside = (s) => ["member", "administrator", "creator"].includes(s);
+      if (!inside(was) && inside(now)) await bump(u.chat_member.invite_link ? "tg_joins_invite_link" : "tg_joins");
+      if (inside(was) && !inside(now)) await bump("tg_leaves");
+      return json({ ok: true });
+    }
+
     const m = u.message;
     if (!m || m.chat.type !== "private" || !m.text) return json({ ok: true });
     const [cmd, arg] = m.text.trim().split(/\s+/, 2);

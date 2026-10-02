@@ -19,6 +19,7 @@ export function statusTable(p) {
     `| **Official website** | ${p.links.website} |`,
     ...(p.links.x ? [`| **X** | ${p.links.x} |`] : []),
     ...(p.links.telegram ? [`| **Telegram** | ${p.links.telegram} |`] : []),
+    ...(p.links.github ? [`| **Source** | ${p.links.github} (history sanitized once for privacy — see docs/repository-sanitization.md) |`] : []),
     `| **Token** | **${live ? `LAUNCHED on ${p.token.launchPlatform}` : "NOT LAUNCHED"}** |`,
     `| **Contract address (CA)** | ${live ? `\`${p.token.ca}\`` : "**DOES NOT EXIST YET**"} |`,
     `| **Public since** | ${day} (UTC) |`,

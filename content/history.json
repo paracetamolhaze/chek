@@ -168,6 +168,15 @@
       "proof": {
         "label": "config/project.json"
       }
+    },
+    {
+      "date": "2026-10-02T00:53:40Z",
+      "title": "Repository public on GitHub",
+      "detail": "The full source and build history are public. Before publication the history was rewritten for privacy — personal paths, hosting ids, location, time-zone offsets and a placeholder author name were removed; commit messages and moments were kept. A first published version was replaced a few minutes later (author name, co-author lines). The hashes in this log are the published ones.",
+      "proof": {
+        "label": "docs/repository-sanitization.md",
+        "href": "https://github.com/paracetamolhaze/chek/blob/main/docs/repository-sanitization.md"
+      }
     }
   ]
 }

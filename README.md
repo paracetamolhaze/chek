@@ -11,6 +11,7 @@
 | **Official website** | https://www.chekcoinsol.xyz |
 | **X** | https://x.com/chekcoinsol |
 | **Telegram** | https://t.me/chekcoinsol |
+| **Source** | https://github.com/paracetamolhaze/chek (history sanitized once for privacy — see docs/repository-sanitization.md) |
 | **Token** | **NOT LAUNCHED** |
 | **Contract address (CA)** | **DOES NOT EXIST YET** |
 | **Public since** | 01 Oct 2026 (UTC) |

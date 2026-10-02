@@ -177,7 +177,7 @@ export function audit() {
   const histStrings = F.history.flatMap((e) => [e.title, e.detail, e.correction?.note].filter(Boolean).map((s) => visibleText(s)));
   const current = (text) => histStrings.reduce((t, s) => t.split(s).join(" "), text);
   for (const [where, text] of Object.entries(all)) {
-    if (/CHANGELOG/.test(where)) continue;
+    if (/CHANGELOG|history-rewrite/.test(where)) continue;
     for (const [re, n, what] of want) for (const m of current(text).matchAll(re)) if (Number(m[1]) !== n) cnt.push(`${where}: “${m[0]}” but there are ${n} ${what}`);
   }
   for (const [where, text] of Object.entries(all)) if (/\b\d+ (?:automatic|automated) checks\b/i.test(current(text))) cnt.push(`${where}: hard-coded check count — the only source is content/checks.json`);

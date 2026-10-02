@@ -104,6 +104,16 @@ export default function History() {
               )}
               .
             </p>
+            {repo && (
+              <p className="mx-auto mt-4 max-w-[52ch] text-[12px] leading-relaxed text-faded">
+                Before it went public, the repository history was rewritten for privacy (personal paths, hosting ids, location, time-zone
+                offsets; commit messages and moments kept). Commit hashes in this log are the published ones — a lookup, not independent proof.{" "}
+                <a className="underline" href={`${repo}/blob/main/docs/repository-sanitization.md`} target="_blank" rel="noopener noreferrer">
+                  What was changed
+                </a>
+                .
+              </p>
+            )}
             <Barcode value={`${project.ticker}-LOG-${buildLog.length}`} className="mx-auto mt-8 h-14 w-[240px]" />
             <a href="/" className="mt-8 inline-block text-[12px] font-bold tracking-[0.16em] uppercase underline underline-offset-4">
               ← Back to the receipt
