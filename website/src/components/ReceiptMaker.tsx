@@ -106,20 +106,76 @@ export function ReceiptMaker({ site, host, handle }: { site: string; host: strin
     ? `https://x.com/intent/post?text=${encodeURIComponent(shareText(r.claim, handle))}&url=${encodeURIComponent(link)}&via=${encodeURIComponent(handle.replace(/^@/, ""))}`
     : "";
 
+  // The receipt PNG (square), fetched once per receipt and reused by Share / Download.
+  const pngCache = useRef<{ key: string; blob: Promise<Blob> } | null>(null);
+  function receiptPng(): Promise<Blob> {
+    const key = claimQuery(r, { short: false });
+    if (pngCache.current?.key !== key) {
+      const blob = fetch(`/api/image?${key}&format=square`).then(async (res) => {
+        if (!res.ok) {
+          const msg = await res.json().then((d: { error?: string }) => d.error ?? "").catch(() => "");
+          throw new Error(res.status === 400 && msg ? msg : "");
+        }
+        return res.blob();
+      });
+      blob.catch(() => (pngCache.current = null));
+      pngCache.current = { key, blob };
+    }
+    return pngCache.current.blob;
+  }
+  // warm the image as soon as a receipt is valid, so sharing is instant
+  useEffect(() => {
+    if (!r.ok || !ready) return;
+    const t = setTimeout(() => receiptPng().catch(() => {}), 900);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [r.ok, ready, query]);
+
+  // X can't take an image through a link, so the image travels another way:
+  //  · phones: the system share sheet with the PNG attached (the visitor picks X there);
+  //  · computers: the PNG goes to the clipboard, X opens with the text, Ctrl+V pastes the receipt into the post.
+  // The link in the text still unfurls into the receipt card for everyone who sees the post.
+  async function shareX(e: React.MouseEvent) {
+    if (!r.ok) return;
+    e.preventDefault();
+    hit("share");
+    const text = `${shareText(r.claim, handle)} ${link} via ${handle}`;
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+    if (touch && typeof navigator.canShare === "function") {
+      try {
+        const file = new File([await receiptPng()], `chek-receipt-${code}.png`, { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text });
+          return;
+        }
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+      }
+      window.open(xHref, "_blank", "noopener");
+      return;
+    }
+    let copiedImage = false;
+    try {
+      if (typeof ClipboardItem !== "undefined") {
+        await Promise.race([
+          navigator.clipboard.write([new ClipboardItem({ "image/png": receiptPng() })]),
+          new Promise((_, no) => setTimeout(() => no(new Error("slow")), 3500)),
+        ]);
+        copiedImage = true;
+      }
+    } catch {}
+    setNote(copiedImage ? "Receipt image copied — press Ctrl+V (⌘V) in the X post to attach it." : "Tip: download the PNG and attach it to your post.");
+    const w = window.open(xHref, "_blank");
+    if (w) w.opener = null;
+    else setNote((n) => `${n} If X didn't open, allow pop-ups for this site.`);
+  }
+
   async function download() {
     if (!r.ok || busy) return;
     setBusy(true);
     setNote("");
     try {
-      const res = await fetch(`/api/image?${claimQuery(r, { short: false })}&format=square`);
-      if (!res.ok) {
-        const msg = await res
-          .json()
-          .then((d: { error?: string }) => d.error ?? "")
-          .catch(() => "");
-        throw new Error(res.status === 400 && msg ? msg : "");
-      }
-      const url = URL.createObjectURL(await res.blob());
+      const url = URL.createObjectURL(await receiptPng());
       const a = document.createElement("a");
       a.href = url;
       a.download = `chek-receipt-${code}.png`;
@@ -307,7 +363,7 @@ export function ReceiptMaker({ site, host, handle }: { site: string; host: strin
       <section aria-label="Share" className="min-w-0 lg:col-start-1 lg:row-start-2">
         <div className="flex flex-wrap gap-3">
           {r.ok ? (
-            <a href={xHref} target="_blank" rel="noopener noreferrer" onClick={() => hit("share")} className={`${btn} bg-marker text-ink hover:bg-paper`}>
+            <a href={xHref} target="_blank" rel="noopener noreferrer" onClick={shareX} className={`${btn} bg-marker text-ink hover:bg-paper`}>
               <XLogo className="size-4" /> Share on X
             </a>
           ) : (
