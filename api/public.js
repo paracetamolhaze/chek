@@ -11,7 +11,10 @@ import { creatorPosition } from "../server/lib/onchain.js";
 import { listReceipts, publicReceipt } from "../server/lib/receipts.js";
 import { enterXDrop } from "../server/lib/xdrop.js";
 
-const EVENTS = { gen: "rg_gen", share: "rg_share", download: "rg_download", copy: "rg_copy", visit_x: "visit_x", visit_tg: "visit_tg", visit_other: "visit_other" };
+const EVENTS = { gen: "rg_gen", share: "rg_share", download: "rg_download", copy: "rg_copy", visit_x: "visit_x", visit_tg: "visit_tg", visit_other: "visit_other", visit_direct: "visit_direct" };
+for (const s of ["home", "drop", "print", "receipts", "transparency", "other"]) EVENTS[`pv_${s}`] = `pv_${s}`;
+// X drop form outcomes (counts only — which step people get stuck on)
+const XDROP = new Set(["ok", "closed", "bad_link", "slow_down", "not_found", "ours", "not_reply", "too_early", "no_address", "already", "other_wallet", "taken"]);
 
 export async function GET(request) {
   return handle(async () => {
@@ -40,7 +43,13 @@ export async function POST(request) {
     if (op === "x_drop") {
       const b = await readJson(request, 2000).catch(() => ({}));
       const ip = (request.headers.get("x-forwarded-for") || "").split(",")[0].trim();
-      return json(await enterXDrop(b?.link, ip));
+      const r = await enterXDrop(b?.link, ip).catch(async (e) => {
+        await bump("xdrop_error").catch(() => {});
+        throw e;
+      });
+      const k = r.ok ? "ok" : r.error;
+      if (XDROP.has(k)) await bump(`xdrop_${k}`);
+      return json(r);
     }
     if (op !== "hit") throw new AppError(404, "unknown op");
     const b = await readJson(request).catch(() => ({}));
