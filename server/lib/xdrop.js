@@ -1,17 +1,14 @@
 // X drop: one entry = the public link of your reply to @chekcoinsol that contains your Solana address.
 // The reply is read through X's public embed endpoint (the one embedded posts on websites use): no X account,
 // no API key, nothing is posted or liked. Follow and repost are asked in the posts but cannot be checked this way.
-import { createHash } from "node:crypto";
 import { isPubkey } from "../../shared/solana-inspect.mjs";
 import { bump, getSetting } from "./core.js";
 import { db } from "./db.js";
-import { env } from "./env.js";
 import { project } from "./project.js";
 import { roundOf, roundPosts } from "./draw.js";
 
 const STATUS = /^(?:https?:\/\/)?(?:www\.|mobile\.)?(?:x|twitter)\.com\/(?:[A-Za-z0-9_]{1,15}|i(?:\/web)?)\/status(?:es)?\/(\d{5,25})/i;
 const ADDR = /\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/g;
-const PER_10_MIN = 10;
 
 export const replyIdOf = (link) => String(link ?? "").trim().match(STATUS)?.[1] ?? null;
 
@@ -25,17 +22,6 @@ export async function fetchPost(id) {
   if (!r.ok) throw new Error(`x embed ${r.status}`);
   const t = await r.json().catch(() => null);
   return t?.__typename === "Tweet" ? t : null; // deleted / protected posts come back as tombstones
-}
-
-// Salted hash of the caller's IP, kept one day for the rate limit only.
-async function tooMany(ip) {
-  const key = createHash("sha256").update(`${env.appSecret}:xdrop:${ip || "?"}`).digest("hex").slice(0, 32);
-  const sql = await db();
-  const [{ n }] = await sql`select count(*)::int as n from chek.rate_hits where key = ${key} and at > now() - interval '10 minutes'`;
-  if (n >= PER_10_MIN) return true;
-  await sql`insert into chek.rate_hits (key) values (${key})`;
-  if (Math.random() < 0.05) await sql`delete from chek.rate_hits where at < now() - interval '1 day'`;
-  return false;
 }
 
 export async function dropClosed(p = project()) {
@@ -62,7 +48,7 @@ export async function enterXDrop(link, ip) {
   if (!d?.x || d.status !== "open" || (launchedAt && Date.now() > Date.parse(launchedAt) + 48 * 3600e3)) return { error: "closed" };
   const id = replyIdOf(link);
   if (!id) return { error: "bad_link" };
-  if (await tooMany(ip)) return { error: "slow_down" };
+  // no per-IP limit (owner: farms are fine)
   const t = await fetchPost(id);
   if (!t?.user?.id_str) return { error: "not_found" };
   const ours = (p.accounts?.x?.handle ?? "chekcoinsol").toLowerCase();
