@@ -24,8 +24,8 @@ export async function tg(method, body = {}) {
 // "@chekcoin" from "https://t.me/chekcoin"
 export const chatFromLink = (link) => (link ? `@${link.replace(/^https?:\/\/t\.me\//, "").replace(/\/.*/, "")}` : null);
 
-const isVideo = (u) => /\.(mp4|mov)$/i.test(u);
-const isGif = (u) => /\.gif$/i.test(u);
+const isVideo = (u) => /\.(mp4|mov)($|\?)/i.test(u);
+const isGif = (u) => /\.gif($|\?)/i.test(u);
 
 // Publish one queue item (text, optional media by public URL, optional poll). Returns the message.
 export async function publishTelegram({ chat, parts, mediaUrl = null, poll = null, pin = false, silent = false }) {

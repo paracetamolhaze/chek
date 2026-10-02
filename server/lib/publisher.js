@@ -13,7 +13,10 @@ import { publishX, xReady } from "./x.js";
 import { handoffX, ownerAwake } from "./xhandoff.js";
 
 const MEDIA_DIRS = /^content\/(mascot|memes|animations)\//;
-export const mediaUrl = (asset) => (asset && MEDIA_DIRS.test(asset) ? `${env.siteUrl}/media/${asset.replace(/^content\//, "")}` : null);
+// ?v=<deployment>: Telegram caches files fetched by URL, so a re-rendered video would otherwise arrive in its old version
+const MEDIA_V = process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_URL || "";
+export const mediaUrl = (asset) =>
+  asset && MEDIA_DIRS.test(asset) ? `${env.siteUrl}/media/${asset.replace(/^content\//, "")}${MEDIA_V ? `?v=${encodeURIComponent(MEDIA_V)}` : ""}` : null;
 const mediaOf = (row, out = null) => {
   const raw = out ? out.imageUrl : row.payload.imageUrl;
   const img = raw && !raw.includes("{{") ? raw : null;

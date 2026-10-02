@@ -269,17 +269,27 @@
       "slot": "D1 12:15",
       "category": "community",
       "status": "ready",
-      "text": "🎁 CHEK DROP · ROUND 1\n\n{{X_ROUND_WINNERS}} winners × {{X_ROUND_EACH}} $CHEKD from replies under THIS post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\n1. follow @chekcoinsol\n2. repost this\n3. reply with your SOL address, then paste your reply link at {{SITE}}/drop\n\nnew round every few hours.",
+      "text": "🎁 CHEK GIVEAWAY · ROUND 1\n\n{{X_ROUND_WINNERS}} winners × {{X_ROUND_EACH}} $CHEKD from replies under THIS post\n+ airdrop: the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\n1. follow @chekcoinsol\n2. repost this\n3. reply with your SOL address, then paste your reply link at {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
-      "note": "X drop round 1",
+      "note": "X drop round 1 — first version, posted with the old video and no keywords, deleted by the owner",
       "publishAfter": "2026-10-02T12:15:00.000Z"
+    },
+    {
+      "id": "xg-105",
+      "slot": "D1 12:50",
+      "category": "community",
+      "status": "ready",
+      "text": "🎁 CHEK GIVEAWAY · ROUND 1\n\n{{X_ROUND_WINNERS}} winners × {{X_ROUND_EACH}} $CHEKD from replies under THIS post\n+ airdrop: the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\n1. follow @chekcoinsol\n2. repost this\n3. reply with your SOL address, then paste your reply link at {{SITE}}/drop\n\n#Solana #airdrop",
+      "asset": "content/animations/v07-receipt-drop.png",
+      "note": "X drop round 1, re-posted with keywords and the rounds video (the first ROUND 1 post was deleted by the owner)",
+      "publishAfter": "2026-10-02T12:50:00.000Z"
     },
     {
       "id": "xg-104",
       "slot": "D1 14:30",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 2 of the CHEK drop 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD, drawn only from the replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow, repost, reply with your SOL address → paste the reply link at {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "ROUND 2 of the CHEK giveaway 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD, drawn only from the replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow, repost, reply with your SOL address → paste the reply link at {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.png",
       "note": "X drop round 2",
       "publishAfter": "2026-10-02T14:30:00.000Z"
@@ -289,7 +299,7 @@
       "slot": "D1 17:30",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 3 🎁 {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n\nfollow + repost, reply with your SOL address, paste the reply link at {{SITE}}/drop — the site checks the public reply itself.\n\ntokens are SENT. no claim site, no wallet connect, no fees.\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 3 🎁 {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here\n\nfollow + repost, reply with your SOL address, paste the reply link at {{SITE}}/drop — the site checks the public reply itself.\n\ntokens are SENT. no claim site, no wallet connect, no fees.\n\n#Solana #airdrop",
       "asset": "content/memes/03-never-dm-first.png",
       "note": "X drop round 3",
       "publishAfter": "2026-10-02T17:30:00.000Z"
@@ -309,7 +319,7 @@
       "slot": "D2 05:00",
       "category": "community",
       "status": "ready",
-      "text": "gm. ROUND 4 of the CHEK drop 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every round is a new draw — in round 1 already? reply here too.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "gm. ROUND 4 of the CHEK giveaway 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every round is a new draw — in round 1 already? reply here too.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 4",
       "publishAfter": "2026-10-03T05:00:00.000Z"
@@ -319,7 +329,7 @@
       "slot": "D2 09:00",
       "category": "community",
       "status": "ready",
-      "text": "two kinds of airdrops:\n\n“connect your wallet to claim” → VOID\n“tokens sent to your address, receipt published” → ours ✅\n\nROUND 5: {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "two kinds of airdrops:\n\n“connect your wallet to claim” → VOID\n“tokens sent to your address, receipt published” → ours ✅\n\nGIVEAWAY ROUND 5: {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/memes/04-ca-chek.png",
       "note": "X drop round 5",
       "publishAfter": "2026-10-03T09:00:00.000Z"
@@ -329,7 +339,7 @@
       "slot": "D2 13:00",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 6 🧾 why the drop comes from the creator's own bag:\n\nteam allocation: 0%. the creator buys at launch like everyone; part of that buy goes to you.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here.\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 6 🧾 why it comes from the creator's own bag:\n\nteam allocation: 0%. the creator buys at launch like everyone; part of that goes to you.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here.\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "note": "X drop round 6",
       "publishAfter": "2026-10-03T13:00:00.000Z"
     },
@@ -348,7 +358,7 @@
       "slot": "D2 21:00",
       "category": "community",
       "status": "ready",
-      "text": "late-night ROUND 7 from register #4 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. {{X_ENTRIES}} accounts in the drop so far.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "late-night GIVEAWAY ROUND 7 from register #4 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. {{X_ENTRIES}} accounts in the drop so far.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/mascot/03-void.png",
       "note": "X drop round 7",
       "publishAfter": "2026-10-03T21:00:00.000Z"
@@ -358,7 +368,7 @@
       "slot": "D3 05:00",
       "category": "community",
       "status": "ready",
-      "text": "gm 🧾 day {{DAY_N}} of receipts. ROUND 8 is open.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "gm 🧾 day {{DAY_N}} of receipts. GIVEAWAY ROUND 8 is open.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 8",
       "publishAfter": "2026-10-04T05:00:00.000Z"
@@ -368,7 +378,7 @@
       "slot": "D3 09:00",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 9 checklist 🎁\n\n✅ follow @chekcoinsol\n✅ repost this\n✅ reply with your SOL address\n✅ paste your reply link at {{SITE}}/drop\n❌ seed phrase\n❌ wallet connect\n❌ fees\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here.\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 9 checklist 🎁\n\n✅ follow @chekcoinsol\n✅ repost this\n✅ reply with your SOL address\n✅ paste your reply link at {{SITE}}/drop\n❌ seed phrase\n❌ wallet connect\n❌ fees\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies here.\n\n#Solana #airdrop",
       "asset": "content/memes/09-vibe-chek.png",
       "note": "X drop round 9",
       "publishAfter": "2026-10-04T09:00:00.000Z"
@@ -388,7 +398,7 @@
       "slot": "D3 17:00",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 10 🧾 {{X_ENTRIES}} accounts in the CHEK drop so far.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every round is its own draw, so a reply under a new round is a new ticket.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 10 🧾 {{X_ENTRIES}} accounts in the CHEK drop so far.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every round is its own draw, so a reply under a new round is a new ticket.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 10",
       "publishAfter": "2026-10-04T17:00:00.000Z"
@@ -398,7 +408,7 @@
       "slot": "D3 21:00",
       "category": "community",
       "status": "ready",
-      "text": "the shredder deletes evidence. we publish it.\n\nROUND 11: {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every transfer gets its own on-chain receipt.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "the shredder deletes evidence. we publish it.\n\nGIVEAWAY ROUND 11: {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. every transfer gets its own on-chain receipt.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/memes/05-the-shredder.png",
       "note": "X drop round 11",
       "publishAfter": "2026-10-04T21:00:00.000Z"
@@ -408,7 +418,7 @@
       "slot": "D4 05:00",
       "category": "community",
       "status": "ready",
-      "text": "gm. ROUND 12 of the CHEK drop 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post, from the creator's launch buy\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "gm. ROUND 12 of the CHEK giveaway 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post, from the creator's launch buy\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 12",
       "publishAfter": "2026-10-05T05:00:00.000Z"
@@ -428,7 +438,7 @@
       "slot": "D4 13:00",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 13 in one line:\n\nrepost → reply with your address → link at {{SITE}}/drop → draw after launch → tokens sent → receipt published.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. follow @chekcoinsol.\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 13 in one line:\n\nrepost → reply with your address → link at {{SITE}}/drop → draw after launch → tokens sent → receipt published.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. follow @chekcoinsol.\n\n#Solana #airdrop",
       "asset": "content/mascot/04-you-bought-what.png",
       "note": "X drop round 13",
       "publishAfter": "2026-10-05T13:00:00.000Z"
@@ -438,7 +448,7 @@
       "slot": "D4 17:00",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 14 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. draws run 24h after launch with a solana blockhash as the seed — anyone can re-run them.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 14 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. draws run 24h after launch with a solana blockhash as the seed — anyone can re-run them.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.png",
       "note": "X drop round 14",
       "publishAfter": "2026-10-05T17:00:00.000Z"
@@ -448,7 +458,7 @@
       "slot": "D4 21:00",
       "category": "community",
       "status": "ready",
-      "text": "pics or it didn't happen ❌\nairdrops or it didn't happen ❌\nreceipts or it didn't happen ✅\n\nROUND 15: {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post.\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "pics or it didn't happen ❌\nairdrops or it didn't happen ❌\nreceipts or it didn't happen ✅\n\nGIVEAWAY ROUND 15: {{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post.\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/memes/02-pics-vs-receipts.png",
       "note": "X drop round 15",
       "publishAfter": "2026-10-05T21:00:00.000Z"
@@ -468,7 +478,7 @@
       "slot": "D5 09:00",
       "category": "community",
       "status": "ready",
-      "text": "launch day. ROUND 16 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. nobody from chek will DM you about the drop. ever.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "launch day. GIVEAWAY ROUND 16 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. nobody from chek will DM you about the drop. ever.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/memes/03-never-dm-first.png",
       "note": "X drop round 16",
       "publishAfter": "2026-10-06T09:00:00.000Z"
@@ -478,7 +488,7 @@
       "slot": "T+3h",
       "category": "community",
       "status": "ready",
-      "text": "$CHEKD is live. ROUND 17 of the drop is open 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. entries close 24h after launch.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "$CHEKD is live. ROUND 17 of the giveaway is open 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. entries close 24h after launch.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 17",
       "publishAfter": null
@@ -488,7 +498,7 @@
       "slot": "T+7h",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 18 🧾 {{X_ENTRIES}} accounts in the X drop.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 18 🧾 {{X_ENTRIES}} accounts in the X drop.\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post\n+ the first {{X_AIRDROP}} accounts get {{X_AIRDROP_EACH}} each\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.png",
       "note": "X drop round 18",
       "publishAfter": null
@@ -508,7 +518,7 @@
       "slot": "T+15h",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 19. 9 hours left in the drop 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 19. 9 hours left in the drop 🧾\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/animations/v07-receipt-drop.mp4",
       "note": "X drop round 19",
       "publishAfter": null
@@ -518,7 +528,7 @@
       "slot": "T+20h",
       "category": "community",
       "status": "ready",
-      "text": "ROUND 20, the last one 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. 4 hours left — then the draw seed is taken from a solana block and the transfer receipts start printing.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
+      "text": "GIVEAWAY ROUND 20, the last one 🎁\n\n{{X_ROUND_WINNERS}} × {{X_ROUND_EACH}} $CHEKD from replies under this post. 4 hours left — then the draw seed is taken from a solana block and the transfer receipts start printing.\n\nfollow + repost + reply with your SOL address → {{SITE}}/drop\n\n#Solana #airdrop",
       "asset": "content/mascot/01-printing.png",
       "note": "X drop round 20",
       "publishAfter": null

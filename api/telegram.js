@@ -15,6 +15,7 @@ import { renderClaimReceipt } from "../server/lib/render.js";
 import { tg } from "../server/lib/telegram.js";
 import { attachLink, confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
 import { dropClosed } from "../server/lib/xdrop.js";
+import { refreshRoundLinks } from "../server/lib/roundlinks.js";
 import { isPubkey } from "../shared/solana-inspect.mjs";
 import { chatFromLink } from "../server/lib/telegram.js";
 
@@ -224,6 +225,8 @@ export async function POST(request) {
       const done = id ? await confirmPosted(id, m.text.trim(), owner) : { ok: false };
       // ✅ was tapped first → the link still belongs to the post just logged
       const late = !id ? await attachLink(m.text.trim()) : null;
+      // a drop round got its link → channel posts that point to the latest round follow it
+      if (/^xg-/.test(late || (done.published ? id : ""))) await refreshRoundLinks().catch(() => {});
       await reply(
         m.chat.id,
         late ? `🔗 Link saved for ${late}.` : !done.ok ? "No X post is waiting for a link right now." : done.published ? `✅ ${id} logged as posted.` : `Got it — part ${done.next} is above.`,

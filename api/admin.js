@@ -150,6 +150,8 @@ export async function POST(request) {
         await audit("owner", "post.now", "ok", { ref: row.id });
         return json({ ok: true, result: await runPublisher(new Date(), { ids: [row.id], platforms: [row.platform] }) });
       }
+      case "tg_round_links":
+        return json({ ok: true, edited: await (await import("../server/lib/roundlinks.js")).refreshRoundLinks() });
       case "x_skip": {
         // withdraw an X post already handed to the owner (same as the owner's ⏭ Skip button)
         const ok = await skipHandoff(String(b.id));
