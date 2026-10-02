@@ -8,7 +8,9 @@ import { tick } from "../server/lib/jobs.js";
 import { decide } from "../server/lib/publisher.js";
 import { reschedule, syncSeed } from "../server/lib/queue.js";
 import { syncBuildLog } from "../server/lib/receipts.js";
-import { notifyOwner, tg } from "../server/lib/telegram.js";
+import { notifyOwner, setChannelDescription, tg } from "../server/lib/telegram.js";
+import { placeholders } from "../shared/content-core.mjs";
+import { project as loadProject, withLiveToken } from "../server/lib/project.js";
 import { xAccount } from "../server/lib/x.js";
 import { agentStatus } from "../server/lib/llm.js";
 import { confirmLaunch } from "../server/lib/launch.js";
@@ -105,10 +107,20 @@ export async function POST(request) {
         const s = await getSetting("schedule");
         if (b.d1 && !/^\d{4}-\d{2}-\d{2}$/.test(b.d1)) throw new AppError(400, "bad d1");
         if (b.launchAt && Number.isNaN(Date.parse(b.launchAt))) throw new AppError(400, "bad launchAt");
-        // the launch time is announced ≥ 24 h before the mint (announcement slot T-26h)
-        if (b.launchAt && Date.parse(b.launchAt) - Date.now() < 26 * 3600e3 && !b.allowShortNotice) throw new AppError(409, "launch time must be ≥ 26 h away so the announcement goes out ≥ 24 h before the mint");
+        // the launch time is announced ≥ 24 h before the mint: it must be ≥ 24.5 h away, and the announcement goes out at once
+        if (b.launchAt && Date.parse(b.launchAt) - Date.now() < 24.5 * 3600e3 && !b.allowShortNotice) throw new AppError(409, "launch time must be ≥ 24.5 h away so the announcement goes out ≥ 24 h before the mint");
         await setSetting("schedule", { ...s, ...(b.d1 ? { d1: b.d1 } : {}), ...(b.launchAt !== undefined ? { launchAt: b.launchAt ? new Date(b.launchAt).toISOString() : null } : {}) });
-        return json({ ok: true, rescheduled: await reschedule() });
+        const rescheduled = await reschedule();
+        // announcement slot T-26h already behind us (owner confirmed later than that) → it goes out now
+        const sql = await db();
+        const now = await sql`update chek.queue set publish_after = now(), updated_at = now() where slot = 'T-26h' and status in ('ready','review','approved') and publish_after < now() returning id`;
+        return json({ ok: true, rescheduled, announceNow: now.map((r) => r.id) });
+      }
+      case "tg_channel_description": {
+        const p = withLiveToken(loadProject(), await getSetting("token_live"));
+        const text = await setChannelDescription(p, placeholders(p, await getSetting("schedule")));
+        await audit("owner", "telegram.channel_description", "ok", { detail: { text } });
+        return json({ ok: true, text });
       }
       case "decide":
         return json({ ok: true, row: await decide(String(b.id), Boolean(b.approve), "dashboard") });

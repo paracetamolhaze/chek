@@ -88,6 +88,15 @@ export async function confirmLaunch(ca, by = "owner") {
   const x = await runPublisher(now, { ids: ["x-310"], platforms: ["x"] }).catch((e) => ({ error: e.message }));
   const tg = await runPublisher(now, { ids: ["tg-310"], platforms: ["telegram"] }).catch((e) => ({ error: e.message }));
   await audit("launch", "launch.announced", "ok", { ref: ca, detail: { x, tg } });
+  try {
+    const { placeholders } = await import("../../shared/content-core.mjs");
+    const { setChannelDescription } = await import("./telegram.js");
+    const { withLiveToken } = await import("./project.js");
+    const lp = withLiveToken(p, live);
+    await setChannelDescription(lp, placeholders(lp, await getSetting("schedule")));
+  } catch (e) {
+    await alert("warn", "tg_description", `Channel description not updated at launch: ${e.message}`);
+  }
 
   // X not connected or the post failed → the owner gets the exact launch post with a one-tap “open in X” button
   if (x?.x?.published !== "x-310") {

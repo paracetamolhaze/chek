@@ -69,3 +69,16 @@ export async function notifyOwner(ownerId, text, buttons = null) {
     reply_markup: buttons ? { inline_keyboard: buttons } : undefined,
   });
 }
+
+// Channel description from content/telegram/queue.json (pre-launch or live version). Needs the bot's "change info" right.
+export async function setChannelDescription(project, values) {
+  const { fill } = await import("../../shared/content-core.mjs");
+  const { seedQueue } = await import("./project.js");
+  const setup = seedQueue().telegram.setup.channel;
+  const template = values.CA ? setup.descriptionLive : setup.description;
+  const text = fill(template, values);
+  if (text.missing.length) throw new Error(`description needs ${text.missing.join(", ")}`);
+  if ([...text.text].length > 255) throw new Error("description longer than 255 characters");
+  await tg("setChatDescription", { chat_id: chatFromLink(project.links.telegram), description: text.text });
+  return text.text;
+}

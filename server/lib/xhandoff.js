@@ -44,7 +44,8 @@ export async function handoffX(row, out, media, settings) {
   const sql = await db();
   const owner = settings.owner?.telegramUserId;
   if (!owner) return false;
-  if (!ownerAwake(settings)) return false; // no hand-overs at night; the post waits for the morning
+  // no hand-overs at night — except the launch sequence and the launch-time announcement, which must not wait
+  if (!ownerAwake(settings) && !row.payload.launch && row.slot !== "T-26h") return false;
   const [open] = await sql`select id, payload from chek.queue where platform = 'x' and status = 'publishing' and payload ? 'handoff' limit 1`;
   if (open) return false;
   const h = { sentAt: new Date().toISOString(), part: 0, parts: out.parts, links: [], media };
