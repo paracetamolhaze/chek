@@ -13,6 +13,7 @@ import { runPublisher } from "./publisher.js";
 import { enqueue } from "./queue.js";
 import { chatFromLink, notifyOwner, tg } from "./telegram.js";
 import { mentions, xReady } from "./x.js";
+import { expireHandoffs } from "./xhandoff.js";
 import { checkClaim } from "../../shared/claim.mjs";
 
 // Telegram turns itself on once the owner made the bot an admin of the channel (post + edit/pin rights).
@@ -101,6 +102,7 @@ async function dryWatch() {
 const JOBS = [
   { name: "tg_rights", everyMin: 30, run: telegramRights },
   { name: "ai_expire", everyMin: 15, run: expireJobs },
+  { name: "x_handoff_expire", everyMin: 15, run: expireHandoffs },
   { name: "publisher", everyMin: 0, run: runPublisher },
   { name: "onchain", everyMin: 5, run: runWatcher },
   { name: "news_fetch", everyMin: 120, run: fetchFeeds },

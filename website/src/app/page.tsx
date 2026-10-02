@@ -170,8 +170,8 @@ export default function Home() {
           </header>
 
           {/* 01 WHAT */}
-          <section id="what" data-mood="what" className="scroll-mt-24 pt-14" aria-labelledby="what-title">
-            <SectionHead n="01" id="what-title" title={`What is ${project.name}?`} kicker="10-second version" />
+          <section data-mood="what" className="pt-14" aria-labelledby="what-title">
+            <SectionHead n="01" id="what-title" anchor="what" title={`What is ${project.name}?`} kicker="10-second version" />
             <div className="grid gap-10 md:grid-cols-[1.25fr_1fr]">
               <div className="reveal space-y-4 text-[15px] leading-relaxed">
                 <p>
@@ -214,8 +214,8 @@ export default function Home() {
           </section>
 
           {/* 02 STORY */}
-          <section id="story" data-mood="story" className="scroll-mt-24 pt-20" aria-labelledby="story-title">
-            <SectionHead n="02" id="story-title" title="The story" kicker="Lore · ongoing" />
+          <section data-mood="story" className="pt-20" aria-labelledby="story-title">
+            <SectionHead n="02" id="story-title" anchor="story" title="The story" kicker="Lore · ongoing" />
             <ol className="space-y-2">
               {lore.map((c) => (
                 <li key={c.ch} className="reveal grid grid-cols-[72px_1fr] gap-4 border-b-2 border-dotted border-ink/20 py-5 sm:grid-cols-[110px_1fr] sm:gap-7">
@@ -234,8 +234,8 @@ export default function Home() {
           </section>
 
           {/* 03 WHY */}
-          <section id="why" data-mood="why" className="scroll-mt-24 pt-20" aria-labelledby="why-title">
-            <SectionHead n="03" id="why-title" title="Why does this exist?" kicker="Honest answer" />
+          <section data-mood="why" className="pt-20" aria-labelledby="why-title">
+            <SectionHead n="03" id="why-title" anchor="why" title="Why does this exist?" kicker="Honest answer" />
             <p className="reveal max-w-[60ch] text-lg leading-snug font-bold [font-stretch:100%] sm:text-xl">
               Because most meme coins ask you to trust them. We&apos;d rather show receipts.
             </p>
@@ -251,8 +251,8 @@ export default function Home() {
           </section>
 
           {/* 04 UTILITY */}
-          <section id="utility" data-mood="utility" className="scroll-mt-24 pt-20" aria-labelledby="utility-title">
-            <SectionHead n="04" id="utility-title" title="What can you do with it?" kicker="Live vs planned" />
+          <section data-mood="utility" className="pt-20" aria-labelledby="utility-title">
+            <SectionHead n="04" id="utility-title" anchor="utility" title="What can you do with it?" kicker="Live vs planned" />
             <p className="reveal max-w-[62ch] text-[15px] leading-relaxed">
               {T} is a membership badge for a meme community. Here&apos;s what exists today and what comes next — labelled honestly. Nothing
               marked <Tag kind="planned" /> exists yet.
@@ -293,8 +293,8 @@ export default function Home() {
           </div>
 
           {/* 05 TOKENOMICS */}
-          <section id="tokenomics" data-mood="tokenomics" className="scroll-mt-24 pt-20" aria-labelledby="tokenomics-title">
-            <SectionHead n="05" id="tokenomics-title" title="Tokenomics" kicker="Itemized" />
+          <section data-mood="tokenomics" className="pt-20" aria-labelledby="tokenomics-title">
+            <SectionHead n="05" id="tokenomics-title" anchor="tokenomics" title="Tokenomics" kicker="Itemized" />
             {!isLive && (
               <div className="reveal mb-6 flex flex-wrap items-center gap-4">
                 <Stamp rotate={-4} className="text-base">Final data at launch</Stamp>
@@ -342,8 +342,8 @@ export default function Home() {
           </section>
 
           {/* 06 TRANSPARENCY */}
-          <section id="transparency" data-mood="transparency" className="scroll-mt-24 pt-20" aria-labelledby="transparency-title">
-            <SectionHead n="06" id="transparency-title" title="Transparency" kicker="Only what you can check" />
+          <section data-mood="transparency" className="pt-20" aria-labelledby="transparency-title">
+            <SectionHead n="06" id="transparency-title" anchor="transparency" title="Transparency" kicker="Only what you can check" />
             <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
               <OfficialRecord className="reveal" />
               <div className="reveal">
@@ -364,8 +364,8 @@ export default function Home() {
           </section>
 
           {/* 07 HOW TO BUY */}
-          <section id="buy" data-mood="buy" className="scroll-mt-24 pt-20" aria-labelledby="buy-title">
-            <SectionHead n="07" id="buy-title" title="How to buy" kicker="5 steps" />
+          <section data-mood="buy" className="pt-20" aria-labelledby="buy-title">
+            <SectionHead n="07" id="buy-title" anchor="buy" title="How to buy" kicker="5 steps" />
             {!isLive && (
               <div className="reveal mb-6 flex flex-wrap items-center gap-4 border-2 border-stamp/60 bg-stamp/[0.06] p-4">
                 <Stamp rotate={-3}>Not launched yet</Stamp>
@@ -403,8 +403,8 @@ export default function Home() {
           </section>
 
           {/* 08 ROADMAP */}
-          <section id="roadmap" data-mood="roadmap" className="scroll-mt-24 pt-20" aria-labelledby="roadmap-title">
-            <SectionHead n="08" id="roadmap-title" title="Roadmap" kicker="No moons. No lambos." />
+          <section data-mood="roadmap" className="pt-20" aria-labelledby="roadmap-title">
+            <SectionHead n="08" id="roadmap-title" anchor="roadmap" title="Roadmap" kicker="No moons. No lambos." />
             <p className="reveal max-w-[60ch] text-[15px] leading-relaxed">Only things we can actually do. Items get a receipt in the build log when they ship.</p>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               {roadmap.map((p) => (
@@ -425,8 +425,8 @@ export default function Home() {
           </section>
 
           {/* 09 FAQ */}
-          <section id="faq" data-mood="faq" className="scroll-mt-24 pt-20" aria-labelledby="faq-title">
-            <SectionHead n="09" id="faq-title" title="FAQ" kicker="Straight answers" />
+          <section data-mood="faq" className="pt-20" aria-labelledby="faq-title">
+            <SectionHead n="09" id="faq-title" anchor="faq" title="FAQ" kicker="Straight answers" />
             <div className="border-t-2 border-ink">
               {faq.map((f) => (
                 <details key={f.q} className="reveal group border-b-2 border-dotted border-ink/25">
@@ -443,8 +443,8 @@ export default function Home() {
           </section>
 
           {/* 10 BUILD LOG */}
-          <section id="log" data-mood="log" className="scroll-mt-24 pt-20" aria-labelledby="log-title">
-            <SectionHead n="10" id="log-title" title="Build log" kicker="Real dates · UTC" />
+          <section data-mood="log" className="pt-20" aria-labelledby="log-title">
+            <SectionHead n="10" id="log-title" anchor="log" title="Build log" kicker="Real dates · UTC" />
             <ol>
               {buildLog.slice(0, 5).map((e) => (
                 <li key={e.date + e.title} className="reveal grid gap-1 border-b-2 border-dotted border-ink/20 py-4 sm:grid-cols-[170px_1fr] sm:gap-6">

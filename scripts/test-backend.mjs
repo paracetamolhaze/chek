@@ -129,6 +129,23 @@ const sched = await adm({ op: "schedule", launchAt: new Date(Date.now() + 5 * 36
 ok(sched.status === 409, "a launch time < 26 h away is refused (announcement must be ≥ 24 h before)");
 await core.setSetting("schedule", { d1: "2026-10-02", launchAt: null });
 
+
+// X via the owner's Telegram: thread hand-over logic (sending is not exercised here — no bot token in tests)
+const xh = await import("../server/lib/xhandoff.js");
+await sql`insert into chek.queue (id, platform, category, level, status, publish_after, payload, origin)
+  values ('test-thread', 'x', 'build', 'auto', 'publishing', now(), ${sql.json({ parts: ["one", "two"], handoff: { sentAt: new Date().toISOString(), part: 0, parts: ["one", "two"], links: [], media: null } })}, 'seed')`;
+ok((await xh.openHandoff()) === "test-thread", "open X hand-over found");
+const w = await xh.confirmPosted("test-thread", null, null);
+ok(w.waitingForLink, "thread part 1 without a link → asks for the link");
+const n2 = await xh.confirmPosted("test-thread", "https://x.com/chekcoinsol/status/1844000000000000001", null);
+ok(n2.next === 2, "link of part 1 accepted → part 2 is next");
+const d2 = await xh.confirmPosted("test-thread", "https://x.com/chekcoinsol/status/1844000000000000002", null);
+const [tt] = await sql`select status, external_url from chek.queue where id = 'test-thread'`;
+ok(d2.published && tt.status === "published" && tt.external_url.endsWith("1844000000000000001"), "thread logged as published with the first post's link");
+await sql`insert into chek.queue (id, platform, category, level, status, publish_after, payload, origin)
+  values ('test-stale', 'x', 'meme', 'auto', 'publishing', now(), ${sql.json({ parts: ["x"], handoff: { sentAt: new Date(Date.now() - 4 * 3600e3).toISOString(), part: 0, parts: ["x"], links: [] } })}, 'seed')`;
+ok((await xh.expireHandoffs()) === 1, "unattended hand-over expires after 3 h");
+
 // vault
 await vaultSet("t", { a: 1 });
 ok((await vaultGet("t")).a === 1, "vault round-trip (AES-GCM)");

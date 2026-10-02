@@ -13,6 +13,7 @@ import { decide } from "../server/lib/publisher.js";
 import { enqueue } from "../server/lib/queue.js";
 import { renderClaimReceipt } from "../server/lib/render.js";
 import { tg } from "../server/lib/telegram.js";
+import { confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
 
 export const maxDuration = 60;
 
@@ -101,6 +102,12 @@ export async function POST(request) {
       }
       if (!owner || q.from.id !== owner) return json({ ok: true });
       const [act, id] = String(q.data || "").split(":");
+      if (act === "xp" || act === "xs") {
+        const done = act === "xp" ? await confirmPosted(id, null, owner) : { ok: await skipHandoff(id) };
+        await tg("answerCallbackQuery", { callback_query_id: q.id, text: !done.ok ? "Already handled" : act === "xs" ? "Skipped" : done.published ? "Logged as posted ✅" : done.waitingForLink ? "Paste the post link here" : `Next: part ${done.next}` });
+        if (q.message && (act === "xs" || done.published)) await tg("editMessageReplyMarkup", { chat_id: q.message.chat.id, message_id: q.message.message_id, reply_markup: { inline_keyboard: [] } }).catch(() => {});
+        return json({ ok: true });
+      }
       const row = await decide(id, act === "ap", "telegram");
       await tg("answerCallbackQuery", { callback_query_id: q.id, text: row ? (act === "ap" ? "Approved — goes out on the next tick" : "Rejected") : "Already handled" });
       if (q.message) await tg("editMessageReplyMarkup", { chat_id: q.message.chat.id, message_id: q.message.message_id, reply_markup: { inline_keyboard: [] } }).catch(() => {});
@@ -123,6 +130,13 @@ export async function POST(request) {
     }
 
     const isOwner = owner && m.from.id === owner;
+    // the owner pasted the link of an X post they just made → log it (and send the next thread part)
+    if (isOwner && tweetIdOf(m.text)) {
+      const id = await openHandoff();
+      const done = id ? await confirmPosted(id, m.text.trim(), owner) : { ok: false };
+      await reply(m.chat.id, !done.ok ? "No X post is waiting for a link right now." : done.published ? `✅ ${id} logged as posted.` : `Got it — part ${done.next} is above.`);
+      return json({ ok: true });
+    }
     if (isOwner && cmd === "/status") {
       const sql = await db();
       const [c] = await sql`select (select count(*) from chek.queue where status='review')::int as review, (select count(*) from chek.alerts where resolved_at is null)::int as alerts`;

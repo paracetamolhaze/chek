@@ -50,7 +50,8 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  /* sticky header (4rem + 1px border) + a small gap: in-page links land the section heading right under the header */
+  scroll-padding-top: calc(4rem + 1px + 24px);
   -webkit-text-size-adjust: 100%;
 }
 

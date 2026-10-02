@@ -2,8 +2,12 @@ import type { ReactNode } from "react";
 
 // Building blocks of the receipt language: section heads, itemized rows, stamps, tags.
 
-export function SectionHead({ n, title, kicker, id }: { n: string; title: string; kicker?: string; id?: string }) {
+// anchor: the in-page link target (#story…). It sits on an untransformed marker right above the heading row, so a
+// click lands the row just under the sticky header (html scroll-padding-top), whatever the section padding or animation.
+export function SectionHead({ n, title, kicker, id, anchor }: { n: string; title: string; kicker?: string; id?: string; anchor?: string }) {
   return (
+    <>
+    {anchor && <span id={anchor} aria-hidden className="block h-0" />}
     <header className="reveal mb-8 sm:mb-10">
       <div className="flex items-center gap-3 text-[11px] font-semibold tracking-[0.25em] text-faded uppercase">
         <span className="font-display text-base font-black tracking-normal text-ink">{n}</span>
@@ -14,6 +18,7 @@ export function SectionHead({ n, title, kicker, id }: { n: string; title: string
         {title}
       </h2>
     </header>
+    </>
   );
 }
 

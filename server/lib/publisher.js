@@ -10,6 +10,7 @@ import { checkContent } from "./guards.js";
 import { conditionsMet, context, render } from "./queue.js";
 import { chatFromLink, messageUrl, notifyOwner, publishTelegram } from "./telegram.js";
 import { publishX, xReady } from "./x.js";
+import { handoffX } from "./xhandoff.js";
 
 const MEDIA_DIRS = /^content\/(mascot|memes|animations)\//;
 export const mediaUrl = (asset) => (asset && MEDIA_DIRS.test(asset) ? `${env.siteUrl}/media/${asset.replace(/^content\//, "")}` : null);
@@ -59,8 +60,11 @@ export async function runPublisher(now = new Date(), { ids = null, platforms = [
           on conflict (run, queue_id, verdict) do nothing`
       : null;
 
+  // X goes out through the official API when its keys are connected, otherwise via the owner's Telegram (one tap per post)
+  const xTransport = settings.x_transport || (integrations().x ? "api" : "telegram");
   for (const platform of platforms) {
-    const configured = integrations()[platform] && (platform !== "x" || (await xReady()));
+    const configured =
+      platform === "x" && xTransport === "telegram" ? Boolean(integrations().telegram && settings.owner?.telegramUserId) : integrations()[platform] && (platform !== "x" || (await xReady()));
     const live = !dry && settings.platforms[platform] && configured;
     if (!dry && !live) {
       report[platform] = { live: false, waiting: "platform not connected" };
@@ -128,6 +132,11 @@ export async function runPublisher(now = new Date(), { ids = null, platforms = [
         continue;
       }
 
+      if (platform === "x" && xTransport === "telegram") {
+        if (await handoffX(row, out, mediaOf(row, out), settings)) published = row.id;
+        break; // one hand-over at a time; the next one goes after the owner posted (or skipped) this one
+      }
+
       await sql`update chek.queue set status = 'publishing', attempts = attempts + 1, updated_at = now() where id = ${row.id}`;
       try {
         const media = mediaOf(row, out);
@@ -153,7 +162,7 @@ export async function runPublisher(now = new Date(), { ids = null, platforms = [
         break;
       }
     }
-    report[platform] = { live, dry, published };
+    report[platform] = { live, dry, published, ...(platform === "x" ? { via: xTransport } : {}) };
   }
   return report;
 }

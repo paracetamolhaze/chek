@@ -72,6 +72,7 @@ const ALLOWED = {
   ai: (v) => ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5"].includes(v.model),
   prices: (v) => Object.values(v).every((n) => typeof n === "number" && n >= 0),
   onchain_threshold_pct: (v) => typeof v === "number" && v > 0 && v < 100,
+  x_transport: (v) => ["telegram", "api"].includes(v),
 };
 
 export async function GET(request) {
