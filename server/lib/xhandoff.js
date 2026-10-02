@@ -82,6 +82,18 @@ export async function confirmPosted(id, link = null, owner = null) {
   return { ok: true, published: true };
 }
 
+/** A link pasted after ✅ (no hand-over open): attach it to the latest X post logged without one (last 6 h). */
+export async function attachLink(link) {
+  const tid = tweetIdOf(link);
+  if (!tid) return null;
+  const sql = await db();
+  const [row] = await sql`update chek.queue set external_id = ${tid}, external_url = ${`https://x.com/i/status/${tid}`}, updated_at = now()
+    where id = (select id from chek.queue where platform = 'x' and status = 'published' and external_id is null and published_at > now() - interval '6 hours'
+      order by published_at desc limit 1) returning id`;
+  if (row) await audit("owner", "post.link_added.x", "ok", { ref: row.id, detail: { id: tid } });
+  return row?.id ?? null;
+}
+
 /** The open hand-over (for a pasted link). */
 export async function openHandoff() {
   const sql = await db();

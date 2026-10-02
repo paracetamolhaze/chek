@@ -13,7 +13,7 @@ import { decide } from "../server/lib/publisher.js";
 import { enqueue } from "../server/lib/queue.js";
 import { renderClaimReceipt } from "../server/lib/render.js";
 import { tg } from "../server/lib/telegram.js";
-import { confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
+import { attachLink, confirmPosted, openHandoff, skipHandoff, tweetIdOf } from "../server/lib/xhandoff.js";
 import { dropClosed } from "../server/lib/xdrop.js";
 import { isPubkey } from "../shared/solana-inspect.mjs";
 import { chatFromLink } from "../server/lib/telegram.js";
@@ -176,6 +176,8 @@ export async function POST(request) {
       if (act === "xp" || act === "xs") {
         const done = act === "xp" ? await confirmPosted(id, null, owner) : { ok: await skipHandoff(id) };
         await tg("answerCallbackQuery", { callback_query_id: q.id, text: !done.ok ? "Already handled" : act === "xs" ? "Skipped" : done.published ? "Logged as posted ✅" : done.waitingForLink ? "Paste the post link here" : `Next: part ${done.next}` });
+        // drop rounds: the channel links to the X post, so ask for its link once
+        if (act === "xp" && done.published && /^xg-/.test(id)) await reply(q.from.id, `✅ ${id} logged. Paste its link here too — the Telegram channel points people to this round.`);
         if (q.message && (act === "xs" || done.published)) await tg("editMessageReplyMarkup", { chat_id: q.message.chat.id, message_id: q.message.message_id, reply_markup: { inline_keyboard: [] } }).catch(() => {});
         return json({ ok: true });
       }
@@ -220,7 +222,12 @@ export async function POST(request) {
     if (isOwner && tweetIdOf(m.text)) {
       const id = await openHandoff();
       const done = id ? await confirmPosted(id, m.text.trim(), owner) : { ok: false };
-      await reply(m.chat.id, !done.ok ? "No X post is waiting for a link right now." : done.published ? `✅ ${id} logged as posted.` : `Got it — part ${done.next} is above.`);
+      // ✅ was tapped first → the link still belongs to the post just logged
+      const late = !id ? await attachLink(m.text.trim()) : null;
+      await reply(
+        m.chat.id,
+        late ? `🔗 Link saved for ${late}.` : !done.ok ? "No X post is waiting for a link right now." : done.published ? `✅ ${id} logged as posted.` : `Got it — part ${done.next} is above.`,
+      );
       return json({ ok: true });
     }
     if (isOwner && cmd === "/status") {

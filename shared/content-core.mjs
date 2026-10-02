@@ -114,6 +114,7 @@ export const SAMPLE = {
   RECEIPTS_PRINTED: "1,234",
   X_ENTRIES: "1,234",
   TG_ENTRIES: "1,234",
+  X_ROUND_URL: "https://x.com/chekcoinsol/status/1900000000000000000",
   TG_ENTER: "comment your SOL address under t.me/chekcoinsol/123",
   ROTW_ENTRIES: "12",
   DAY_N: "9",

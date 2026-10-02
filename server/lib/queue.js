@@ -122,10 +122,14 @@ export async function context() {
   const [dp] = await sql`select external_url from chek.queue where id = 'tg-gw-1' and status = 'published'`;
   const discussion = (await getSetting("tg_discussion"))?.chatId;
   const tgDrop = dp?.external_url ? dp.external_url.replace("https://", "") : null;
+  // the latest X drop round the owner posted (its link pasted to the bot) — Telegram posts point people to it
+  const [xr] = await sql`select external_id from chek.queue where platform = 'x' and id like 'xg-%' and status = 'published' and external_id is not null
+    order by published_at desc limit 1`;
   const inputs = {
     RECEIPTS_PRINTED: m.n.toLocaleString("en-US"),
     X_ENTRIES: de.x.toLocaleString("en-US"),
     TG_ENTRIES: de.tg.toLocaleString("en-US"),
+    X_ROUND_URL: xr ? `https://x.com/${p.accounts?.x?.handle ?? "chekcoinsol"}/status/${xr.external_id}` : null,
     // Telegram drop entry: comments under the pinned Telegram drop post once it exists, the bot until then
     TG_ENTER: discussion && tgDrop ? `comment your SOL address under ${tgDrop}` : "send your SOL address to t.me/chekcoinsol_bot",
     ...((await getSetting("inputs")) || {}),

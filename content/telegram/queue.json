@@ -34,6 +34,16 @@
       "asset": "content/animations/v01-meet-chek.mp4"
     },
     {
+      "id": "tg-xr-1",
+      "slot": "D1 12:25",
+      "category": "community",
+      "status": "ready",
+      "where": "channel",
+      "text": "🎁 The X drop is live — ROUND 1\n\n{{X_ROUND_WINNERS}} winners × {{X_ROUND_EACH}} $CHEKD from the replies under this post:\n{{X_ROUND_URL}}\n+ {{X_AIRDROP_EACH}} $CHEKD each for the first {{X_AIRDROP}} accounts.\n\n1. Follow @chekcoinsol on X and repost it\n2. Reply there with your public Solana address\n3. Paste the link to your reply at {{SITE_URL}}/drop\n\nEvery X drop post is a new round. This channel gets its own separate drop later today.",
+      "note": "Telegram → X: points channel subscribers to the live X round",
+      "publishAfter": "2026-10-02T12:25:00.000Z"
+    },
+    {
       "id": "tg-102",
       "slot": "D1 13:30",
       "category": "community",
@@ -170,7 +180,7 @@
       "category": "community",
       "status": "ready",
       "where": "channel",
-      "text": "Telegram drop update 🧾 {{TG_ENTRIES}} entries so far.\n\nThe first {{TG_AIRDROP}} get the airdrop, every entry is in the draw. Entry and rules: the pinned drop post.\n\nThe X drop is separate — reply on X, then paste the link at {{SITE_URL}}/drop.\n\nWe never DM first — report anyone who does.",
+      "text": "Telegram drop update 🧾 {{TG_ENTRIES}} entries so far.\n\nThe first {{TG_AIRDROP}} get the airdrop, every entry is in the draw. Entry and rules: the pinned drop post.\n\nThe X drop is separate — the latest round: {{X_ROUND_URL}} (reply there, then paste the link at {{SITE_URL}}/drop).\n\nWe never DM first — report anyone who does.",
       "asset": "content/animations/v08-telegram-drop.png",
       "publishAfter": "2026-10-03T17:05:00.000Z"
     },
@@ -189,7 +199,7 @@
       "category": "community",
       "status": "ready",
       "where": "channel",
-      "text": "Both drops stay open until 24 h after launch. Draw seeds = Solana blockhashes, published together with the winners. Every transfer gets an on-chain receipt.\n\nTelegram drop entries so far: {{TG_ENTRIES}}. X drop: {{SITE_URL}}/drop",
+      "text": "Both drops stay open until 24 h after launch. Draw seeds = Solana blockhashes, published together with the winners. Every transfer gets an on-chain receipt.\n\nTelegram drop entries so far: {{TG_ENTRIES}}. Latest X round: {{X_ROUND_URL}}",
       "asset": "content/animations/v08-telegram-drop.mp4",
       "publishAfter": "2026-10-05T09:05:00.000Z"
     },
