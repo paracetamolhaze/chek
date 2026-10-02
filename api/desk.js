@@ -53,9 +53,18 @@ export async function GET(request) {
   if (!row) {
     const sql = await db();
     const next = await sql`select id, publish_after from chek.queue where platform = 'x' and status in ('ready','approved') and publish_after is not null order by publish_after limit 3`;
+    // X posts are spaced (minGapMinutes) and nothing goes out at night: say exactly when the next one shows up here
+    const s = await getSetting("limits");
+    const [last] = await sql`select max(published_at) as at from chek.queue where platform = 'x' and status = 'published'`;
+    const gapEnd = last?.at ? new Date(new Date(last.at).getTime() + (s?.minGapMinutes ?? 55) * 60e3) : new Date(0);
+    const at = (d) => new Date(d).toISOString().slice(11, 16) + " UTC";
+    const first = next[0];
+    const when = first ? new Date(Math.max(new Date(first.publish_after).getTime(), gapEnd.getTime())) : null;
+    const mins = when ? Math.max(0, Math.ceil((when.getTime() - Date.now()) / 60e3) + 5) : null; // + the 5-min scheduler tick
     return page(
       `<h1>CHEK X desk</h1>${note}<p><b>Nothing to post right now.</b> Do not post anything from memory or old copies.</p>
-<p class="muted">Next posts become available here at their time (UTC): ${next.map((n) => `${esc(n.id)} at ${esc(new Date(n.publish_after).toISOString().slice(0, 16).replace("T", " "))}`).join(", ") || "none scheduled"}. Check again later.</p>`,
+${first ? `<p><b>Next: ${esc(first.id)}</b> shows up here at about ${esc(at(when.getTime() + 5 * 60e3))} (in ~${mins} min). Come back then.</p>` : ""}
+<p class="muted">Upcoming (scheduled time, UTC): ${next.map((n) => `${esc(n.id)} at ${esc(at(n.publish_after))}`).join(", ") || "none scheduled"}. Posts are spaced ${s?.minGapMinutes ?? 55} min apart; the owner's night hours also delay them.</p>`,
     );
   }
 
